@@ -1,0 +1,23 @@
+!define BLANK ""
+C:\Users\borov\source\repos\nstu\Numerical_computations\lab3\l3src.obj : C:\&
+Users\borov\source\repos\nstu\Numerical_computations\lab3\l3src.for .AUTODEP&
+END
+ @C:
+ cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab3
+ wfc386 l3src.for -d2 -q -dep
+
+C:\Users\borov\source\repos\nstu\Numerical_computations\lab3\l3.exe : C:\Use&
+rs\borov\source\repos\nstu\Numerical_computations\lab3\l3src.obj .AUTODEPEND
+ @C:
+ cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab3
+ @%write l3.lk1 FIL l3src.obj
+ @%append l3.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b l3.imp 
+ @%append l3.lk1 LIBR l3.imp
+!endif
+!ifneq BLANK ""
+ @%append l3.lk1 
+!endif
+ *wlink name l3 d all sys nt op m op maxe=25 op q op symf @l3.lk1
+

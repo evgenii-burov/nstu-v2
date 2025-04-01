@@ -1,0 +1,21 @@
+!define BLANK ""
+C:\PV\labAnotha\lab2src.obj : C:\PV\labAnotha\lab2src.for .AUTODEPEND
+ @C:
+ cd C:\PV\labAnotha
+ wfc386 lab2src.for -d2 -q -dep
+
+C:\PV\labAnotha\lab2proj.exe : C:\PV\labAnotha\lab2src.obj .AUTODEPEND
+ @C:
+ cd C:\PV\labAnotha
+ @%write lab2proj.lk1 FIL lab2src.obj
+ @%append lab2proj.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b lab2proj.imp 
+ @%append lab2proj.lk1 LIBR lab2proj.imp
+!endif
+!ifneq BLANK ""
+ @%append lab2proj.lk1 
+!endif
+ *wlink name lab2proj d all sys nt op m op maxe=25 op q op symf @lab2proj.lk&
+1
+

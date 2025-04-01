@@ -1,0 +1,3 @@
+import random
+
+s="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sed tortor sit amet erat consequat rutrum. Ut enim velit, congue sed odio a, tincidunt tristique felis. Vestibulum id dui lectus. Suspendisse vitae faucibus orci. Donec orci libero, convallis eu interdum vitae, gravida non sapien. Aenean neque tortor, accumsan eget dictum eu, vestibulum in ex. Morbi nulla nulla, convallis non maximus at, sollicitudin hendrerit nisi. Curabitur vel quam sem. Donec id pretium tellus, ac tristique ipsum. Cras vel augue quis lacus rutrum condimentum eget id dui. Ut tempus viverra fringilla. Duis eros nisi, sagittis eu arcu dictum, fermentum aliquet risus."

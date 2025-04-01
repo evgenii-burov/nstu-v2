@@ -1,0 +1,166 @@
+body{
+    overflow: auto;
+    padding-top: 50px;
+    margin: 0;
+    background-color: #efefef;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+body hr{
+    border: 0;
+    height: 1px;
+    background: #808080;
+    margin: 40px 0;
+}
+
+.image-with-text {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.image-with-text img {
+    
+}
+
+.text-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.text-container h2 {
+    margin: 0;
+}
+
+.text-container h4 {
+    margin: 0;
+}
+
+.text-container p {
+    margin: 0;
+}
+
+.text-container a{
+    text-decoration: none;
+    color: inherit;
+}
+
+.text-container a:hover{
+    color: rgb(3, 3, 151);
+}
+
+.header{
+    background-color: azure;
+    text-align: center;
+    padding: 20px;
+}
+
+.top_bar{
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    width: 100%;
+    min-height: 50px;
+    margin: auto;
+    background-color: #01204e;
+    border: 1px solid black;
+    color: white;
+}
+
+.top_bar a{
+    float: left;
+    display: block;
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.top_bar a:hover {
+    background-color: rgb(80, 121, 175);
+    color: black;
+  }
+
+.main_content{
+    background-color: #ffffff;
+    color: black;
+    width: 80%;
+    padding: 10px;
+    margin: auto;
+    border-radius: 10px;
+}
+
+.main_content img{
+    width: 800px;
+    height: 450px;
+}
+
+.main_content.contacts p{
+    margin-left: 50px;
+}
+
+.pagination{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    margin-right: 5px;
+} 
+
+.pagination.index{
+    display: inline;
+    padding: 10px;
+    border: 1px solid #01204e;
+}
+
+.pagination.index a{
+    color:rgb(3, 3, 151);
+    text-decoration: none;
+}
+
+.pagination.index a:hover{
+    color:rgb(255, 255, 255);
+    background-color:rgb(3, 3, 151);
+    text-decoration: none;
+}
+
+.footer{
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: inherit;
+    padding-left: 30px;
+    text-decoration: none;
+    color: black;
+    text-align: left;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+    width: 80%;
+}
+
+.footer li {
+    width: 80%;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+.footer li a{
+    text-decoration: inherit;
+    color: inherit;
+}
+
+.footer li a:hover{
+    color: rgb(54, 54, 223);
+}
+
+@media screen and (max-width:1000px){
+    .main_content {
+        width: 100%;
+    }
+}

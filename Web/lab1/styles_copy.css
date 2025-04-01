@@ -1,0 +1,84 @@
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure the body takes up at least the full viewport height */
+    margin: 0;
+    padding-top: 50px; /* Space for the top bar */
+    background-color: #efefef;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.top_bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #01204e;
+    border: 1px solid black;
+    color: white;
+}
+
+.top_bar a {
+    float: left;
+    display: block;
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.top_bar a:hover {
+    background-color: rgb(80, 121, 175);
+    color: black;
+}
+
+.main_content {
+    flex: 1; /* Allow the main content to grow and take up remaining space */
+    background-color: #ffffff;
+    color: black;
+    width: 80%;
+    padding: 10px;
+    margin: auto;
+}
+
+.above-footer {
+    width: 80%;
+    margin: 20px auto; /* Add margin above the footer */
+    border: 0;
+    border-top: 1px solid #000; /* Style the <hr> */
+}
+
+.footer {
+    background-color: inherit;
+    padding: 20px;
+    text-decoration: none;
+    color: black;
+    text-align: left;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+    width: 80%;
+    margin: auto;
+}
+
+.footer li {
+    margin-bottom: 10px;
+}
+
+.footer li a {
+    text-decoration: inherit;
+    color: inherit;
+}
+
+.footer li a:hover {
+    color: rgb(54, 54, 223);
+}
+
+@media screen and (max-width: 1000px) {
+    .main_content {
+        width: 100%;
+    }
+}

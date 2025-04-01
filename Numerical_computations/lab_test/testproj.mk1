@@ -1,0 +1,25 @@
+!define BLANK ""
+C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test\test.obj : &
+C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test\test.for .A&
+UTODEPEND
+ @C:
+ cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test
+ wfc386 test.for -d2 -q -dep
+
+C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test\testproj.ex&
+e : C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test\test.ob&
+j .AUTODEPEND
+ @C:
+ cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab_test
+ @%write testproj.lk1 FIL test.obj
+ @%append testproj.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b testproj.imp 
+ @%append testproj.lk1 LIBR testproj.imp
+!endif
+!ifneq BLANK ""
+ @%append testproj.lk1 
+!endif
+ *wlink name testproj d all sys nt op m op maxe=25 op q op symf @testproj.lk&
+1
+

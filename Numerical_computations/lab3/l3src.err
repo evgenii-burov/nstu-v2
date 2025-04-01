@@ -1,0 +1,9 @@
+l3src.for(54): *ERR* CC-01 column 17, invalid character encountered in source input
+l3src.for: *WRN* VA-05 in PRINTDENSE, X is an unreferenced symbol
+l3src.for: *ERR* SV-02 in PRINTDENSE, adjustable/assumed size array X must be a dummy argument
+l3src.for: *WRN* VA-05 in PRINTDENSE, B is an unreferenced symbol
+l3src.for: *ERR* SV-02 in PRINTDENSE, adjustable/assumed size array B must be a dummy argument
+l3src.for: *WRN* VA-05 in PRINTDENSE, DI is an unreferenced symbol
+l3src.for: *WRN* VA-05 in PRINTDENSE, JA is an unreferenced symbol
+l3src.for: *WRN* VA-05 in PRINTDENSE, AL is an unreferenced symbol
+l3src.for: *WRN* VA-05 in PRINTDENSE, IA is an unreferenced symbol

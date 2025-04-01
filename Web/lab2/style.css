@@ -1,0 +1,61 @@
+body{
+    background-color:rgb(199, 202, 214);
+}
+
+nav.navbar {
+    background-color: rgb(38, 38, 99); /* Vertical gradient */
+    color: rgb(152, 193, 253); /* Text color */
+}
+
+.navbar-brand.display-1 {
+    font-weight: bold !important; /* Make the text bold */
+    color: rgb(152, 193, 253) !important; /* Change the text color */
+}
+
+.navbar-brand.display-1:hover {
+    color:rgb(104, 181, 253) !important;
+    transition: color 0.5s ease !important;
+}
+
+.card {
+    background-color: rgb(231, 231, 231);
+}
+
+.card:hover{
+    background-color: rgb(210, 220, 253);
+    color: rgb(57, 57, 141);
+}
+
+.page-link {
+    background-color: rgb(231, 231, 231);
+}
+
+.page-item.disabled .page-link{
+    background-color: rgb(173, 173, 173);
+    border-color: rgb(173, 173, 173);
+}
+
+.page-item.active .page-link{
+    background-color: rgb(64, 64, 202);
+} 
+
+.footer li:hover{
+    text-decoration: underline;
+}
+
+p{
+    font-size: large;
+}
+
+.img-fluid{
+    max-height: 600px;
+}
+
+.card-text{
+    max-height: 200px;
+}
+
+li a{
+    color: black;
+    text-decoration: none;
+}

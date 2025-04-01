@@ -1,0 +1,24 @@
+!define BLANK ""
+C:\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2\lab3.obj : C:&
+\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2\lab3.for .AUTOD&
+EPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2
+ wfc386 lab3.for -d2 -q -dep
+
+C:\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2\lab3v2.exe : &
+C:\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2\lab3.obj .AUT&
+ODEPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu\Numerical_computations\lab3v2
+ @%write lab3v2.lk1 FIL lab3.obj
+ @%append lab3v2.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b lab3v2.imp 
+ @%append lab3v2.lk1 LIBR lab3v2.imp
+!endif
+!ifneq BLANK ""
+ @%append lab3v2.lk1 
+!endif
+ *wlink name lab3v2 d all sys nt op m op maxe=25 op q op symf @lab3v2.lk1
+

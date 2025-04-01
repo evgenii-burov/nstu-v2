@@ -1,0 +1,20 @@
+!define BLANK ""
+C:\PV\labfin\f.obj : C:\PV\labfin\f.for .AUTODEPEND
+ @C:
+ cd C:\PV\labfin
+ wfc386 f.for -d2 -q -dep
+
+C:\PV\labfin\fin.exe : C:\PV\labfin\f.obj .AUTODEPEND
+ @C:
+ cd C:\PV\labfin
+ @%write fin.lk1 FIL f.obj
+ @%append fin.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b fin.imp 
+ @%append fin.lk1 LIBR fin.imp
+!endif
+!ifneq BLANK ""
+ @%append fin.lk1 
+!endif
+ *wlink name fin d all sys nt op m op maxe=25 op q op symf @fin.lk1
+
