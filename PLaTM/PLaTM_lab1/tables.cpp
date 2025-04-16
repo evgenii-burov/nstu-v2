@@ -1,6 +1,6 @@
 #include "tables.h"
 
-void ConstantTable::load_table(std::string file_name)
+ConstantTable::ConstantTable(std::string file_name)
 {
 	std::ifstream input_stream(file_name);
 	if (!input_stream)
