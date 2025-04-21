@@ -1,5 +1,5 @@
-project : C:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4p&
-roj.exe .SYMBOLIC
+project : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\la&
+b4proj.exe .SYMBOLIC
 
-!include C:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4pr&
-oj.mk1
+!include C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab&
+4proj.mk1

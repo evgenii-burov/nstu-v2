@@ -1,16 +1,16 @@
 !define BLANK ""
-C:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4src.obj : C&
-:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4src.for .AUT&
-ODEPEND
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.obj &
+: C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.fo&
+r .AUTODEPEND
  @C:
- cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab4
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4
  wfc386 lab4src.for -d2 -q -dep
 
-C:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4proj.exe : &
-C:\Users\borov\source\repos\nstu\Numerical_computations\lab4\lab4src.obj .AU&
-TODEPEND
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4proj.exe&
+ : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.o&
+bj .AUTODEPEND
  @C:
- cd C:\Users\borov\source\repos\nstu\Numerical_computations\lab4
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4
  @%write lab4proj.lk1 FIL lab4src.obj
  @%append lab4proj.lk1 
 !ifneq BLANK ""

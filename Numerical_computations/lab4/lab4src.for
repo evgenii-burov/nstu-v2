@@ -2,17 +2,13 @@
       implicit real(a-h,o-z)
       common/mesh/n
       real mem(10000)
-      h=1
-      a=1
-      b=10
+      open(1,file='params.txt')
+      read(1,*)a,b,h
       call makeMesh(mem(1),a,b,h)
-      do i=1,n
-        print*,'i:', i, ' mem:', mem(i)
-      enddo
-      t=rectangle(mem(1))
-      print*,t
-      p=simpson(mem(1))
-      print*,p
+      result=rectangle(mem(1))
+      print*,'Rectangle method: ',result
+      result=simpson(mem(1))
+      print*,'Simpson method: ',result
       pause
       end
 
@@ -21,20 +17,17 @@
       common/mesh/n
       real v(*)
       cur=a
-      i=1
-      n=999
-      print*,a,b
+      n=1
     1 continue
       if(cur.gt.b)then
         goto 2
       endif
-      v(i)=cur
+      v(n)=cur
       cur=cur+h
-      i=i+1
+      n=n+1
       goto 1
     2 continue
-      n=i-1
-      print*,'n is ',n
+      n=n-1
       end
 
       real function rectangle(v)
@@ -43,7 +36,6 @@
       real v(*)
       r=0
       do i=1,n-1
-        print*,'doin',v(i)
         r=r+(v(i+1)-v(i))*fun((v(i)+v(i+1))/2)
       enddo
       rectangle=r
@@ -66,5 +58,5 @@
 
       real function fun(x)
       implicit real(a-h,o-z)
-      fun=x**2
+        fun=x**2
       end
