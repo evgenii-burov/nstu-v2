@@ -4,13 +4,14 @@
       real mem(100000000)
       open(1,file='params.txt')
       read(1,*)a,b,h
-      h=8
-      do i=1,25
+      h=13
+      do i=1,24
         write(*,3)h
         h=h/2
       enddo
-      h=8
-      do i=1,25
+      print*,'------------'
+      h=13
+      do i=1,24
         call makeMesh(mem(1),a,b,h)
         result=r_newton_cotes_4(mem(1))
         write(*,3)result
@@ -22,7 +23,7 @@
     ! result=r_newton_cotes_4(mem(1))
     ! print*,'Newton cotes method: ',result
       pause
-    3 format(f20.8)
+    3 format(e15.8)
       end
 
       subroutine makeMesh(v,a,b,h)
@@ -90,6 +91,6 @@
     ! fun=23*x**3-5*x**2+34*x+31
     ! fun=2*x**4+6*x**3-10*x**2-7*x+21
     ! fun=x**5-x**4+3*x**3+11*x**2-2*x-9
-      fun=x**7-2*x**5+5*x**3-7*x
-    ! fun=x*cos(x)
+    ! fun=x**7-2*x**5+5*x**3-7*x
+      fun=x*cos(x)
       end

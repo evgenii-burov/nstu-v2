@@ -1,17 +1,17 @@
 !define BLANK ""
-C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.obj &
-: C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.fo&
-r .AUTODEPEND
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4double.o&
+bj : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4dou&
+ble.for .AUTODEPEND
  @C:
  cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4
- wfc386 lab4src.for -d2 -q -dep
+ wfc386 lab4double.for -d2 -q -dep
 
 C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4proj.exe&
- : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4src.o&
-bj .AUTODEPEND
+ : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4\lab4doubl&
+e.obj .AUTODEPEND
  @C:
  cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab4
- @%write lab4proj.lk1 FIL lab4src.obj
+ @%write lab4proj.lk1 FIL lab4double.obj
  @%append lab4proj.lk1 
 !ifneq BLANK ""
  *wlib -q -n -b lab4proj.imp 

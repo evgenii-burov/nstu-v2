@@ -1,0 +1,24 @@
+!define BLANK ""
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta\sueta.obj :&
+ C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta\sueta.for &
+.AUTODEPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta
+ wfc386 sueta.for -d2 -q -dep
+
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta\noname.exe &
+: C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta\sueta.obj&
+ .AUTODEPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\sueta
+ @%write noname.lk1 FIL sueta.obj
+ @%append noname.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b noname.imp 
+ @%append noname.lk1 LIBR noname.imp
+!endif
+!ifneq BLANK ""
+ @%append noname.lk1 
+!endif
+ *wlink name noname d all sys nt op m op maxe=25 op q op symf @noname.lk1
+
