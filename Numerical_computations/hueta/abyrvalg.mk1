@@ -1,0 +1,25 @@
+!define BLANK ""
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.obj : &
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.for .A&
+UTODEPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta
+ wfc386 main.for -d2 -q -dep
+
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\abyrvalg.ex&
+e : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.ob&
+j .AUTODEPEND
+ @C:
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta
+ @%write abyrvalg.lk1 FIL main.obj
+ @%append abyrvalg.lk1 
+!ifneq BLANK ""
+ *wlib -q -n -b abyrvalg.imp 
+ @%append abyrvalg.lk1 LIBR abyrvalg.imp
+!endif
+!ifneq BLANK ""
+ @%append abyrvalg.lk1 
+!endif
+ *wlink name abyrvalg d all sys nt op m op maxe=25 op q op symf @abyrvalg.lk&
+1
+
