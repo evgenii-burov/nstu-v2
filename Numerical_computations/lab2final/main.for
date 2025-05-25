@@ -46,6 +46,7 @@
         xc=xmem
         write(chpr,2)yc
         yc=yc+yh
+        call trim(yc)
         write(ch,2)yc
         if(ch.eq.chpr)then
         print*,'yH is too small'
@@ -72,6 +73,7 @@
         write(2,1)xc
         write(chpr,2)xc
         xc=xc+xh
+        call trim(xc)
         n=n+1
         write(ch,2)xc
         if(ch.eq.chpr)then
@@ -100,21 +102,22 @@
       write(2,4)yc
       do while(xc.lt.xmax.and.abs(xmax-xc).gt.epsx
      +.and.n.lt.nlength)
-        if(abs(xc).lt.1.19e-7)then
+        if(abs(xc).lt.1e-38)then
         write(2,'(a12,\)')'not defined|'
-        else if(abs(mod(yc,180.0)-90.0).lt.1e-4)then
+        else if(abs(mod(yc,180.0)-90.0).lt.1e-38)then
         write(2,1)0.0
         else
         write(2,1)fn(xc,yc)
         endif
         xc=xc+xh
+        call trim(xc)
         n=n+1
       end do
       if(n.lt.nlength)then
-      if(abs(xc).lt.1.19e-7)then
+      if(abs(xc).lt.1e-38)then
         write(2,'(a12,\)')'not defined|'
-        else if(abs(mod(yc,180.0)-90.0).lt.1e-7)then
-        write(2,1)0
+        else if(abs(mod(yc,180.0)-90.0).lt.1e-38)then
+        write(2,1)0.0
         else
         write(2,1)fn(xmax,yc)
       endif
