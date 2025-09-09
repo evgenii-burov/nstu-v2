@@ -117,7 +117,7 @@
       if(abs(xc).lt.1e-38)then
         write(2,'(a12,\)')'not defined|'
         else if(abs(mod(yc,180.0)-90.0).lt.1e-38)then
-        write(2,1)0.0
+        write(2,1)0
         else
         write(2,1)fn(xmax,yc)
       endif

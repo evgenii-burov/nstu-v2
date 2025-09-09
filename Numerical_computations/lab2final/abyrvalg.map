@@ -1,6 +1,6 @@
 Open Watcom Linker Version 1.9
 Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
-Created on:       25/05/26 03:18:45
+Created on:       25/05/27 21:10:30
 Executable Image: abyrvalg.exe
 creating a Windows NT character-mode executable
 
@@ -67,7 +67,7 @@ STACK                  STACK          DGROUP         0041a180        00010000
 Address        Symbol
 =======        ======
 
-Module: main.obj(C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.for)
+Module: main.obj(C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final\main.for)
 00401010       FMAIN
 0040105e+      WRITE_TABLE
 004010f8+      WRITE_PAGE
@@ -88,7 +88,7 @@ Module: C:\Users\evgen\Documents\WATCOM/lib386/nt\flib7.lib(cowrite)
 004019b0*      RT@OutLOG4
 004019be*      RT@OutINT1
 004019d0*      RT@OutINT2
-004019e0*      RT@OutINT4
+004019e0       RT@OutINT4
 004019ef       RT@OutREAL
 004019ff*      RT@OutDBLE
 00401a0f*      RT@OutXTND

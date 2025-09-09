@@ -1,16 +1,16 @@
 !define BLANK ""
-C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.obj : &
-C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.for .A&
-UTODEPEND
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final\main.ob&
+j : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final\mai&
+n.for .AUTODEPEND
  @C:
- cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final
  wfc386 main.for -d2 -q -dep
 
-C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\abyrvalg.ex&
-e : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta\main.ob&
-j .AUTODEPEND
+C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final\abyrval&
+g.exe : C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final&
+\main.obj .AUTODEPEND
  @C:
- cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\hueta
+ cd C:\Users\evgen\source\repos\nstu-v2\Numerical_computations\lab2final
  @%write abyrvalg.lk1 FIL main.obj
  @%append abyrvalg.lk1 
 !ifneq BLANK ""
