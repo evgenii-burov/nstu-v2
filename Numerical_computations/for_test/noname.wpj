@@ -4,10 +4,10 @@ projectIdent
 VpeMain
 1
 WRect
--580
-3072
-7680
-7872
+2880
+1952
+6360
+6016
 2
 MProject
 3
@@ -30,7 +30,7 @@ VComponent
 WRect
 0
 0
-5673
+5666
 4256
 0
 0
@@ -39,5 +39,5 @@ WFileName
 10
 noname.tgt
 0
--1
+1
 7
