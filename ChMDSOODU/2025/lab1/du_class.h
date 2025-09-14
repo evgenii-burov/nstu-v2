@@ -34,6 +34,10 @@ public:
 		input_stream >> h >> t_start >> t_end >> y_0;
 	}
 
+	DifferentialEquation(double h_0, double t_start_0, double t_end_0, double y_0_0) :
+	h(h_0), t_start(t_start_0), t_end(t_end_0), y_0(y_0_0)
+	{}
+
 	void solve_du(std::string file_name)
 	{
 		std::ofstream output_stream(file_name);
