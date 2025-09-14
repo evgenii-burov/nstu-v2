@@ -2,6 +2,6 @@
 
 int main()
 {
-    EulerFirst dura("input.txt");
-    dura.solve_du("output.txt");
+    EulerFirst du(0.1, 0, 1, 1);
+    du.solve_du("output.txt");
 }
