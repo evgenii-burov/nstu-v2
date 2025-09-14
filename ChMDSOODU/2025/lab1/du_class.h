@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-class DURAQ
+class DifferentialEquation
 {
 	/*
 	y' = 2ty
@@ -25,32 +25,36 @@ protected:
 		return exp(t * t);
 	}
 
-	virtual double get_next_y(double t, double y);
+	virtual double get_next_y(double t, double y) = 0;
 
 public:
-	DURAQ(std::string file_name)
+	DifferentialEquation(std::string file_name)
 	{
 		std::ifstream input_stream(file_name);
-		input_stream >> h, t_start, t_end, y_0;
+		input_stream >> h >> t_start >> t_end >> y_0;
 	}
 
 	void solve_du(std::string file_name)
 	{
 		std::ofstream output_stream(file_name);
-		for (double t = t_start, y = y_0; t<t_end && abs(t - t_end)>eps;t += h, y=get_next_y(t,y))
+		output_stream << "t\ty_n\ty_a\t|y_n-y_a|\n";
+		std::cout << "t\ty_n\ty_a\t|y_n-y_a|\n";
+		for (double t = t_start, y = y_0; t < t_end || abs(t - t_end) < eps; \
+			y = get_next_y(t, y), t += h)
 		{
 			output_stream << t << "\t" << y << "\t" << y_analytic(t) << "\t" << abs(y - y_analytic(t)) << "\n";
+			std::cout << t << "\t" << y << "\t" << y_analytic(t) << "\t" << abs(y - y_analytic(t)) << "\n";
 		}
 	}
 };
 
-class EulerFirst : public DURAQ
+class EulerFirst : public DifferentialEquation
 {
 protected:
 	double get_next_y(double t, double y) override
 	{
-		return y + h * DURAQ::y_derivative(t, y);
+		return y + h * y_derivative(t, y);
 	}
 public:
-	using DURAQ::DURAQ;
+	using DifferentialEquation::DifferentialEquation;
 };
