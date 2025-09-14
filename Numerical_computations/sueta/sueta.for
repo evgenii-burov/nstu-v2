@@ -70,6 +70,8 @@
       pause
       stop
       endif
+      print*,power(x_max)-power(x_step)
+      print*,power(x_min)-power(x_step)
       if(abs(power(x_max)-power(x_step)).gt.4.or.
      +abs(power(x_min)-power(x_step)).gt.4)then
       print*,'Invisible step by x'
