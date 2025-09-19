@@ -52,12 +52,34 @@ public:
 	}
 };
 
-class EulerFirst : public DifferentialEquation
+class EulerSimple : public DifferentialEquation
 {
 protected:
 	double get_next_y(double t, double y) override
 	{
 		return y + h * y_derivative(t, y);
+	}
+public:
+	using DifferentialEquation::DifferentialEquation;
+};
+
+class EulerModified : public DifferentialEquation
+{
+protected:
+	double get_next_y(double t, double y) override
+	{
+		return y + h * (y_derivative(t, y) + y_derivative(t + h, y + h * y_derivative(t, y))) / 2;
+	}
+public:
+	using DifferentialEquation::DifferentialEquation;
+};
+
+class EulerImproved : public DifferentialEquation
+{
+protected:
+	double get_next_y(double t, double y) override
+	{
+		return y + h * y_derivative(t + h / 2, y + h * y_derivative(t, y) / 2);
 	}
 public:
 	using DifferentialEquation::DifferentialEquation;

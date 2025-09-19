@@ -2,6 +2,10 @@
 
 int main()
 {
-    EulerFirst du(0.1, 0, 1, 1);
-    du.solve_du("output.txt");
+    EulerSimple euler_simple("input.txt");
+    EulerModified euler_modified("input.txt");
+    EulerImproved euler_improved("input.txt");
+    euler_simple.solve_du("euler_simple.txt");
+    euler_modified.solve_du("euler_modified.txt");
+    euler_improved.solve_du("euler_improved.txt");
 }
