@@ -4,4 +4,5 @@ int main()
 {
     EulerImplicit du("input.txt");
     du.solve_du("euler_implicit.txt");
+    std::cout << "Continueing work without rebasing";
 }
