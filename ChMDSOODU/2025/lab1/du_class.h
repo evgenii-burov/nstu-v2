@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -41,6 +42,8 @@ public:
 	void solve_du(std::string file_name)
 	{
 		std::ofstream output_stream(file_name);
+		output_stream << std::setprecision(6) << std::scientific;
+		std::cout << std::setprecision(6) << std::scientific;
 		output_stream << "t\ty_n\ty_a\t|y_n-y_a|\n";
 		std::cout << "t\ty_n\ty_a\t|y_n-y_a|\n";
 		for (double t = t_start, y = y_0; t < t_end || abs(t - t_end) < eps; \
