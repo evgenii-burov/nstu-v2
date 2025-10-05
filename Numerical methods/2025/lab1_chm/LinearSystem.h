@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <string>
 
-typedef float precision;
+typedef double precision;
 
 class LinearSystem
 {
