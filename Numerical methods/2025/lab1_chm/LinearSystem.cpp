@@ -64,27 +64,29 @@ void LinearSystem::print_ls()
 	std::cout << "\n";
 }
 
-void LinearSystem::solve_Ux_y()
-{
-	int elements_in_line = 0;
-	for (int i = n - 1; i >= 0; i--)
-	{
-		precision sum_over_j = 0;
-		elements_in_line = ia[i + 1] - ia[i];
-	}
-
-	//upper triangle
-	for (int i = 1; i < n; i++)
-	{
-		elements_in_line = ia[i + 1] - ia[i];
-		for (int j = 0; j < elements_in_line; j++)
-		{
-			std::cout << i << " " << au[ia[i] + j] << " " << b[i] << "\n";
-			result[i - elements_in_line + j] += au[ia[i] + j] * b[i];
-		}
-	}
-
-}
+//redo that
+//void LinearSystem::solve_Ux_y()
+//{
+//	int elements_in_line = 0;
+//	for (int i = n - 1; i >= 0; i--)
+//	{
+//		precision sum_over_j = 0;
+//		elements_in_line = ia[i + 1] - ia[i];
+//	}
+//
+//	//upper triangle
+//	for (int i = 1; i < n; i++)
+//	{
+//		precision sum_over_j = 0;
+//		elements_in_line = ia[i + 1] - ia[i];
+//		for (int j = 0; j < elements_in_line; j++)
+//		{
+//			std::cout << i << " " << au[ia[i] + j] << " " << b[i] << "\n";
+//			sum_over_j += au[ia[i] + j] * b[i];
+//		}
+//	}
+//
+//}
 
 void LinearSystem::solve_Ly_b()
 {
