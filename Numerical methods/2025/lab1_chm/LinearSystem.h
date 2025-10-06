@@ -19,4 +19,6 @@ public:
 	void decompose_ldu();
 	void solve_Ly_b();
 	void solve_Ux_y();
+	void matrix_times_b();
+	void print_ls();
 };
