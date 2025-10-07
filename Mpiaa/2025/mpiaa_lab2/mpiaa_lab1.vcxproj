@@ -129,11 +129,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lab2mpiaa.cpp" />
+    <ClCompile Include="linear_system.cpp" />
+    <ClCompile Include="matrices.cpp" />
+    <ClCompile Include="vectors.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lab2mpiaa.h" />
+    <ClInclude Include="mpiaalab2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
