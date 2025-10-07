@@ -1,96 +1,88 @@
-﻿#include <iostream>
-#include <string>
-#include <thread>
+﻿#pragma comment (lib,"Ws2_32.lib")
+#include <stdio.h>
 #include <winsock2.h>
-#include <ws2tcpip.h>
-
-#pragma comment(lib, "Ws2_32.lib")
-
-const int BUFFER_SIZE = 1024;
-
-// Function to receive messages from the server
-void ReceiveMessages(SOCKET clientSocket) {
-    char buffer[BUFFER_SIZE];
-    while (true) {
-        int bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE - 1, 0);
-        if (bytesReceived <= 0) {
-            std::cerr << "Connection to the server lost." << std::endl;
-            break;
-        }
-
-        buffer[bytesReceived] = '\0'; // Null-terminate the received message
-        std::cout << buffer << std::endl; // Print the message
-    }
-}
-
-int main() {
+#include <string>
+#include <iostream> 
+#include <cstdio>
+using namespace std;
+int main()
+{
+    WORD ver = MAKEWORD(2, 2);
     WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "WSAStartup failed." << std::endl;
-        return 1;
-    }
-
-    SOCKET clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (clientSocket == INVALID_SOCKET) {
-        std::cerr << "Socket creation failed." << std::endl;
-        WSACleanup();
-        return 1;
-    }
-
-    // Server address
-    std::string serverIP;
-    std::cout << "Enter server IP: ";
-    std::cin >> serverIP;
-
-    SOCKADDR_IN serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(2004); // Server port
-    inet_pton(AF_INET, serverIP.c_str(), &serverAddr.sin_addr);
-
-    // Connect to the server
-    if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "Failed to connect to the server." << std::endl;
-        closesocket(clientSocket);
-        WSACleanup();
-        return 1;
-    }
-
-    //Sending username
-    std::cout << "Connected to the server. Input your username." << std::endl;
-    std::string message;
-    while (true)
+    int retVal = 0;
+    WSAStartup(ver, (LPWSADATA)&wsaData);
+    LPHOSTENT hostEnt;
+    hostEnt = gethostbyname("localhost");
+    if (!hostEnt)
     {
-        std::getline(std::cin, message);
-        if (send(clientSocket, message.c_str(), message.size() + 1, 0) == SOCKET_ERROR) {
-            std::cerr << "Failed to send name." << std::endl;
-            break;
-        }
+        printf("Unable to collect gethostbyname\n");
+        WSACleanup();
+        system("pause");
+        return 1;
     }
-
-    // Start a thread to receive messages from the server
-    std::thread receiveThread(ReceiveMessages, clientSocket);
-    receiveThread.detach();
-
-    // Main loop to send messages to the server
-    
-    while (true) {
-        std::string message;
-        std::getline(std::cin, message); // Read input from the user
-
-        if (message == "/exit") {
-            std::cout << "Disconnecting from the server..." << std::endl;
-            break;
-        }
-
-        // Send the message to the server
-        if (send(clientSocket, message.c_str(), message.size() + 1, 0) == SOCKET_ERROR) {
-            std::cerr << "Failed to send message." << std::endl;
-            break;
-        }
+    //Создаем сокет
+    SOCKET clientSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (clientSock == SOCKET_ERROR)
+    {
+        printf("Unable to create socket\n");
+        WSACleanup();
+        system("pause");
+        return 1;
     }
+    string ip, port;
+    cout << "ip>";
+    cin >> ip;
+    cout << "port>";
+    cin >> port;
+    cin.ignore();
 
-    // Cleanup
-    closesocket(clientSocket);
+    SOCKADDR_IN serverInfo;
+    serverInfo.sin_family = PF_INET;
+    serverInfo.sin_addr.S_un.S_addr = inet_addr(ip.c_str());
+    serverInfo.sin_port = htons(stoi(port));
+    //Пытаемся присоединится к серверу по ip и port
+    retVal = connect(clientSock, (LPSOCKADDR)&serverInfo, sizeof(serverInfo));
+    if (retVal == SOCKET_ERROR)
+    {
+        printf("Unable to connect\n");
+        WSACleanup();
+        system("pause");
+        return 1;
+    }
+    printf("Connection made sucessfully\n");
+    printf("Enter strings of text ending with a dot:\n\n");
+    char pBuf[256];
+    //fgets(pBuf,256,stdin);
+    cin.getline(pBuf, 256, '.');
+    string s = (const char*)pBuf;
+    printf("\nSending request from client\n");
+    //Отсылаем данные на сервер
+    retVal = send(clientSock, pBuf, strlen(pBuf), 0);
+    if (retVal == SOCKET_ERROR)
+    {
+        printf("Unable to send\n");
+        WSACleanup();
+        system("pause");
+        return 1;
+    }
+    char szResponse[256];
+    //Пытаемся получить ответ от сервера
+    retVal = recv(clientSock, szResponse, 256, 0);
+    if (retVal == SOCKET_ERROR)
+    {
+        printf("Unable to recv\n");
+        WSACleanup();
+        system("pause");
+        return 1;
+    }
+    char* Resp;
+    Resp = szResponse;
+    if (s.compare(0, 4, "stop"))
+        printf("Server response is:\n\n%s", Resp);
+    else
+        printf("%s\n", Resp);
+    closesocket(clientSock);
     WSACleanup();
+    system("pause");
     return 0;
 }

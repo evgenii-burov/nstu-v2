@@ -1,151 +1,132 @@
-﻿#include <iostream>
-#include <string>
-#include <thread>
-#include <vector>
-#include <mutex>
-#include <algorithm>
+﻿#pragma comment (lib,"Ws2_32.lib")
 #include <winsock2.h>
-#include <ws2tcpip.h>
+#include <stdio.h>
+#include <iostream> 
+#include <sstream>
+#include <string>
 
-#pragma comment(lib, "Ws2_32.lib")
+using namespace std;
+int main(void)
+{
+	WORD sockVer;
+	WSADATA wsaData;
+	int retVal;
+	sockVer = MAKEWORD(2, 2);
+	WSAStartup(sockVer, &wsaData);
+	//Создаем сокет
+	SOCKET servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-const int PORT = 2004;
-const int MAX_CLIENTS = 5;
-const int USERNAME_LENGTH = 20;
+	if (servSock == INVALID_SOCKET)
+	{
+		printf("Unable to create socket\n");
+		WSACleanup();
+		system("pause");
+		return SOCKET_ERROR;
+	}
 
-struct ClientInfo {
-    SOCKET socket;
-    std::string ipAddress;
-    std::string name;
-    int port;
-};
+	SOCKADDR_IN sin;
+	sin.sin_family = PF_INET;
+	sin.sin_port = htons(2004);
+	sin.sin_addr.s_addr = INADDR_ANY;
 
-std::vector<ClientInfo> clients; // Stores client information
-std::mutex mtx; // Protects shared resources
+	retVal = bind(servSock, (LPSOCKADDR)&sin, sizeof(sin));
+	if (retVal == SOCKET_ERROR)
+	{
+		printf("Unable to bind\n");
+		WSACleanup();
+		system("pause");
+		return SOCKET_ERROR;
+	}
+	printf("Server started at %s, port %d\n", inet_ntoa(sin.sin_addr), htons(sin.sin_port));
+	while (true)
+	{
+		//Пытаемся начать слушать сокет
+		retVal = listen(servSock, 10);
+		if (retVal == SOCKET_ERROR)
+		{
+			printf("Unable to listen\n");
+			WSACleanup();
+			system("pause");
+			return SOCKET_ERROR;
+		}
+		//Ждем клиента
+		SOCKET clientSock;
+		SOCKADDR_IN from;
+		int fromlen = sizeof(from);
+		clientSock = accept(servSock, (struct sockaddr*)&from, &fromlen);
+		if (clientSock == INVALID_SOCKET)
+		{
+			printf("Unable to accept\n");
+			WSACleanup();
+			system("pause");
+			return SOCKET_ERROR;
+		}
+		printf("New connection accepted from %s, port %d\n", inet_ntoa(from.sin_addr), htons(from.sin_port));
+		char szReq[256];
+		retVal = recv(clientSock, szReq, 256, 0);
+		//Пытаемся получить данные от клиента
+		if (retVal == SOCKET_ERROR)
+		{
+			printf("Unable to recv\n");
+			system("pause");
+			return SOCKET_ERROR;
+		}
+		szReq[retVal] = '\0';
+		printf("Data received\n");
+		string s = (const char*)szReq;
+		std::cout << s;
+		if (!s.compare(0, 4, "stop"))// Команда на выключение сервера
+		{
+			printf("Received server shutdown request\n");
+			s = "Server shutdown";
+			retVal = send(clientSock, s.c_str(), 256, 0);
 
-void notifyClients(const std::string& message) {
-    std::lock_guard<std::mutex> lock(mtx);
-    for (const auto& client : clients) {
-        send(client.socket, message.c_str(), message.size() + 1, 0);
-    }
-}
-
-void handleClient(ClientInfo client) {
-    char buffer[1024];
-    while (true) {
-        int bytesReceived = recv(client.socket, buffer, sizeof(buffer) - 1, 0);
-        if (bytesReceived <= 0) {
-            std::lock_guard<std::mutex> lock(mtx);
-            SOCKET socket = client.socket;
-            // Find the disconnected client in the vector
-            auto it = std::find_if(clients.begin(), clients.end(),
-                [socket](const ClientInfo& some_client) { return some_client.socket == socket; });
-
-            if (it != clients.end()) {
-                std::string leaveMessage = "Client disconnected: " + it->ipAddress + ":" + std::to_string(it->port);
-                clients.erase(it); // Remove the client from the vector
-                notifyClients(leaveMessage); // Notify other clients
-            }
-
-            std::cout << "Client disconnected." << std::endl;
-            break;
-        }
-
-        buffer[bytesReceived] = '\0'; // Null-terminate the received message
-
-        // Lock for thread-safe console output
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            std::cout << "Received: " << buffer << std::endl;
-        }
-    }
-
-    closesocket(client.socket);
-}
-
-int main() {
-    WSADATA wsaData;
-    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "WSAStartup failed." << std::endl;
-        return 1;
-    }
-
-    SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (serverSocket == INVALID_SOCKET) {
-        std::cerr << "Socket creation failed." << std::endl;
-        WSACleanup();
-        return 1;
-    }
-
-    SOCKADDR_IN serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(2004);
-    serverAddr.sin_addr.s_addr = INADDR_ANY;
-
-    if (bind(serverSocket, (SOCKADDR*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "Bind failed." << std::endl;
-        closesocket(serverSocket);
-        WSACleanup();
-        return 1;
-    }
-
-    if (listen(serverSocket, 10) == SOCKET_ERROR) {
-        std::cerr << "Listen failed." << std::endl;
-        closesocket(serverSocket);
-        WSACleanup();
-        return 1;
-    }
-
-    std::cout << "Server is listening on port 2004" << std::endl;
-
-    while (true) {
-        SOCKADDR_IN clientAddr;
-        int clientAddrLen = sizeof(clientAddr);
-
-        SOCKET clientSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientAddrLen);
-        if (clientSocket == INVALID_SOCKET) {
-            std::lock_guard<std::mutex> lock(mtx);
-            std::cerr << "Accept failed." << std::endl;
-            continue;
-        }
-
-        // Convert the client's IP address to a string
-        char clientIP[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &clientAddr.sin_addr, clientIP, INET_ADDRSTRLEN);
-        int clientPort = ntohs(clientAddr.sin_port);
-
-        //Get clients name
-        std::string name;
-        char name_buffer[USERNAME_LENGTH];
-        int bytes_received = recv(clientSocket, name_buffer, sizeof(name_buffer) - 1, 0);
-        if(bytes_received < 0)
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            std::cerr << "Couldn't receive a name" << std::endl;
-            closesocket(clientSocket);
-            continue;
-        }
-        name_buffer[bytes_received] = '\0'; // Null-terminate the received message
-        name = name_buffer;
-
-        // Add the new client to the vector
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            clients.push_back({ clientSocket, clientIP, name, clientPort });
-            std::cout << "New client connected: " << name << " from " << clientIP << ":" << clientPort << std::endl;
-        }
-
-        // Notify all clients about the new connection
-        std::string joinMessage = "New client connected: " + name + " from " + \
-            std::string(clientIP) + ":" + std::to_string(clientPort);
-        notifyClients(joinMessage);
-
-        // Create a thread to handle the new client
-        std::thread clientThread(handleClient, clients.back());
-        clientThread.detach();
-    }
-
-    closesocket(serverSocket);
-    WSACleanup();
-    return 0;
+			closesocket(clientSock);
+			break;
+		}
+		else
+		{
+			//Обрабатываем данные
+			char szResp[256];
+			string sResp = "";
+			string sFromText = "";
+			for (int i = 0; szReq[i] != '\0'; i++)
+			{
+				if (szReq[i] != '\n')
+				{
+					sFromText += szReq[i];
+				}
+				else
+				{
+					sFromText += to_string(sFromText.length()) + "\n";
+					sResp += sFromText;
+					sFromText = "";
+				}
+			}
+			sFromText += to_string(sFromText.length()) + "\n";
+			sResp += sFromText;
+			if (sResp.empty())
+			{
+				sFromText += to_string(sFromText.length()) + "\n";
+				sResp += sFromText;
+			}
+			//Пытаемся отослать данные клиенту
+			strcpy(szResp, sResp.c_str());
+			printf("\nSending response from server\n");
+			retVal = send(clientSock, szResp, 256, 0);
+			if (retVal == SOCKET_ERROR)
+			{
+				printf("Unable to send\n");
+				system("pause");
+				return SOCKET_ERROR;
+			}
+			closesocket(clientSock);
+			printf("Connection closed\n");
+		}
+	}
+	//Закрываем сокет	
+	closesocket(servSock);
+	WSACleanup();
+	system("pause");
+	return 0;
 }
