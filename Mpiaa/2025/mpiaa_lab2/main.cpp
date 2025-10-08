@@ -2,5 +2,5 @@
 
 int main()
 {
-    vectors_task(100);
+    vectors_task(1000000000, 16);
 }
