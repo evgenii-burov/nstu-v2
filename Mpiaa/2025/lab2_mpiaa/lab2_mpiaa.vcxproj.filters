@@ -15,16 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="lab2_mpiaa.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="vectors.cpp">
+    <ClCompile Include="linear_system.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="matrices.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="linear_system.cpp">
+    <ClCompile Include="vectors.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
