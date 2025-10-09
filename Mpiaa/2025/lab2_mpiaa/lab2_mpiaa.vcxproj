@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{39a92356-94ba-4ab5-a869-f5fb7bf9fbf3}</ProjectGuid>
-    <RootNamespace>mpiaalab1</RootNamespace>
+    <ProjectGuid>{591ca255-9aad-4ad5-afb6-7a2f8f70a15d}</ProjectGuid>
+    <RootNamespace>lab2mpiaa</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>mpiaa_lab2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -129,10 +128,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="lab2_mpiaa.cpp" />
     <ClCompile Include="linear_system.cpp" />
     <ClCompile Include="matrices.cpp" />
     <ClCompile Include="vectors.cpp" />
-    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mpiaalab2.h" />
