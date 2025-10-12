@@ -7,9 +7,11 @@ double dot_product_sequential(const int n, const double* vector_a, const double*
 
 double dot_product_parallel(const int n, const double* vector_a, const double* vector_b, const int num_threads);
 
-double* matrix_multiplication_sequential(const int n, const double* matrix_a, const double* matrix_b);
+double* matrix_multiplication_sequential(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b);
 
-double* matrix_multiplication_parallel(const int n, const double* matrix_a, const double* matrix_b, const int num_threads);
+double* matrix_multiplication_parallel(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b, const int num_threads);
 
 double matrix_norm(const int n, const double* matrix);
 
