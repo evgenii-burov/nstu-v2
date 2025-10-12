@@ -1,36 +1,36 @@
 #include "mpiaalab2.h"
 
-double* matrix_multiplication_sequential(const int n, const double* matrix_a,
-	const double* matrix_b)
+double* matrix_multiplication_sequential(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b)
 {
-	double* result = new double[n * n];
+	double* result = new double[n * k];
 	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < n; j++)
+		for (int j = 0; j < k; j++)
 		{
-			result[i * n + j] = 0;
-			for (int k = 0; k < n; k++)
+			result[i * k + j] = 0;
+			for (int l = 0; l < m; l++)
 			{
-				result[i * n + j] += matrix_a[i * n + k] * matrix_b[k * n + j];
+				result[i * k + j] += matrix_a[i * m + l] * matrix_b[l * k + j];
 			}
 		}
 	}
 	return result;
 }
 
-double* matrix_multiplication_parallel(const int n, const double* matrix_a,
-	const double* matrix_b, const int num_threads)
+double* matrix_multiplication_parallel(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b, const int num_threads)
 {
-	double* result = new double[n * n];
+	double* result = new double[n * k];
 #pragma omp parallel for num_threads(num_threads)
 	for (int i = 0; i < n; i++)
 	{
-		for (int j = 0; j < n; j++)
+		for (int j = 0; j < k; j++)
 		{
-			result[i*n+j] = 0;
-			for (int k = 0; k < n; k++)
+			result[i * k + j] = 0;
+			for (int l = 0; l < m; l++)
 			{
-				result[i*n+j] += matrix_a[i * n + k] * matrix_b[k * n + j];
+				result[i * k + j] += matrix_a[i * m + l] * matrix_b[l * k + j];
 			}
 		}
 	}
@@ -57,7 +57,7 @@ void matrices_task(const int n, const int num_threads)
 	double resulting_matrix_norm = 0;
 
 	auto t1 = std::chrono::high_resolution_clock::now();
-	resulting_matrix = matrix_multiplication_sequential(n, matrix_a, matrix_a);
+	resulting_matrix = matrix_multiplication_sequential(n, n, n, matrix_a, matrix_a);
 	auto t2 = std::chrono::high_resolution_clock::now();
 	auto time = std::chrono::duration<double>(t2 - t1).count();
 	resulting_matrix_norm = matrix_norm(n, resulting_matrix);
@@ -71,7 +71,7 @@ void matrices_task(const int n, const int num_threads)
 	std::cout << "Time elapsed: " << time << "\nResult: " << resulting_matrix_norm << "\n";
 
 	t1 = std::chrono::high_resolution_clock::now();
-	resulting_matrix = matrix_multiplication_parallel(n, matrix_a, matrix_a, num_threads);
+	resulting_matrix = matrix_multiplication_parallel(n, n, n, matrix_a, matrix_a, num_threads);
 	t2 = std::chrono::high_resolution_clock::now();
 	auto time_parallel = std::chrono::duration<double>(t2 - t1).count();
 	resulting_matrix_norm = matrix_norm(n, resulting_matrix);
