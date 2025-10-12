@@ -2,7 +2,13 @@
 
 int main()
 {
-    EulerImplicit du("input.txt");
-    du.solve_du("euler_implicit.txt");
-    std::cout << "Continueing work without rebasing";
+    EulerSimpleImplicit du1("input.txt");
+    du1.solve_du("euler_first.txt");
+
+    EulerSecondImplicit du2("input.txt");
+    du2.solve_du("euler_second.txt");
+
+    EulerThirdImplicit du3("input.txt");
+    du3.solve_du("euler_third.txt");
+
 }

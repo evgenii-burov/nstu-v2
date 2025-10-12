@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <string>
 
-class DifferentialEquation
+class DifferentialEquationImplicit
 {
 	/*
 	y' = 2ty
@@ -25,16 +26,32 @@ protected:
 		return exp(t * t);
 	}
 
-	virtual double get_next_y(double t, double y) = 0;
+	virtual double f_of_x(double x, double t, double y) = 0;
+
+	virtual double df_over_dx(double x, double t, double y) = 0;
+
+	virtual double get_next_y(double t, double y)
+	{
+		double x = 1;
+		double f_x = 0;
+		double df_dx = 0;
+		do
+		{
+			df_dx = df_over_dx(x, t, y);
+			f_x = f_of_x(x, t, y);
+			x -= f_x / df_dx;
+		} while (abs(f_x / df_dx) > eps);
+		return x;
+	}
 
 public:
-	DifferentialEquation(std::string file_name)
+	DifferentialEquationImplicit(std::string file_name)
 	{
 		std::ifstream input_stream(file_name);
 		input_stream >> h >> t_start >> t_end >> y_0;
 	}
 
-	DifferentialEquation(double h_0, double t_start_0, double t_end_0, double y_0_0) :
+	DifferentialEquationImplicit(double h_0, double t_start_0, double t_end_0, double y_0_0) :
 		h(h_0), t_start(t_start_0), t_end(t_end_0), y_0(y_0_0)
 	{
 	}
@@ -42,8 +59,8 @@ public:
 	void solve_du(std::string file_name)
 	{
 		std::ofstream output_stream(file_name);
-		output_stream << "t\ty_n\ty_a\t|y_n-y_a|\n";
-		std::cout << "t\ty_n\ty_a\t|y_n-y_a|\n";
+		output_stream << "t\ty_n\ty_a\t|y_n-y_a|\n" << std::scientific << std::setprecision(7);
+		std::cout << "t\ty_n\ty_a\t|y_n-y_a|\n" << std::scientific << std::setprecision(7);
 		for (double t = t_start, y = y_0; t < t_end || abs(t - t_end) < eps; \
 			y = get_next_y(t, y), t += h)
 		{
@@ -53,33 +70,99 @@ public:
 	}
 };
 
-class EulerImplicit : public DifferentialEquation
+class EulerSimpleImplicit : public DifferentialEquationImplicit
 {
+	/*
+		f(t,y) = 2ty
+		x = y + h * f(t+h,x) = y + h * (2x(t+h))
+		x = y + 2xth + 2x(h^2)
+		x(2th + 2(h^2) - 1) + y = 0
+
+		F(x) = x(2th + 2(h^2) - 1) + y
+		dF(x)/dx = 2th + 2(h^2) - 1
+		*/
 private:
+	double f_of_x(double x, double t, double y) override
+	{
+		return x * (2 * t * h + 2 * h * h - 1) + y;
+	}
+
+	double df_over_dx(double x, double t, double y) override
+	{
+		return 2 * t * h + 2 * h * h - 1;
+	}
+
+public:
+	using DifferentialEquationImplicit::DifferentialEquationImplicit;
+
+};
+
+class EulerSecondImplicit : public DifferentialEquationImplicit
+{
+	/*
+		f(t,y) = 2ty
+		x = y + h * ( f(t,y)+f(t+h,x) )/2 = y + h * ( 2ty+2x(t+h) )/2 = y+h*(ty+x(t+h))
+		x=y + hty + hxt + x(h^2)
+		x(ht+h^2-1) + y(ht+1) = 0
+
+		F(x) = x(ht+h^2-1) + y(ht+1)
+		dF(x)/dx = ht+h^2-1
+		*/
+private:
+	double f_of_x(double x, double t, double y) override
+	{
+		return x * (h * t + h * h - 1) + y * (h * t + 1);
+	}
+
+	double df_over_dx(double x, double t, double y) override
+	{
+		return h * t + h * h - 1;
+	}
+
+public:
+	using DifferentialEquationImplicit::DifferentialEquationImplicit;
+
+};
+
+class EulerThirdImplicit : public DifferentialEquationImplicit
+{
+	/*
+		f(t,y) = 2ty
+		y_n+1 = y + hf(t+h/2, y_n+1/2); y_n+1/2 = y + hf(t+h/2,y_n+1/2)/2
+		x = y + hf(t+h/2,x)/2 = y + h(t+h/2)x
+		x = y + h(t+h/2)x
+		x(ht + (h^2)/2 - 1) + y = 0
+
+		F(x) = x(ht + (h^2)/2 - 1) + y
+		dF(x)/dx = ht + (h^2)/2 - 1
+		*/
+private:
+	double f_of_x(double x, double t, double y) override
+	{
+		return x * (h * t + h * h / 2 - 1) + y;
+	}
+
+	double df_over_dx(double x, double t, double y) override
+	{
+		return h * t + h * h / 2 - 1;
+	}
+
 	double get_next_y(double t, double y) override
 	{
-		/*
-		x = y+h*f(t+h,x)
-		x = y+2xh(t+h)
-		x=y+2txh+2xh^2
-		x(1-2th-2h^2)-y = F(x) = 0
-		F'(x) = 1-2th-2h^2
-		x_next=x-(F(x))/(F'(x))
-		abs(x_next-x) = abs(F(x))/(F'(x))
-		*/
 		double x = 1;
-		double f_of_x = 0;
-		double df_over_dx = 0;
+		double f_x = 0;
+		double df_dx = 0;
+		int a = 1;
 		do
 		{
-			df_over_dx = 1-2*t*h-2*pow(h,2);
-			f_of_x = x * df_over_dx - y;
-			x -= f_of_x / df_over_dx;
-			std::cout << "a\n";
-		} while (abs(f_of_x / df_over_dx) > eps);
-		return x;
+			df_dx = df_over_dx(x, t, y);
+			f_x = f_of_x(x, t, y);
+			x -= f_x / df_dx;
+		} while (abs(f_x / df_dx) > eps);
+		
+		return y + h * y_derivative(t + h / 2, x);
 	}
 public:
-	using DifferentialEquation::DifferentialEquation;
+	using DifferentialEquationImplicit::DifferentialEquationImplicit;
 
 };
