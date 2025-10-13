@@ -64,6 +64,15 @@ void LinearSystem::print_ls()
 	std::cout << "\n";
 }
 
+void LinearSystem::decompose_ldu()
+{
+	/*
+	d_i = a_ii - sum{j=1; j<i-1} (l_ij*d_j*u_ji)
+	l_ij = 1/d_j [ a_ij - sum{k=1; k<j-1} (l_ik*d_k*u_kj) ]
+	u_ij = 1/d_i [ a_ij - sum{k=1; k<i-1} (l_ik*d_k*u_kj) ]
+	*/
+}
+
 void LinearSystem::solve_DUx_y()
 {
 	//Ux=(D^-1)y= {y1/di1; y2/di2, ...}
