@@ -18,7 +18,7 @@ public:
 	LinearSystem(std::string file_name);
 	void decompose_ldu();
 	void solve_Ly_b();
-	void solve_Ux_y();
+	void solve_DUx_y();
 	void matrix_times_b();
 	void print_ls();
 };

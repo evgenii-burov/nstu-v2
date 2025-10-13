@@ -4,6 +4,6 @@ int main()
 {
     LinearSystem ls("input.txt");
     ls.print_ls();
-    ls.solve_Ly_b();
+    ls.solve_DUx_y();
     ls.print_ls();
 }
