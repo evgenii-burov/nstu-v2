@@ -2,7 +2,7 @@
 
 int main()
 {
-    vectors_task(100, 12);
-    matrices_task(100, 12);
+    //vectors_task(1000000000, 12);
+    matrices_task(1000, 12);
 
 }
