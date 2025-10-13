@@ -15,6 +15,12 @@ void matrix_multiplication_parallel(const int n, const int m, const int k,
 
 double matrix_norm(const int n, const double* matrix);
 
+void linear_combination_sequential(const int n, double*& vector_y, const double* vector_x, const double scalar);
+
+void linear_combination_parallel(const int n, double*& vector_y, const double* vector_x, const double scalar, const int num_threads);
+
 void vectors_task(const int n, const int num_threads);
 
 void matrices_task(const int n, const int num_threads);
+
+void linear_combination_task(const int n, const int num_threads);

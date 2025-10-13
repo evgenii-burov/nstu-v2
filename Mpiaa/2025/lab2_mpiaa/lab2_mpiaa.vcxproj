@@ -129,6 +129,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lab2_mpiaa.cpp" />
+    <ClCompile Include="linear_combination.cpp" />
     <ClCompile Include="linear_system.cpp" />
     <ClCompile Include="matrices.cpp" />
     <ClCompile Include="vectors.cpp" />
