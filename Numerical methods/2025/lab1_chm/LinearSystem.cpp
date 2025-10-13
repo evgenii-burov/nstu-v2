@@ -64,29 +64,34 @@ void LinearSystem::print_ls()
 	std::cout << "\n";
 }
 
-//redo that
-//void LinearSystem::solve_Ux_y()
-//{
-//	int elements_in_line = 0;
-//	for (int i = n - 1; i >= 0; i--)
-//	{
-//		precision sum_over_j = 0;
-//		elements_in_line = ia[i + 1] - ia[i];
-//	}
-//
-//	//upper triangle
-//	for (int i = 1; i < n; i++)
-//	{
-//		precision sum_over_j = 0;
-//		elements_in_line = ia[i + 1] - ia[i];
-//		for (int j = 0; j < elements_in_line; j++)
-//		{
-//			std::cout << i << " " << au[ia[i] + j] << " " << b[i] << "\n";
-//			sum_over_j += au[ia[i] + j] * b[i];
-//		}
-//	}
-//
-//}
+void LinearSystem::solve_DUx_y()
+{
+	//Ux=(D^-1)y= {y1/di1; y2/di2, ...}
+	for (int i = 0; i < n; i++)
+	{
+		b[i] /= di[i];
+	}
+	//x_i = y_i - sum{j=i+1; j<n} (U_ij*x_j)
+	double sum_over_j = 0;
+	for (int i = n - 1; i >= 0; i--)
+	{
+		sum_over_j = 0;
+		int elements_in_column = 0;
+		int column_start_offset = 0;
+		int column_start_to_target_distance = 0;
+		for (int j = i + 1; j < n; j++)
+		{
+			elements_in_column = ia[j + 1] - ia[j];
+			column_start_offset = j - elements_in_column;
+			column_start_to_target_distance = i - column_start_offset;
+			//if distance is negative, multiply by zero
+			sum_over_j += au[ia[j] + column_start_to_target_distance ] * b[j] * 
+				 (column_start_to_target_distance >= 0);
+			
+		}
+		b[i] -= sum_over_j;
+	}
+}
 
 void LinearSystem::solve_Ly_b()
 {
