@@ -41,7 +41,7 @@ void linear_combination_task(const int n, const int num_threads)
 
 	std::cout << "N=" << n;
 	std::cout << std::fixed << std::setprecision(15);
-	std::cout << "* Sequential *\n";
+	std::cout << "\n* Sequential *\n";
 	std::cout << "Time elapsed: " << time << "\nResult: " << vector_y_norm << "\n";
 
 	t1 = std::chrono::high_resolution_clock::now();
@@ -50,7 +50,7 @@ void linear_combination_task(const int n, const int num_threads)
 	auto time_parallel = std::chrono::duration<double>(t2 - t1).count();
 	vector_y_norm = sqrt(dot_product_parallel(n, vector_y, vector_y, 12));
 
-	std::cout << "* Parallel, threads=" << num_threads << " *\n";
+	std::cout << "\n* Parallel, threads=" << num_threads << " *\n";
 	std::cout << "Time elapsed: " << time_parallel << "\nResult: " << vector_y_norm << "\n";
 	std::cout << "Speedup: " << time / time_parallel << ", speedup/threads: " << time / time_parallel / num_threads << "\n";
 

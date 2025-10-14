@@ -35,19 +35,19 @@ void vectors_task(const int n, const int num_threads)
 	auto t1 = std::chrono::high_resolution_clock::now();
 	dot_product = dot_product_sequential(n, vector_a, vector_b);
 	auto t2 = std::chrono::high_resolution_clock::now();
-	auto time = std::chrono::duration<double>(t2-t1).count();
+	auto time = std::chrono::duration<double, std::milli>(t2-t1).count();
 
 	std::cout << "N=" << n;
-	std::cout << std::fixed << std::setprecision(15);
-	std::cout << "* Sequential *\n";
+	std::cout << std::scientific << std::setprecision(3);
+	std::cout << "\n* Sequential *\n";
 	std::cout << "Time elapsed: " << time << "\nResult: " << dot_product << "\n";
 
 	t1 = std::chrono::high_resolution_clock::now();
 	dot_product = dot_product_parallel(n, vector_a, vector_b, num_threads);
 	t2 = std::chrono::high_resolution_clock::now();
-	auto time_parallel = std::chrono::duration<double>(t2 - t1).count();
+	auto time_parallel = std::chrono::duration<double, std::milli>(t2 - t1).count();
 
-	std::cout << "* Parallel, threads=" << num_threads << " *\n";
+	std::cout << "\n* Parallel, threads=" << num_threads << " *\n";
 	std::cout << "Time elapsed: " << time_parallel << "\nResult: " << dot_product << "\n";
 	std::cout << "Speedup: " << time / time_parallel << ", speedup/threads: " << time/time_parallel/num_threads << "\n";
 

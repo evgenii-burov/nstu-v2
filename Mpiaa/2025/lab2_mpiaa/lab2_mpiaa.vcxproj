@@ -132,6 +132,7 @@
     <ClCompile Include="linear_combination.cpp" />
     <ClCompile Include="linear_system.cpp" />
     <ClCompile Include="matrices.cpp" />
+    <ClCompile Include="matrix_multiplication_with_transposition.cpp" />
     <ClCompile Include="vectors.cpp" />
   </ItemGroup>
   <ItemGroup>
