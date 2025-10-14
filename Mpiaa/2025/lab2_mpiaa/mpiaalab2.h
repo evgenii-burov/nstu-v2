@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <chrono>
 #include <iomanip>
 
@@ -7,14 +8,30 @@ double dot_product_sequential(const int n, const double* vector_a, const double*
 
 double dot_product_parallel(const int n, const double* vector_a, const double* vector_b, const int num_threads);
 
-double* matrix_multiplication_sequential(const int n, const int m, const int k,
-	const double* matrix_a, const double* matrix_b);
+void matrix_multiplication_sequential(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b, double*& matrix_c);
 
-double* matrix_multiplication_parallel(const int n, const int m, const int k,
-	const double* matrix_a, const double* matrix_b, const int num_threads);
+void matrix_multiplication_parallel(const int n, const int m, const int k,
+	const double* matrix_a, const double* matrix_b, double*& matrix_c, const int num_threads);
 
 double matrix_norm(const int n, const double* matrix);
+
+void linear_combination_sequential(const int n, double*& vector_y, const double* vector_x, const double scalar);
+
+void linear_combination_parallel(const int n, double*& vector_y, const double* vector_x, const double scalar, const int num_threads);
+
+void matrix_transposition(const int n, const double* matrix, double*& matrix_T);
+
+void solve_Uy_b_sequential(const int n, const double* matrix_U, double*& vector_y, const double* vector_b);
+
+void solve_Uy_b_parallel(const int n, const double* matrix_U, double*& vector_y, const double* vector_b, const int num_threads);
 
 void vectors_task(const int n, const int num_threads);
 
 void matrices_task(const int n, const int num_threads);
+
+void linear_combination_task(const int n, const int num_threads);
+
+void matrix_transposition_task(const int n, const int num_threads);
+
+void linear_system_task(const int n, const int num_threads);
