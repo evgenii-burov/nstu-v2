@@ -62,11 +62,10 @@ void matrix_transposition_task(const int n, const int num_threads)
 	double* matrix_b_T = new double[n * n];
 	matrix_transposition(n, matrix_b, matrix_b_T);
 
-
 	if (num_threads == 1)
 	{
 		auto t1 = std::chrono::high_resolution_clock::now();
-		matrix_multiplication_T_sequential(n, n, n, matrix_a, matrix_b, matrix_c);
+		matrix_multiplication_T_sequential(n, n, n, matrix_a, matrix_b_T, matrix_c);
 		auto t2 = std::chrono::high_resolution_clock::now();
 		auto time = std::chrono::duration<double, std::milli>(t2 - t1).count();
 		matrix_c_norm = matrix_norm(n, matrix_c);
@@ -81,7 +80,7 @@ void matrix_transposition_task(const int n, const int num_threads)
 	if (num_threads > 1)
 	{
 		auto t1 = std::chrono::high_resolution_clock::now();
-		matrix_multiplication_T_parallel(n, n, n, matrix_a, matrix_b, matrix_c, num_threads);
+		matrix_multiplication_T_parallel(n, n, n, matrix_a, matrix_b_T, matrix_c, num_threads);
 		auto t2 = std::chrono::high_resolution_clock::now();
 		auto time_parallel = std::chrono::duration<double, std::milli>(t2 - t1).count();
 		matrix_c_norm = matrix_norm(n, matrix_c);
