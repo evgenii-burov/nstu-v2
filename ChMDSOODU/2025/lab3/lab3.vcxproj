@@ -129,6 +129,9 @@
   <ItemGroup>
     <ClCompile Include="lab3.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="solver_class.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
