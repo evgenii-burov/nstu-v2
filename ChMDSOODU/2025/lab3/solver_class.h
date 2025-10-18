@@ -12,7 +12,7 @@ class Solver
 private:
 	Equation equation;
 	Method method;
-	double eps = 1e-7;
+	double eps = 1e-5;
 public:
 	Solver(Equation& equation0, Method& method0)
 		: equation(equation0), method(method0)
@@ -93,7 +93,7 @@ public:
 
 	double f_of_x_s(double x, double t, double y, double h)
 	{
-		return y - x * (25 * h + 1) + h * (cos(t + h) + sin(t + h));
+		return y - x * (25 * h + 1) + h * (cos(t + h) + 25*sin(t + h));
 	}
 
 	double df_over_dx_s(double x, double t, double y, double h)
@@ -121,7 +121,7 @@ class Method
 {
 protected:
 	std::vector<double> h_list;
-	double eps = 1e-7;
+	double eps = 1e-15;
 public:
 	Method(std::vector<double>& h)
 		: h_list(h)
@@ -182,7 +182,7 @@ public:
 	}
 };
 
-class EulerTrapezoid : public Method
+class TrapezoidMethod : public Method
 {
 public:
 	using Method::Method;
