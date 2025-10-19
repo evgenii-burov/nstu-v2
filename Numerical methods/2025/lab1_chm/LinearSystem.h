@@ -4,6 +4,7 @@
 #include <vector>
 #include <iomanip>
 #include <string>
+#include <utility>
 
 typedef double precision;
 
@@ -14,6 +15,8 @@ private:
 	std::vector<int> ia;
 	double eps = 1e-7;
 	int n;
+	precision dense_element(int i, int j);
+
 public:
 	LinearSystem(std::string file_name);
 	void decompose_ldu();
