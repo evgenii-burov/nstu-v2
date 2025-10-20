@@ -12,20 +12,25 @@ LinearSystem::LinearSystem(std::string file_name) :
 		input_stream >> element_int;
 		ia.push_back(element_int);
 	}
-	for (int i = 0; i < n; i++)
-	{
-		input_stream >> element_float;
-		di.push_back(element_float);
-	}
 	for (int i = 0; i < element_int; i++)
 	{
 		input_stream >> element_float;
 		al.push_back(element_float);
 	}
+	for (int i = 0; i < n + 1; i++)
+	{
+		input_stream >> element_int;
+		ja.push_back(element_int);
+	}
 	for (int i = 0; i < element_int; i++)
 	{
 		input_stream >> element_float;
 		au.push_back(element_float);
+	}
+	for (int i = 0; i < n; i++)
+	{
+		input_stream >> element_float;
+		di.push_back(element_float);
 	}
 	for (int i = 0; i < n; i++)
 	{
@@ -36,19 +41,15 @@ LinearSystem::LinearSystem(std::string file_name) :
 
 void LinearSystem::print_ls()
 {
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			std::cout << dense_element(i, j) << "\t";
-		}
-		std::cout << "\n";
-	}
-	std::cout << "\n";
 	std::cout << "n: " << n << "\nia: ";
 	for (int i = 0; i < n + 1; i++)
 	{
 		std::cout << ia[i] << " ";
+	}
+	std::cout << "\nja: ";
+	for (int i = 0; i < n+1; i++)
+	{
+		std::cout << ja[i] << " ";
 	}
 	std::cout << "\ndi: ";
 	for (int i = 0; i < n; i++)
@@ -61,7 +62,7 @@ void LinearSystem::print_ls()
 		std::cout << al[i] << " ";
 	}
 	std::cout << "\nau: ";
-	for (int i = 0; i < ia[n]; i++)
+	for (int i = 0; i < ja[n]; i++)
 	{
 		std::cout << au[i] << " ";
 	}
@@ -69,6 +70,15 @@ void LinearSystem::print_ls()
 	for (int i = 0; i < n; i++)
 	{
 		std::cout << b[i] << " ";
+	}
+	std::cout << "\n";
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			std::cout << dense_element(i, j) << "\t";
+		}
+		std::cout << "\n";
 	}
 	std::cout << "\n";
 }
@@ -93,23 +103,23 @@ void LinearSystem::decompose_ldu()
 		//	std::cout << "\tIL:" << il << "\n";
 		//	int j = row_offset + il;
 		//	precision sum_over_k = 0;
-		//	int elements_in_col = ia[j + 1] - ia[j];
+		//	int elements_in_col = ja[j + 1] - ja[j];
 		//	int col_offset = j - elements_in_col;
 		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
 		//	for (int k = 0; k < lowest_elem_count; k++)
 		//	{
 		//		std::cout << "\t\tK:" << k << "\n";
 		//		sum_over_k += al[ia[i] + k + (il - lowest_elem_count)] \
-		//			* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
+		//			* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
 		//
 		//		std::cout << "+=al*di*au: " << al[ia[i] + k + (il - lowest_elem_count)] << "*";
 		//		std::cout << di[j - lowest_elem_count + k] << "*";
-		//		std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+		//		std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		//	}
 		//}
 		//u_ij = 1 / d_i[a_ij - sum{ k = 1; k < i - 1 } (l_ik* d_k* u_kj)]
 		//std::cout << "I:" << i << "\n";
-		//int elements_in_row = ia[i + 1] - ia[i];
+		//int elements_in_row = ja[i + 1] - ja[i];
 		//int row_offset = i - elements_in_row;
 		//for (int il = 1; il < elements_in_row; il++)
 		//{
@@ -123,10 +133,10 @@ void LinearSystem::decompose_ldu()
 		//	for (int k = 0; k < lowest_elem_count; k++)
 		//	{
 		//		std::cout << "\t\tK:" << k << "\n";
-		//		sum_over_k += au[ia[i] + k + (il - lowest_elem_count)] \
+		//		sum_over_k += au[ja[i] + k + (il - lowest_elem_count)] \
 		//			* di[j - lowest_elem_count + k] * al[ia[j] + k + (elements_in_col - lowest_elem_count)];
-
-		//		std::cout << "+=al*di*au: " << au[ia[i] + k + (il - lowest_elem_count)] << "*";
+		//
+		//		std::cout << "+=al*di*au: " << au[ja[i] + k + (il - lowest_elem_count)] << "*";
 		//		std::cout << di[j - lowest_elem_count + k] << "*";
 		//		std::cout << al[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		//	}
@@ -135,7 +145,7 @@ void LinearSystem::decompose_ldu()
 		std::cout << "I:" << i << "\n";
 		int elements_in_row = ia[i + 1] - ia[i];
 		int row_offset = i - elements_in_row;
-
+		
 		//col number
 		int j = i;
 		precision sum_over_k = 0;
@@ -147,7 +157,7 @@ void LinearSystem::decompose_ldu()
 			std::cout << "\t\tK:" << k << "\n";
 			sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
 				* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
-
+		
 			std::cout << "+=al*di*au: " << al[ia[i] + k + (i - lowest_elem_count)] << "*";
 			std::cout << di[j - lowest_elem_count + k] << "*";
 			std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
@@ -172,11 +182,11 @@ void LinearSystem::solve_DUx_y()
 		int column_start_to_target_distance = 0;
 		for (int j = i + 1; j < n; j++)
 		{
-			elements_in_column = ia[j + 1] - ia[j];
+			elements_in_column = ja[j + 1] - ja[j];
 			column_start_offset = j - elements_in_column;
 			column_start_to_target_distance = i - column_start_offset;
 			//if distance is negative, multiply by zero
-			sum_over_j += au[ia[j] + column_start_to_target_distance ] * b[j] * 
+			sum_over_j += au[ja[j] + column_start_to_target_distance ] * b[j] * 
 				 (column_start_to_target_distance >= 0);
 			
 		}
@@ -221,11 +231,11 @@ void LinearSystem::matrix_times_b()
 	//upper triangle
 	for (int i = 1; i < n; i++)
 	{
-		elements_in_line = ia[i + 1] - ia[i];
+		elements_in_line = ja[i + 1] - ja[i];
 		for (int j = 0; j < elements_in_line; j++)
 		{
-			std::cout << i << " " << au[ia[i] + j] << " " << b[i] << "\n";
-			result[i - elements_in_line + j] += au[ia[i] + j] * b[i];
+			std::cout << i << " " << au[ja[i] + j] << " " << b[i] << "\n";
+			result[i - elements_in_line + j] += au[ja[i] + j] * b[i];
 		}
 	}
 	std::cout << "u\n";
@@ -251,11 +261,11 @@ precision LinearSystem::dense_element(int i, int j)
 	}
 	if (i < j)
 	{
-		int col_offset = j - (ia[j + 1] - ia[j]);
+		int col_offset = j - (ja[j + 1] - ja[j]);
 		if (i >= col_offset)
 		{
 			value_set = true;
-			return au[ia[j]+i-col_offset];
+			return au[ja[j]+i-col_offset];
 		}
 	}
 	return i == j ? di[i] : 0;
