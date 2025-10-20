@@ -7,6 +7,7 @@
 #include <utility>
 
 typedef double precision;
+typedef double precision_sum;
 
 class LinearSystem
 {

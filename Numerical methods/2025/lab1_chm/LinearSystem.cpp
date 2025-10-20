@@ -102,7 +102,7 @@ void LinearSystem::decompose_ldu()
 		//	//col number
 		//	std::cout << "\tIL:" << il << "\n";
 		//	int j = row_offset + il;
-		//	precision sum_over_k = 0;
+		//	precision_sum sum_over_k = 0;
 		//	int elements_in_col = ja[j + 1] - ja[j];
 		//	int col_offset = j - elements_in_col;
 		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
@@ -126,7 +126,7 @@ void LinearSystem::decompose_ldu()
 		//	//col number
 		//	std::cout << "\tIL:" << il << "\n";
 		//	int j = row_offset + il;
-		//	precision sum_over_k = 0;
+		//	precision_sum sum_over_k = 0;
 		//	int elements_in_col = ia[j + 1] - ia[j];
 		//	int col_offset = j - elements_in_col;
 		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
@@ -148,7 +148,7 @@ void LinearSystem::decompose_ldu()
 		
 		//col number
 		int j = i;
-		precision sum_over_k = 0;
+		precision_sum sum_over_k = 0;
 		int elements_in_col = ia[j + 1] - ia[j];
 		int col_offset = j - elements_in_col;
 		int lowest_elem_count = std::min(elements_in_row, elements_in_col);
@@ -156,11 +156,12 @@ void LinearSystem::decompose_ldu()
 		{
 			std::cout << "\t\tK:" << k << "\n";
 			sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
-				* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
-		
-			std::cout << "+=al*di*au: " << al[ia[i] + k + (i - lowest_elem_count)] << "*";
+				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
+		//sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
+				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
+			std::cout << "+=al*di*au: " << al[ia[i] + k + (elements_in_col - lowest_elem_count)] << "*";
 			std::cout << di[j - lowest_elem_count + k] << "*";
-			std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+			std::cout << au[ja[j] + k + (j - lowest_elem_count)] << "\n";
 		}
 	}
 }
@@ -173,7 +174,7 @@ void LinearSystem::solve_DUx_y()
 		b[i] /= di[i];
 	}
 	//x_i = y_i - sum{j=i+1; j<n} (U_ij*x_j)
-	precision sum_over_j = 0;
+	precision_sum sum_over_j = 0;
 	for (int i = n - 1; i >= 0; i--)
 	{
 		sum_over_j = 0;
@@ -199,7 +200,7 @@ void LinearSystem::solve_Ly_b()
 	int elements_in_line = 0;
 	for (int i = 1; i < n; i++)
 	{
-		precision sum_over_j = 0;
+		precision_sum sum_over_j = 0;
 		elements_in_line = ia[i + 1] - ia[i];
 		for (int j = 0; j < elements_in_line; j++)
 		{
