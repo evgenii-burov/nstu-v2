@@ -92,76 +92,94 @@ void LinearSystem::decompose_ldu()
 	*/
 	//Обход по матрице
 	for (int i = 0; i < n; i++) {
-		////Обход по i-ой строке
-		//std::cout << "I:" << i << "\n";
-		//int elements_in_row = ia[i + 1] - ia[i];
-		//int row_offset = i - elements_in_row;
-		////l_ij = 1/d_j [ a_ij - sum{k=1; k<j-1} (l_ik*d_k*u_kj) ]
-		//for (int il = 1; il < elements_in_row; il++)
-		//{
-		//	//col number
-		//	std::cout << "\tIL:" << il << "\n";
-		//	int j = row_offset + il;
-		//	precision sum_over_k = 0;
-		//	int elements_in_col = ja[j + 1] - ja[j];
-		//	int col_offset = j - elements_in_col;
-		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
-		//	for (int k = 0; k < lowest_elem_count; k++)
-		//	{
-		//		std::cout << "\t\tK:" << k << "\n";
-		//		sum_over_k += al[ia[i] + k + (il - lowest_elem_count)] \
-		//			* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
-		//
-		//		std::cout << "+=al*di*au: " << al[ia[i] + k + (il - lowest_elem_count)] << "*";
-		//		std::cout << di[j - lowest_elem_count + k] << "*";
-		//		std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
-		//	}
-		//}
-		//u_ij = 1 / d_i[a_ij - sum{ k = 1; k < i - 1 } (l_ik* d_k* u_kj)]
-		//std::cout << "I:" << i << "\n";
-		//int elements_in_row = ja[i + 1] - ja[i];
-		//int row_offset = i - elements_in_row;
-		//for (int il = 1; il < elements_in_row; il++)
-		//{
-		//	//col number
-		//	std::cout << "\tIL:" << il << "\n";
-		//	int j = row_offset + il;
-		//	precision sum_over_k = 0;
-		//	int elements_in_col = ia[j + 1] - ia[j];
-		//	int col_offset = j - elements_in_col;
-		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
-		//	for (int k = 0; k < lowest_elem_count; k++)
-		//	{
-		//		std::cout << "\t\tK:" << k << "\n";
-		//		sum_over_k += au[ja[i] + k + (il - lowest_elem_count)] \
-		//			* di[j - lowest_elem_count + k] * al[ia[j] + k + (elements_in_col - lowest_elem_count)];
-		//
-		//		std::cout << "+=al*di*au: " << au[ja[i] + k + (il - lowest_elem_count)] << "*";
-		//		std::cout << di[j - lowest_elem_count + k] << "*";
-		//		std::cout << al[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
-		//	}
-		//}
-		//d_i = a_ii - sum{ j = 1; j < i - 1 } (l_ij* d_j* u_ji)
+		//Обход по i-ой строке
 		std::cout << "I:" << i << "\n";
 		int elements_in_row = ia[i + 1] - ia[i];
 		int row_offset = i - elements_in_row;
+		//l_ij = 1/d_j [ a_ij - sum{k=1; k<j-1} (l_ik*d_k*u_kj) ]
+		for (int il = 0; il < elements_in_row; il++)
+		{
+			//col number
+			std::cout << "\tIL:" << il << "\n";
+			int j = row_offset + il;
+			precision_sum sum_over_k = 0;
+			int elements_in_col = ja[j + 1] - ja[j];
+			int col_offset = j - elements_in_col;
+			int lowest_elem_count = std::min(elements_in_row, elements_in_col);
+			for (int k = 0; k < lowest_elem_count; k++)
+			{
+				std::cout << "\t\tK:" << k << "\n";
+				sum_over_k += al[ia[i] + k + (il - lowest_elem_count)] \
+					* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
+		
+				std::cout << "+=al*di*au: " << al[ia[i] + k + (il - lowest_elem_count)] << "*";
+				std::cout << di[j - lowest_elem_count + k] << "*";
+				std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+			}
+			std::cout << "al modified: " << al[ia[i] + il] << " d_j: " << di[j] << "\n";
+			if (di[j] == 0)
+			{
+				std::cout << "Unable to decompose the matrix.";
+				exit(0);
+			}
+			al[ia[i] + il] = (al[ia[i] + il] - sum_over_k) / di[j];
+		}
+		
+		//u_ij = 1 / d_i[a_ij - sum{ k = 1; k < i - 1 } (l_ik* d_k* u_kj)]
+		std::cout << "I:" << i << "\n";
+		elements_in_row = ja[i + 1] - ja[i];
+		row_offset = i - elements_in_row;
+		for (int il = 0; il < elements_in_row; il++)
+		{
+			//col number
+			std::cout << "\tIL:" << il << "\n";
+			int j = row_offset + il;
+			precision_sum sum_over_k = 0;
+			int elements_in_col = ia[j + 1] - ia[j];
+			int col_offset = j - elements_in_col;
+			int lowest_elem_count = std::min(elements_in_row, elements_in_col);
+			for (int k = 0; k < lowest_elem_count; k++)
+			{
+				std::cout << "\t\tK:" << k << "\n";
+				sum_over_k += au[ja[i] + k + (il - lowest_elem_count)] \
+					* di[j - lowest_elem_count + k] * al[ia[j] + k + (elements_in_col - lowest_elem_count)];
+		
+				std::cout << "+=al*di*au: " << au[ja[i] + k + (il - lowest_elem_count)] << "*";
+				std::cout << di[j - lowest_elem_count + k] << "*";
+				std::cout << al[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+			}
+			std::cout << "au modified: " << au[ja[i] + il] << " d_j: " << di[j] << "\n";
+			if (di[j] == 0)
+			{
+				std::cout << "Unable to decompose the matrix.";
+				exit(0);
+			}
+			au[ja[i] + il] = (au[ja[i] + il] - sum_over_k) / di[j];
+		}
+		//d_i = a_ii - sum{ j = 1; j < i - 1 } (l_ij* d_j* u_ji)
+		std::cout << "I:" << i << "\n";
+		elements_in_row = ia[i + 1] - ia[i];
+		row_offset = i - elements_in_row;
 		
 		//col number
 		int j = i;
-		precision sum_over_k = 0;
-		int elements_in_col = ia[j + 1] - ia[j];
+		precision_sum sum_over_k = 0;
+		int elements_in_col = ja[j + 1] - ja[j];
 		int col_offset = j - elements_in_col;
 		int lowest_elem_count = std::min(elements_in_row, elements_in_col);
 		for (int k = 0; k < lowest_elem_count; k++)
 		{
 			std::cout << "\t\tK:" << k << "\n";
-			sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
-				* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
-		
-			std::cout << "+=al*di*au: " << al[ia[i] + k + (i - lowest_elem_count)] << "*";
+			sum_over_k += al[ia[i] + k + (elements_in_row - lowest_elem_count)] \
+				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
+		//sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
+				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
+			std::cout << "+=al*di*au: " << al[ia[i] + k + (elements_in_row - lowest_elem_count)] << "*";
 			std::cout << di[j - lowest_elem_count + k] << "*";
-			std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+			std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		}
+		std::cout << "di modified: " << di[i] << "\n";
+		di[i] -= sum_over_k;
 	}
 }
 
@@ -173,7 +191,7 @@ void LinearSystem::solve_DUx_y()
 		b[i] /= di[i];
 	}
 	//x_i = y_i - sum{j=i+1; j<n} (U_ij*x_j)
-	precision sum_over_j = 0;
+	precision_sum sum_over_j = 0;
 	for (int i = n - 1; i >= 0; i--)
 	{
 		sum_over_j = 0;
@@ -199,7 +217,7 @@ void LinearSystem::solve_Ly_b()
 	int elements_in_line = 0;
 	for (int i = 1; i < n; i++)
 	{
-		precision sum_over_j = 0;
+		precision_sum sum_over_j = 0;
 		elements_in_line = ia[i + 1] - ia[i];
 		for (int j = 0; j < elements_in_line; j++)
 		{
@@ -269,4 +287,9 @@ precision LinearSystem::dense_element(int i, int j)
 		}
 	}
 	return i == j ? di[i] : 0;
+}
+
+void LinearSystem::solve_Gauss()
+{
+
 }

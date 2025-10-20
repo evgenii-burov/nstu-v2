@@ -7,6 +7,7 @@
 #include <utility>
 
 typedef double precision;
+typedef double precision_sum;
 
 class LinearSystem
 {
@@ -24,4 +25,5 @@ public:
 	void solve_DUx_y();
 	void matrix_times_b();
 	void print_ls();
+	void solve_Gauss();
 };
