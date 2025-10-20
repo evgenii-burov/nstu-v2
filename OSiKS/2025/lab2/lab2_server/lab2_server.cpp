@@ -18,40 +18,35 @@ int main() {
     char buffer[BUFFER_SIZE];
     int result;
 
-    // Initialize Winsock
     result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
         std::cerr << "WSAStartup failed: " << result << std::endl;
         return 1;
     }
 
-    // Create socket
     server_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (server_socket == INVALID_SOCKET) {
-        std::cerr << "Socket creation failed: " << WSAGetLastError() << std::endl;
+        std::cerr << "Unable to create socket: " << WSAGetLastError() << std::endl;
         WSACleanup();
         return 1;
     }
 
-    // Setup server address
     server_addr.sin_family = AF_INET;
     server_addr.sin_addr.s_addr = INADDR_ANY;
     server_addr.sin_port = htons(PORT);
 
-    // Bind socket
     result = bind(server_socket, (sockaddr*)&server_addr, sizeof(server_addr));
     if (result == SOCKET_ERROR) {
-        std::cerr << "Bind failed: " << WSAGetLastError() << std::endl;
+        std::cerr << "Unable to bind: " << WSAGetLastError() << std::endl;
         closesocket(server_socket);
         WSACleanup();
         return 1;
     }
     while(true)
     {
-        // Listen for connections
         result = listen(server_socket, SOMAXCONN);
         if (result == SOCKET_ERROR) {
-            std::cerr << "Listen failed: " << WSAGetLastError() << std::endl;
+            std::cerr << "Unable to listen: " << WSAGetLastError() << std::endl;
             closesocket(server_socket);
             WSACleanup();
             return 1;
@@ -59,23 +54,28 @@ int main() {
 
         std::cout << "Server listening on port " << PORT << std::endl;
 
-        // Accept client connection
         client_socket = accept(server_socket, (sockaddr*)&client_addr, &client_addr_len);
         if (client_socket == INVALID_SOCKET) {
-            std::cerr << "Accept failed: " << WSAGetLastError() << std::endl;
+            std::cerr << "Unable to accept: " << WSAGetLastError() << std::endl;
             closesocket(server_socket);
             WSACleanup();
             return 1;
         }
         std::cout << "Client connected!" << std::endl;
 
-        // Receive message from client
-        result = recv(client_socket, buffer, BUFFER_SIZE, 0);
+        result = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
+        if (buffer[0] == '/' && buffer[1] == 'c' && result == 2)
+        {
+            closesocket(client_socket);
+            closesocket(server_socket);
+            WSACleanup();
+            std::cout << "As per client's request, server is closed." << std::endl;
+            return 0;
+        }
         if (result > 0) {
-            buffer[result] = '\0'; // Null-terminate the string
+            buffer[result] = '\0';
             std::cout << "Message from client: " << buffer << std::endl;
 
-            // Send response to client
             std::string response = "";
             if (result != 6 && result % 7 != 6)
                 response = "Incorrect data sent!";
@@ -84,6 +84,11 @@ int main() {
                 int ticket_number = 0, ticket_number_saved = 0;
                 while(buffer_stream >> ticket_number)
                 {
+                    if (ticket_number < 100000 || ticket_number > 999999) {
+                        response = "Incorrect data sent!";
+                        break;
+                    }
+
                     ticket_number_saved = ticket_number;
                     int sum_first_half = 0, sum_second_half = 0;
                     for (int i = 0; i < 3; i++) {
@@ -105,7 +110,7 @@ int main() {
 
             result = send(client_socket, response.c_str(), (int)response.length(), 0);
             if (result == SOCKET_ERROR) {
-                std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+                std::cerr << "Unable to send: " << WSAGetLastError() << std::endl;
             }
             else {
                 std::cout << "Response sent to client: " << response << std::endl;
@@ -115,11 +120,10 @@ int main() {
             std::cout << "Connection closed by client" << std::endl;
         }
         else {
-            std::cerr << "Recv failed: " << WSAGetLastError() << std::endl;
+            std::cerr << "Unable to receive: " << WSAGetLastError() << std::endl;
         }
     }
 
-    // Cleanup
     closesocket(client_socket);
     closesocket(server_socket);
     WSACleanup();
