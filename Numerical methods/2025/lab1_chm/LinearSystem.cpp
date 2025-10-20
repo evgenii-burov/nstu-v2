@@ -103,23 +103,23 @@ void LinearSystem::decompose_ldu()
 		//	std::cout << "\tIL:" << il << "\n";
 		//	int j = row_offset + il;
 		//	precision sum_over_k = 0;
-		//	int elements_in_col = ia[j + 1] - ia[j];
+		//	int elements_in_col = ja[j + 1] - ja[j];
 		//	int col_offset = j - elements_in_col;
 		//	int lowest_elem_count = std::min(elements_in_row, elements_in_col);
 		//	for (int k = 0; k < lowest_elem_count; k++)
 		//	{
 		//		std::cout << "\t\tK:" << k << "\n";
 		//		sum_over_k += al[ia[i] + k + (il - lowest_elem_count)] \
-		//			* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
+		//			* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
 		//
 		//		std::cout << "+=al*di*au: " << al[ia[i] + k + (il - lowest_elem_count)] << "*";
 		//		std::cout << di[j - lowest_elem_count + k] << "*";
-		//		std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
+		//		std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		//	}
 		//}
 		//u_ij = 1 / d_i[a_ij - sum{ k = 1; k < i - 1 } (l_ik* d_k* u_kj)]
 		//std::cout << "I:" << i << "\n";
-		//int elements_in_row = ia[i + 1] - ia[i];
+		//int elements_in_row = ja[i + 1] - ja[i];
 		//int row_offset = i - elements_in_row;
 		//for (int il = 1; il < elements_in_row; il++)
 		//{
@@ -133,10 +133,10 @@ void LinearSystem::decompose_ldu()
 		//	for (int k = 0; k < lowest_elem_count; k++)
 		//	{
 		//		std::cout << "\t\tK:" << k << "\n";
-		//		sum_over_k += au[ia[i] + k + (il - lowest_elem_count)] \
+		//		sum_over_k += au[ja[i] + k + (il - lowest_elem_count)] \
 		//			* di[j - lowest_elem_count + k] * al[ia[j] + k + (elements_in_col - lowest_elem_count)];
-
-		//		std::cout << "+=al*di*au: " << au[ia[i] + k + (il - lowest_elem_count)] << "*";
+		//
+		//		std::cout << "+=al*di*au: " << au[ja[i] + k + (il - lowest_elem_count)] << "*";
 		//		std::cout << di[j - lowest_elem_count + k] << "*";
 		//		std::cout << al[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		//	}
@@ -145,7 +145,7 @@ void LinearSystem::decompose_ldu()
 		std::cout << "I:" << i << "\n";
 		int elements_in_row = ia[i + 1] - ia[i];
 		int row_offset = i - elements_in_row;
-
+		
 		//col number
 		int j = i;
 		precision sum_over_k = 0;
@@ -157,7 +157,7 @@ void LinearSystem::decompose_ldu()
 			std::cout << "\t\tK:" << k << "\n";
 			sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
 				* di[j - lowest_elem_count + k] * au[ia[j] + k + (elements_in_col - lowest_elem_count)];
-
+		
 			std::cout << "+=al*di*au: " << al[ia[i] + k + (i - lowest_elem_count)] << "*";
 			std::cout << di[j - lowest_elem_count + k] << "*";
 			std::cout << au[ia[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
@@ -168,10 +168,10 @@ void LinearSystem::decompose_ldu()
 void LinearSystem::solve_DUx_y()
 {
 	//Ux=(D^-1)y= {y1/di1; y2/di2, ...}
-	//for (int i = 0; i < n; i++)
-	//{
-	//	b[i] /= di[i];
-	//}
+	for (int i = 0; i < n; i++)
+	{
+		b[i] /= di[i];
+	}
 	//x_i = y_i - sum{j=i+1; j<n} (U_ij*x_j)
 	precision sum_over_j = 0;
 	for (int i = n - 1; i >= 0; i--)
