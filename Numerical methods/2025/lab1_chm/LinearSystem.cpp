@@ -149,19 +149,19 @@ void LinearSystem::decompose_ldu()
 		//col number
 		int j = i;
 		precision_sum sum_over_k = 0;
-		int elements_in_col = ia[j + 1] - ia[j];
+		int elements_in_col = ja[j + 1] - ja[j];
 		int col_offset = j - elements_in_col;
 		int lowest_elem_count = std::min(elements_in_row, elements_in_col);
 		for (int k = 0; k < lowest_elem_count; k++)
 		{
 			std::cout << "\t\tK:" << k << "\n";
-			sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
+			sum_over_k += al[ia[i] + k + (elements_in_row - lowest_elem_count)] \
 				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
 		//sum_over_k += al[ia[i] + k + (i - lowest_elem_count)] \
 				* di[j - lowest_elem_count + k] * au[ja[j] + k + (elements_in_col - lowest_elem_count)];
-			std::cout << "+=al*di*au: " << al[ia[i] + k + (elements_in_col - lowest_elem_count)] << "*";
+			std::cout << "+=al*di*au: " << al[ia[i] + k + (elements_in_row - lowest_elem_count)] << "*";
 			std::cout << di[j - lowest_elem_count + k] << "*";
-			std::cout << au[ja[j] + k + (j - lowest_elem_count)] << "\n";
+			std::cout << au[ja[j] + k + (elements_in_col - lowest_elem_count)] << "\n";
 		}
 	}
 }
