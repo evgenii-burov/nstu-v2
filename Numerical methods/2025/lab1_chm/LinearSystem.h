@@ -25,4 +25,5 @@ public:
 	void solve_DUx_y();
 	void matrix_times_b();
 	void print_ls();
+	void solve_Gauss();
 };

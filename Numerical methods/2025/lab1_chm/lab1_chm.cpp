@@ -6,5 +6,6 @@ int main()
     ls.print_ls();
     std::cout << "\n";
     ls.decompose_ldu();
+    std::cout << "\n";
     ls.print_ls();
 }
