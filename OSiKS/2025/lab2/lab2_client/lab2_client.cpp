@@ -20,6 +20,7 @@ int main() {
     int port = 0;
     std::cout << "Enter server's port: ";
     std::cin >> port;
+    std::cin.ignore(256, '\n');
 
     result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
