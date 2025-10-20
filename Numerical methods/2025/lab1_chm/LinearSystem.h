@@ -12,7 +12,7 @@ class LinearSystem
 {
 private:
 	std::vector<precision> al, au, di, b;
-	std::vector<int> ia;
+	std::vector<int> ia, ja;
 	double eps = 1e-7;
 	int n;
 	precision dense_element(int i, int j);
