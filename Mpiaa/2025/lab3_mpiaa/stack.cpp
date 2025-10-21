@@ -3,38 +3,38 @@
 
 void stack_task(int n)
 {
-   // Генерация исходного файла с числами
    std::ofstream fout("stack.txt");
    if (!fout.is_open()) return;
 
-   fout << n << "\n";  // количество записей
+   std::random_device rd;
+   std::uniform_int_distribution<int> value_dist(0, n - 1);
+
+   fout << n << "\n";
    for (int i = 0; i < n; ++i)
    {
-      fout << i << " ";
+      fout << value_dist(rd) << " ";
    }
    fout.close();
 
-   // Чтение данных и заполнение стека
    std::ifstream fin("stack.txt");
    if (!fin.is_open()) return;
 
    int count;
-   fin >> count;  // Читаем количество элементов
+   fin >> count;
 
    std::stack<int> stack;
    for (int i = 0; i < count; ++i) {
       int num;
       fin >> num;
-      stack.push(num);  // Помещаем элементы в стек
+      stack.push(num);
    }
    fin.close();
 
-   // 3. Запись элементов в обратном порядке
    std::ofstream out("stack_out.txt");
    if (!out.is_open()) return;
 
    while (!stack.empty()) {
-      out << stack.top() << " ";  // Извлекаем элементы из стека (обратный порядок)
+      out << stack.top() << " ";
       stack.pop();
    }
    out.close();

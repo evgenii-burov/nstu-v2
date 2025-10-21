@@ -129,13 +129,13 @@
   <ItemGroup>
     <ClCompile Include="array_container_compatibility.cpp" />
     <ClCompile Include="dynamic_array.cpp" />
-    <ClCompile Include="Enhanced_Priority_Queue.cpp" />
     <ClCompile Include="lab3_mpiaa.cpp" />
     <ClCompile Include="priority_queue.cpp" />
     <ClCompile Include="stack.cpp" />
+    <ClCompile Include="true_priority_queue.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="functions.h" />
+    <ClInclude Include="true_priority_queue.h" />
     <ClInclude Include="header.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
