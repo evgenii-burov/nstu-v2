@@ -1,6 +1,7 @@
 #include "header.h"
 
-std::string input_file_name = "input.txt";
+std::string input_file_name = "dynamic_array.txt";
+std::string output_file_name = "dynamic_array_out.txt";
 
 void dynamic_array_task(int n, int value_range)
 {
@@ -36,7 +37,7 @@ void dynamic_array_task(int n, int value_range)
 	}
 	input_stream.close();
 
-	output_stream = std::ofstream("output.txt");
+	output_stream = std::ofstream(output_file_name);
 
 	for (int i = 0; i < array.size(); i++)
 	{
@@ -44,7 +45,7 @@ void dynamic_array_task(int n, int value_range)
 		array[i].erase(std::unique(array[i].begin(), array[i].end()), array[i].end());
 		if (array[i].size() != 0)
 		{
-			output_stream << "array[" << i << "]: ";
+			output_stream << "array[" << i << "]:\t";
 			for (int j = 0; j < array[i].size(); j++)
 			{
 				output_stream << array[i][j] << "\t";
