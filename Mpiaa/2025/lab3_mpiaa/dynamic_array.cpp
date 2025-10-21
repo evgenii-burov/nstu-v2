@@ -28,7 +28,7 @@ void dynamic_array_task(int n, int value_range)
 	{
 		input_stream >> array_number >> value;
 
-		if (array_number > array.size())
+		if (array_number >= array.size())
 		{
 			array.resize(array_number + 1);
 		}
