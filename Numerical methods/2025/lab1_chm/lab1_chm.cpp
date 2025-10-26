@@ -2,10 +2,6 @@
 
 int main()
 {
-    LinearSystem ls("input.txt");
-    ls.print_ls();
-    std::cout << "\n";
-    ls.decompose_ldu();
-    std::cout << "\n";
+    LinearSystem ls(5, 1, 0);
     ls.print_ls();
 }
