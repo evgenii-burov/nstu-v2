@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <string>
 #include <utility>
+#include <random>
 
 typedef double precision;
 typedef double precision_sum;
@@ -20,6 +21,12 @@ private:
 
 public:
 	LinearSystem(std::string file_name);
+	LinearSystem(int matrix_size, int matrix_type, double optional_k = 1);
+	/*
+	matrix type 1: diagonal significance matrix
+	matrix type 2: dense matrix
+	matrix type 3: Hilbert's matrix
+	*/
 	void decompose_ldu();
 	void solve_Ly_b();
 	void solve_DUx_y();
@@ -27,3 +34,12 @@ public:
 	void print_ls();
 	void solve_Gauss();
 };
+
+/*
+di: n-1 + 3 * (1 + n-1)*(n-1)/2
+lij / uij: n + (n-1) + 3 * (1 + n-1)*(n-1)/2
+sum di+lij+uij: n-1+3n(n-1)/2+4n-2+3n(n-1)
+
+ly = b: n*n-1
+ux = d-1 y: n*n-1+n
+*/

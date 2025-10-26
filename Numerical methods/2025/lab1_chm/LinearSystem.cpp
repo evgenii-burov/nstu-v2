@@ -83,6 +83,133 @@ void LinearSystem::print_ls()
 	std::cout << "\n";
 }
 
+LinearSystem::LinearSystem(int matrix_size, int matrix_type, double optional_k) : n(matrix_size)
+{
+	/*
+	matrix type 1: diagonal significance matrix
+	matrix type 2: dense matrix
+	matrix type 3: Hilbert's matrix
+	*/
+	if (matrix_size < 1)
+	{
+		std::cerr << "Matrix size must be positive\n";
+		exit(0);
+	}
+	if (matrix_type < 1 || matrix_type > 3)
+	{
+		std::cout << "Unknown matrix type\n";
+		exit(0);
+	}
+	std::random_device rd;
+	if (matrix_type == 1)
+	{
+		std::vector<double> a_ij_values = { 0, -1, -2, -3, -4 };
+		std::uniform_int_distribution<> distr(0, a_ij_values.size() - 1);
+		ia.push_back(0);
+		ja.push_back(0);
+		for (int i = 0; i < matrix_size; i++)
+		{
+			int row_offset = 0;
+			int col_offset = 0;
+			for (int offset = 0; offset < i; offset++)
+			{
+				if (a_ij_values[distr(rd)] == 0)
+				{
+					row_offset++;
+				}
+				if (a_ij_values[distr(rd)] == 0)
+				{
+					col_offset++;
+				}
+			}
+			ia.push_back(ia[i] + i - row_offset);
+			ja.push_back(ja[i] + i - col_offset);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < ia[i + 1] - ia[i]; j++)
+			{
+				int element_chosen = a_ij_values[distr(rd)];
+				while( j==0 && element_chosen == 0)
+					element_chosen = a_ij_values[distr(rd)];
+				al.push_back(a_ij_values[distr(rd)]);
+			}
+			for (int j = 0; j < ja[i + 1] - ja[i]; j++)
+			{
+				int element_chosen = a_ij_values[distr(rd)];
+				while (j == 0 && element_chosen == 0)
+					element_chosen = a_ij_values[distr(rd)];
+				au.push_back(a_ij_values[distr(rd)]);
+			}
+		}
+		for (int i = 0; i < n; i++)
+		{
+			precision di_i = 0;
+			if (i == 0)
+				di_i -= pow(10, -optional_k);
+			for (int j = ia[i]; j < ia[i + 1]; j++)
+			{
+				di_i += al[j];
+			}
+			for (int k = i + 1; k < n; k++)
+			{
+				int elements_in_col = ja[k + 1] - ja[k];
+				int col_offset = k - elements_in_col;
+				if (col_offset <= i)
+				{
+					di_i += au[ja[k] + i - col_offset];
+				}
+			}
+			di.push_back(-di_i);
+		}
+	}
+	if (matrix_type == 3)
+	{
+		ia.push_back(0);
+		ja.push_back(0);
+		for (int i = 0; i < matrix_size; i++)
+		{
+			ia.push_back(ia[i] + i);
+			ja.push_back(ja[i] + i);
+		}
+		for (int i = 0; i < n; i++)
+		{
+			di.push_back(1.0 / (2 * i + 1));
+			for (int j = 0; j < i; j++)
+			{
+				al.push_back(1.0 / (i + j + 1));
+				au.push_back(1.0 / (i + j + 1));
+			}
+		}
+	}
+	//b
+	//diagonal
+	b = di;
+	for (int i = 0; i < n; i++)
+	{
+		b[i] *= i+1;
+	}
+	//lower triangle
+	int elements_in_line = 0;
+	for (int i = 1; i < n; i++)
+	{
+		elements_in_line = ia[i + 1] - ia[i];
+		for (int j = 0; j < elements_in_line; j++)
+		{
+			b[i] += al[ia[i] + j] * (i - elements_in_line + j + 1);
+		}
+	}
+	//upper triangle
+	for (int i = 1; i < n; i++)
+	{
+		elements_in_line = ja[i + 1] - ja[i];
+		for (int j = 0; j < elements_in_line; j++)
+		{
+			b[i - elements_in_line + j] += au[ja[i] + j] * (i+1);
+		}
+	}
+}
+
 void LinearSystem::decompose_ldu()
 {
 	/*
