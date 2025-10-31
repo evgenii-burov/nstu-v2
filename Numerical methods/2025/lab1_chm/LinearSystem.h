@@ -7,7 +7,7 @@
 #include <utility>
 #include <random>
 
-typedef double precision;
+typedef float precision;
 typedef double precision_sum;
 
 class LinearSystem
@@ -20,8 +20,8 @@ private:
 	precision dense_element(int i, int j);
 
 public:
-	LinearSystem(std::string file_name);
-	LinearSystem(int matrix_size, int matrix_type, double optional_k = 1);
+	LinearSystem(std::string file_name, int matrix_type = 1, int optional_k = 1);
+	LinearSystem(int matrix_size, int matrix_type, int optional_k = 1);
 	/*
 	matrix type 1: diagonal significance matrix
 	matrix type 2: dense matrix
@@ -32,7 +32,14 @@ public:
 	void solve_DUx_y();
 	void matrix_times_b();
 	void print_ls();
+	void solve_LDU()
+	{
+		decompose_ldu();
+		solve_Ly_b();
+		solve_DUx_y();
+	}
 	void solve_Gauss();
+	void compare_x();
 };
 
 /*

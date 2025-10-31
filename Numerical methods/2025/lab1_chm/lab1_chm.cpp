@@ -2,6 +2,11 @@
 
 int main()
 {
-    LinearSystem ls(5, 1, 0);
+    int k = 14;
+    LinearSystem ls("input.txt", 2, k);
+    std::cout << "----k=" << k << "------\n";
+    ls.print_ls();
+    ls.solve_LDU();
+    ls.compare_x();
     ls.print_ls();
 }
