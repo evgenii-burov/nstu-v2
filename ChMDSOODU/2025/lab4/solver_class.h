@@ -33,7 +33,7 @@ public:
 	virtual void solve(std::string file_name) = 0;
 };
 
-class DE_SolverAdamsMethod : public DE_Solver
+class AdamsMethod : public DE_Solver
 {
 protected:
 	int initial_values_count;
@@ -87,13 +87,13 @@ public:
 		output_stream.close();
 	}
 
-	DE_SolverAdamsMethod(std::string file_name) : DE_Solver(file_name)
+	AdamsMethod(std::string file_name) : DE_Solver(file_name)
 	{
 		initial_values_count = 0;
 	}
 };
 
-class DE_SolverAdamsExplicit3 : public DE_SolverAdamsMethod
+class AdamsExplicit3 : public AdamsMethod
 {
 private:
 	double adams(std::vector<double>& initial_values, double t, double y) override
@@ -103,13 +103,13 @@ private:
 		return y + h * linear_combination / 12;
 	}
 public:
-	DE_SolverAdamsExplicit3(std::string file_name) : DE_SolverAdamsMethod(file_name)
+	AdamsExplicit3(std::string file_name) : AdamsMethod(file_name)
 	{
 		initial_values_count = 2;
 	}
 };
 
-class DE_SolverAdamsExplicit4 : public DE_SolverAdamsMethod
+class AdamsExplicit4 : public AdamsMethod
 {
 private:
 	double adams(std::vector<double>& initial_values, double t, double y) override
@@ -120,8 +120,77 @@ private:
 		return y + h * linear_combination / 24;
 	}
 public:
-	DE_SolverAdamsExplicit4(std::string file_name) : DE_SolverAdamsMethod(file_name)
+	AdamsExplicit4(std::string file_name) : AdamsMethod(file_name)
 	{
 		initial_values_count = 3;
+	}
+};
+
+class AdamsImplicitMethod : public AdamsMethod
+{
+protected:
+	virtual double f_of_x(std::vector<double>& initial_values, double t, double y, double x) = 0;
+	virtual double df_over_dx(double t) = 0;
+
+	double adams(std::vector<double>& initial_values, double t, double y) override
+	{
+		double x = 1;
+		double f_x = 1;
+		double df_dx = 1;
+		do
+		{
+			df_dx = df_over_dx(t);
+			f_x = f_of_x(initial_values, t, y, x);
+			x -= f_x / df_dx;
+		} while (abs(f_x / df_dx) > 10e-15);
+		return x;
+	}
+private:
+	using AdamsMethod::AdamsMethod;
+};
+
+class AdamsImplicit3 : public AdamsImplicitMethod
+{
+/*
+x = y + h( 10x(t+h) + 16ty - 2(t-h)(y_n-1) )/12
+0 = x(h/12 * 10(t+h) - 1) + y + h( 16ty - 2(t-h)(y_n-1) )/12 = F(x)
+dF(x)/dx = (h/12 * 10(t+h) - 1)
+*/
+private:
+	double f_of_x(std::vector<double>& initial_values, double t, double y, double x) override
+	{
+		return x * (h  * 5 * (t + h) / 6 - 1) + y + h * (16 * t * y - 2 * (t - h) * initial_values[0]) / 12;
+	}
+	double df_over_dx(double t) override
+	{
+		return h * 5 * (t + h) / 6 - 1;
+	}
+public:
+	AdamsImplicit3(std::string file_name) : AdamsImplicitMethod(file_name)
+	{
+		initial_values_count = 1;
+	}
+};
+
+class AdamsImplicit4 : public AdamsImplicitMethod
+{
+	/*
+	x = y + h( 18x(t+h) + 38ty - 10(t-h)Y0 + 2(t-2h)Y1 )/24
+	0 = y + x(9h(t+h)/12 - 1) + h( 38ty - 10(t-h)Y0 + 2(t-2h)Y1 )/24 = F(x)
+	dF/dx = 9h(t+h)/12 - 1
+	*/
+private:
+	double f_of_x(std::vector<double>& initial_values, double t, double y, double x) override
+	{
+		return y + x * (9 * h * (t + h) / 12 - 1) + h * (38 * t * y - 10 * (t - h) * initial_values[0] + 2 * (t - 2 * h) * initial_values[1]) / 24;
+	}
+	double df_over_dx(double t) override
+	{
+		return 9 * h * (t + h) / 12 - 1;
+	}
+public:
+	AdamsImplicit4(std::string file_name) : AdamsImplicitMethod(file_name)
+	{
+		initial_values_count = 2;
 	}
 };

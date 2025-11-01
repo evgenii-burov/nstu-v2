@@ -2,6 +2,6 @@
 
 int main()
 {
-	DE_SolverAdamsExplicit4 solver("input.txt");
+	AdamsImplicit4 solver("input.txt");
 	solver.solve("output.txt");
 }
