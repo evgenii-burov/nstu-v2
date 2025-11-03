@@ -488,15 +488,15 @@ void LinearSystem::solve_Gauss()
 				dense_al_with_b[j][k] += coefficient * dense_al_with_b[i][k];
 			}
 		}
-		/*for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < n + 1; j++)
-			{
-				std::cout << dense_al_with_b[i][j] << '\t';
-			}
-			std::cout << '\n';
-		}
-		std::cout << '\n';*/
+		//for (int i = 0; i < n; i++)
+		//{
+		//	for (int j = 0; j < n + 1; j++)
+		//	{
+		//		std::cout << dense_al_with_b[i][j] << '\t';
+		//	}
+		//	std::cout << '\n';
+		//}
+		//std::cout << '\n';
 	}
 	//back substitution
 	precision sum_over_k;
@@ -522,24 +522,24 @@ void LinearSystem::solve_Gauss()
 	output.open("gauss_vector_x.txt");
 	precision var = 1;
 	if (sizeof(var) == 4)
-		output << std::scientific << std::setprecision(8); //<<std::fixed
+		output << std::scientific << std::setprecision(15); //<<std::fixed
 	else
-		output << std::scientific << std::setprecision(16);
+		output << std::scientific << std::setprecision(15);
 	for (int i = 0; i < n; i++)
 		output << dense_al_with_b[i][n] << '\n';
 	output.close();
 	output.open("gauss_delta_x.txt");
-	output << std::scientific << std::setprecision(2);
+	output << std::scientific << std::setprecision(15);
 	for (int i = 0; i < n; i++)
-		output << i + 1 - dense_al_with_b[i][n] << ' ';
+		output << i + 1 - dense_al_with_b[i][n] << '\n';
 	output.close();
 	//print answer
-	std::cout << "Gauss x: ";
-	for (int i = 0; i < n; i++)
-	{
-		std::cout << dense_al_with_b[i][n] << '\t';
-	}
-	std::cout << '\n';
+	//std::cout << "Gauss x: ";
+	//for (int i = 0; i < n; i++)
+	//{
+	//	std::cout << dense_al_with_b[i][n] << '\t';
+	//}
+	//std::cout << '\n';
 }
 
 void LinearSystem::compare_x()

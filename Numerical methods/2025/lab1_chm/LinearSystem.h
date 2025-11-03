@@ -7,7 +7,7 @@
 #include <utility>
 #include <random>
 
-typedef float precision;
+typedef double precision;
 typedef double precision_sum;
 
 class LinearSystem
