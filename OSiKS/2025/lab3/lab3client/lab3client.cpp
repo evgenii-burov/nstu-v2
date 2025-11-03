@@ -1,18 +1,46 @@
-﻿#include <iostream>
-#include <string>
+﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#pragma comment(lib, "Ws2_32.lib")
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <queue>
+#include <mutex>
+#include <conio.h>
 
-#pragma comment(lib, "Ws2_32.lib")
+const int MESSAGE_BUFFER_SIZE = 1024;
 
-const int BUFFER_SIZE = 1024;
+std::queue<std::string> queued_received_messages;
+std::mutex mtx;
+
+void receive_messages(SOCKET client_socket) {
+    char buffer[MESSAGE_BUFFER_SIZE];
+    while (true) {
+        int bytes_received = recv(client_socket, buffer, MESSAGE_BUFFER_SIZE, 0);
+        if (bytes_received <= 0) {
+            std::cout << "Disconnected from server.\n";
+            break;
+        }
+        buffer[bytes_received] = '\0';
+
+        std::cout << buffer << "\n";
+    }
+}
 
 int main() {
-    WSADATA wsaData;
-    SOCKET client_socket = INVALID_SOCKET;
-    struct sockaddr_in server_addr;
-    char buffer[BUFFER_SIZE];
-    int result;
+    WSADATA wsa_data;
+    if (WSAStartup(MAKEWORD(2, 2), &wsa_data) != 0) {
+        std::cerr << "WSAStartup failed.\n";
+        return 1;
+    }
+
+    SOCKET client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (client_socket == INVALID_SOCKET) {
+        std::cerr << "Socket creation failed.\n";
+        WSACleanup();
+        return 1;
+    }
 
     std::string server_ip;
     std::cout << "Enter server's IP address to connect to: ";
@@ -22,68 +50,45 @@ int main() {
     std::cin >> port;
     std::cin.ignore(256, '\n');
 
-    result = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (result != 0) {
-        std::cerr << "WSAStartup failed: " << result << std::endl;
-        return 1;
-    }
-
-    client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (client_socket == INVALID_SOCKET) {
-        std::cerr << "Unable to create socket: " << WSAGetLastError() << std::endl;
-        WSACleanup();
-        return 1;
-    }
-
+    SOCKADDR_IN server_addr;
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port);
     inet_pton(AF_INET, server_ip.c_str(), &server_addr.sin_addr);
 
-    if (server_addr.sin_addr.s_addr == INADDR_NONE) {
-        std::cerr << "Invalid IP address: " << server_ip << std::endl;
+    if (connect(client_socket, (sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+        std::cerr << "Failed to connect to server.\n";
         closesocket(client_socket);
         WSACleanup();
         return 1;
     }
 
-    result = connect(client_socket, (sockaddr*)&server_addr, sizeof(server_addr));
-    if (result == SOCKET_ERROR) {
-        std::cerr << "Unable to connect: " << WSAGetLastError() << std::endl;
-        closesocket(client_socket);
-        WSACleanup();
-        return 1;
-    }
+    std::string name;
+    std::cout << "Enter your username: ";
+    std::getline(std::cin, name);
+    send(client_socket, name.c_str(), name.size() + 1, 0);
 
-    std::cout << "Connected to server at " << server_ip << "!" << std::endl;
+    std::cout << "Connected to server. Press <enter> to start typing a message:\n";
 
-    std::string user_message;
-    std::cout << "Enter message to send (ticket numbers e.g. 123456 789012...)\nor enter \"/c\" to close the server: ";
-    std::getline(std::cin, user_message);
+    // Start a thread to receive messages
+    std::thread receiver(receive_messages, client_socket);
+    receiver.detach();
 
-    result = send(client_socket, user_message.c_str(), (int)user_message.length(), 0);
-    if (result == SOCKET_ERROR) {
-        std::cerr << "Unable to send: " << WSAGetLastError() << std::endl;
-        closesocket(client_socket);
-        WSACleanup();
-        return 1;
-    }
+    while (true) {
+        std::string message;
 
-    std::cout << "Message sent to server" << std::endl;
 
-    result = recv(client_socket, buffer, BUFFER_SIZE - 1, 0);
-    if (result > 0) {
-        buffer[result] = '\0';
-        std::cout << "Response from server: " << buffer << std::endl;
-    }
-    else if (result == 0) {
-        std::cout << "Connection closed by server" << std::endl;
-    }
-    else {
-        std::cerr << "Unable to receive: " << WSAGetLastError() << std::endl;
+        std::getline(std::cin, message);
+        if (message == "/exit") {
+            break;
+        }
+
+        if (send(client_socket, message.c_str(), message.size() + 1, 0) == SOCKET_ERROR) {
+            std::cerr << "Failed to send message.\n";
+            break;
+        }
     }
 
     closesocket(client_socket);
     WSACleanup();
-
     return 0;
 }
