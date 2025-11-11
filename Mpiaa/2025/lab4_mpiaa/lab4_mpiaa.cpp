@@ -21,7 +21,7 @@ int main()
 
    writeComponents("output_task2.txt", components);
 
-   //mergeGraphs("output_task3.txt");
+   mergeGraphs("output_task3.txt");
 
    cout << " \n done";
    return 0;

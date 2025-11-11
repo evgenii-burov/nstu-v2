@@ -2,7 +2,7 @@
 
 int main()
 {
-    int k = 10;
+    int k = 0;
     LinearSystem ls("input.txt", 2, k);
     std::cout << "----k=" << k << "------\n";
     ls.print_ls();
