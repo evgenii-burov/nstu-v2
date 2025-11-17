@@ -1,5 +1,5 @@
 # file_name = input('Enter the name of a binary file to read (ethersXX.bin): ')
-file_name = "ethers05.bin"
+file_name = "ethers07.bin"
 frame_count = 0
 
 ipv4_count = 0
@@ -43,20 +43,39 @@ try:
                     ip_header = file.read(20)
                     if len(ip_header) < 20:
                         break
-                        
+                    
+                    version = ip_header[0] >> 4
                     ihl = ip_header[0] & 0x0F
                     ip_header_bytes = ihl * 4
-                    
+                    dscp = ip_header[1] >> 2
+                    ecn = ip_header[1] & 0x03
                     total_length = int.from_bytes(ip_header[2:4], byteorder='big')
-                    
-                    print(f"  Total Length: {total_length}")
-                    print(f"  IP Header Length: {ip_header_bytes} bytes")
+                    identification = int.from_bytes(ip_header[4:6], byteorder='big')
+                    flags = ip_header[6] >> 5
+                    fragment_offset = int.from_bytes(ip_header[6:8], byteorder='big') & 0x1FFF
+                    ttl = ip_header[8]
+                    protocol = ip_header[9]
+                    checksum = int.from_bytes(ip_header[10:12], byteorder='big')
                     
                     source_ip = '.'.join(str(b) for b in ip_header[12:16])
                     destination_ip = '.'.join(str(b) for b in ip_header[16:20])
-                    print(f'IPv4 destination address: {destination_ip}')
-                    print(f'IPv4 sender address: {source_ip}')
-
+                    
+                    protocol_names = {1: 'ICMP', 6: 'TCP', 17: 'UDP'}
+                    protocol_name = protocol_names.get(protocol, f'Unknown ({protocol})')
+                    
+                    print(f"  Version: {version}")
+                    print(f"  IHL: {ihl} ({ip_header_bytes} bytes)")
+                    print(f"  DSCP: {dscp}, ECN: {ecn}")
+                    print(f"  Total Length: {total_length}")
+                    print(f"  Identification: 0x{identification:04x}")
+                    print(f"  Flags: 0x{flags:01x}")
+                    print(f"  Fragment Offset: {fragment_offset}")
+                    print(f"  TTL: {ttl}")
+                    print(f"  Protocol: {protocol_name}")
+                    print(f"  Header Checksum: 0x{checksum:04x}")
+                    print(f"  Source IP: {source_ip}")
+                    print(f"  Destination IP: {destination_ip}")
+                    
                     ip_payload_bytes = total_length - ip_header_bytes
                     file.seek(ip_payload_bytes, 1)
                     frame_size += 20 + ip_payload_bytes
