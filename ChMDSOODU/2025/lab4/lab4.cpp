@@ -2,6 +2,6 @@
 
 int main()
 {
-	AdamsImplicit4 solver("input.txt");
+	AdamsPrognosisCorrection4 solver("input.txt");
 	solver.solve("output.txt");
 }
