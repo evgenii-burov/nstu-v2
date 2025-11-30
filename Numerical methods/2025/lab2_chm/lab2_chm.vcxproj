@@ -128,6 +128,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lab2_chm.cpp" />
+    <ClCompile Include="linear_system.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="linear_system.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
