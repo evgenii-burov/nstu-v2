@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <iomanip>
 
 typedef double precision;
 
@@ -16,16 +17,23 @@ n Ц размерность матрицы.
 {
 private:
 	int n;
-	int num_diagonals = 7;
+	int num_diagonals = 3;
 	int m;
 	int max_iterations = 100000;
+	precision eps;
 	std::vector<int> diagonal_offset;
-	std::vector<std::vector<precision>> matrix;
+	std::vector<std::vector<precision>> al;
+	std::vector<std::vector<precision>> au;
+	std::vector<precision> di;
 	std::vector<precision> b;
-	std::vector<precision> old_x;
+	std::vector<precision> x;
+	std::vector<precision> new_x;
+	precision get_next_x_ith(int i, precision omega);
 public:
+	precision get_relative_discrepancy();
 	LinearSystem(std::string file_name);
 	void matrix_times_b();
+	void solve_jacobi();
 };
 
 

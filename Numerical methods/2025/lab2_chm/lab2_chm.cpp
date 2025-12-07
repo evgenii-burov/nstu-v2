@@ -3,5 +3,5 @@
 int main()
 {
     LinearSystem ls("input.txt");
-    ls.matrix_times_b();
+    ls.solve_jacobi();
 }
