@@ -529,7 +529,7 @@ void LinearSystem::solve_Gauss()
 		output << dense_al_with_b[i][n] << '\n';
 	output.close();
 	output.open("gauss_delta_x.txt");
-	output << std::scientific << std::setprecision(15);
+	output << std::scientific << std::setprecision(3);
 	for (int i = 0; i < n; i++)
 		output << i + 1 - dense_al_with_b[i][n] << '\n';
 	output.close();
@@ -552,7 +552,7 @@ void LinearSystem::compare_x()
 	}
 	output_stream.close();
 	output_stream = std::ofstream("LDU_delta_x.txt");
-	output_stream << std::scientific << std::setprecision(15);
+	output_stream << std::scientific << std::setprecision(3);
 	for (int i = 0; i < n; i++)
 	{
 		output_stream << (i + 1) - b[i] << "\n";
