@@ -3,5 +3,5 @@
 int main()
 {
     LinearSystem ls("input.txt");
-    ls.solve_jacobi();
+    ls.solve_gauss_seidel(0.1);
 }

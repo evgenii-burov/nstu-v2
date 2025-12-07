@@ -21,6 +21,7 @@ private:
 	int m;
 	int max_iterations = 100000;
 	precision eps;
+
 	std::vector<int> diagonal_offset;
 	std::vector<std::vector<precision>> al;
 	std::vector<std::vector<precision>> au;
@@ -28,12 +29,21 @@ private:
 	std::vector<precision> b;
 	std::vector<precision> x;
 	std::vector<precision> new_x;
+
 	precision get_next_x_ith(int i, precision omega);
+
 public:
 	precision get_relative_discrepancy();
+
 	LinearSystem(std::string file_name);
+
 	void matrix_times_b();
-	void solve_jacobi();
+
+	void solve_jacobi(precision omega);
+
+	void solve_gauss_seidel(precision omega);
+
+	void reset_x();
 };
 
 

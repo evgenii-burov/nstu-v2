@@ -121,7 +121,7 @@ precision LinearSystem::get_next_x_ith(int i, precision omega)
 	//diagonal_offset = {0, 1, m + 2,m + 3, n };
 	//{0,1,4,5,7}
 
-	return x[i] + omega * next_x_ith / di[i];
+	return next_x_ith;
 }
 
 precision LinearSystem::get_relative_discrepancy()
@@ -177,22 +177,25 @@ precision LinearSystem::get_relative_discrepancy()
 	return discrepancy;
 }
 
-void LinearSystem::solve_jacobi()
+void LinearSystem::solve_jacobi(precision omega)
 {
-	precision omega = 1;
 	int iterations = 0;
+	precision relative_discrepancy = 0;
 
 	do
 	{
 		for (int i = 0; i < n; i++)
 		{
-			new_x[i] = get_next_x_ith(i, omega);
+			new_x[i] = x[i] + omega * get_next_x_ith(i, omega) / di[i];
 		}
 		for (int i = 0; i < n; i++)
 		{
 			x[i] = new_x[i];
 		}
-	} while (get_relative_discrepancy() > eps || iterations > max_iterations);
+		iterations++;
+		relative_discrepancy = get_relative_discrepancy();
+		std::cout << "Jacobi iteration #" << iterations <<  ", relative discrepancy: " << relative_discrepancy << "\n";
+	} while (relative_discrepancy > eps && iterations <= max_iterations);
 
 	std::ofstream output_stream("jacobi_x.txt");
 	for (int i = 0; i < n; i++)
@@ -201,6 +204,83 @@ void LinearSystem::solve_jacobi()
 		output_stream << std::scientific << std::setprecision(15);
 		output_stream << x[i] << "\n";
 	}
+	output_stream.close();
+	output_stream.open("jacobi_delta_x.txt");
+	for (int i = 0; i < n; i++)
+	{
+		//std::cout << x[i] << "\t";
+		output_stream << std::scientific << std::setprecision(3);
+		output_stream << (i + 1) - x[i] << "\n";
+	}
+	output_stream.close();
+	output_stream.open("jacobi_condition_number.txt");
 
+	precision condition_number = 0; 
+	precision delta_x_norm = 0;
+	precision true_x_norm = 0;
+	relative_discrepancy = get_relative_discrepancy();
+	for (int i = 0; i < n; i++)
+	{
+		true_x_norm += (i + 1) * (i + 1);
+		delta_x_norm += (i + 1 - x[i]) * (i + 1 - x[i]);
+	}
+	condition_number = sqrt(delta_x_norm / true_x_norm) / relative_discrepancy;
 
+	output_stream << std::fixed << std::setprecision(3);
+	output_stream << condition_number;
+}
+
+void LinearSystem::solve_gauss_seidel(precision omega)
+{
+	int iterations = 0;
+	precision relative_discrepancy = 0;
+
+	do
+	{
+		for (int i = 0; i < n; i++)
+		{
+			x[i] += omega * get_next_x_ith(i, omega) / di[i];
+		}
+		iterations++;
+		relative_discrepancy = get_relative_discrepancy();
+		std::cout << "Gauss-Seidel iteration #" << iterations << ", relative discrepancy: " << relative_discrepancy << "\n";
+	} while (relative_discrepancy > eps && iterations <= max_iterations);
+
+	std::ofstream output_stream("gauss_seidel_x.txt");
+	for (int i = 0; i < n; i++)
+	{
+		//std::cout << x[i] << "\t";
+		output_stream << std::scientific << std::setprecision(15);
+		output_stream << x[i] << "\n";
+	}
+	output_stream.close();
+	output_stream.open("gauss_seidel_delta_x.txt");
+	for (int i = 0; i < n; i++)
+	{
+		//std::cout << x[i] << "\t";
+		output_stream << std::scientific << std::setprecision(3);
+		output_stream << (i + 1) - x[i] << "\n";
+	}
+
+	output_stream.close();
+	output_stream.open("gauss_seidel_condition_number.txt");
+
+	precision condition_number = 0;
+	precision delta_x_norm = 0;
+	precision true_x_norm = 0;
+	relative_discrepancy = get_relative_discrepancy();
+	for (int i = 0; i < n; i++)
+	{
+		true_x_norm += (i + 1) * (i + 1);
+		delta_x_norm += (i + 1 - x[i]) * (i + 1 - x[i]);
+	}
+	condition_number = sqrt(delta_x_norm / true_x_norm) / relative_discrepancy;
+
+	output_stream << std::fixed << std::setprecision(3);
+	output_stream << condition_number;
+}
+
+void LinearSystem::reset_x()
+{
+	x.assign(n, 0);
 }
