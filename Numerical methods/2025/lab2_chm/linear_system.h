@@ -45,5 +45,3 @@ public:
 
 	void reset_x();
 };
-
-
