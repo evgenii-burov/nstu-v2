@@ -134,6 +134,7 @@
     <ClCompile Include="lab5_mpiaa.cpp" />
     <ClCompile Include="task1.cpp" />
     <ClCompile Include="task2.cpp" />
+    <ClCompile Include="task3.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mpi_tasks.h" />
