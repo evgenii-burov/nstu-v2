@@ -2,7 +2,7 @@
 
 int main(int argc, char** argv)
 {
-	task3_sequential(argc, argv);
+	task3_parallel(argc, argv);
 }
 
 
