@@ -67,7 +67,7 @@ int main() {
     std::getline(std::cin, name);
     send(client_socket, name.c_str(), name.size() + 1, 0);
 
-    std::cout << "Connected to server. Press <enter> to start typing a message:\n";
+    std::cout << "Connected to server. You can start typing a message:\n";
 
     // Start a thread to receive messages
     std::thread receiver(receive_messages, client_socket);

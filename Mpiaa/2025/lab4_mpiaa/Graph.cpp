@@ -141,6 +141,7 @@ void mergeGraphs(const string& filename)
     int number_of_files;
     input_stream >> number_of_files;
     input_stream.close();
+    int max_vertices = 0;
 
     for (int i = 0; i < number_of_files; i++)
     {
@@ -154,24 +155,34 @@ void mergeGraphs(const string& filename)
         {
             int vertex = 0;
             input_stream >> vertex;
+            if (vertex > max_vertices)
+                max_vertices = vertex;
             complete_graph_vertices.push_back(vertex - 1);
+        }
+
+        for (int i = 0; i < max_vertices; i++)
+        {
             bool vertex_adjacency_list_exists = false;
             for (auto& vertex_adjacency_list : graph)
             {
-                if (vertex_adjacency_list[0] == vertex - 1)
+                if (vertex_adjacency_list[0] == i)
                     vertex_adjacency_list_exists = true;
             }
-            if(vertex_adjacency_list_exists == false)
-                graph.push_back(vector<int>({ vertex - 1 }));
+            if (vertex_adjacency_list_exists == false)
+                graph.push_back(vector<int>({ i }));
         }
 
-        for (int current_vertex = 0; current_vertex < number_of_vertices - 1; current_vertex++)
+        for (int current_vertex = 0; current_vertex < number_of_vertices; current_vertex++)
         {
             for (auto& vertex_adjacency_list : graph)
             {
                 if (vertex_adjacency_list[0] == complete_graph_vertices[current_vertex])
                 {
-                    for (int other_vertex = current_vertex + 1; other_vertex < number_of_vertices; other_vertex++)
+                    for (int other_vertex = 0; other_vertex < current_vertex; other_vertex++)
+                    {
+                        vertex_adjacency_list.push_back(complete_graph_vertices[other_vertex]);
+                    }
+                    for (int other_vertex = current_vertex+1; other_vertex < number_of_vertices; other_vertex++)
                     {
                         vertex_adjacency_list.push_back(complete_graph_vertices[other_vertex]);
                     }
@@ -180,12 +191,26 @@ void mergeGraphs(const string& filename)
         }
         input_stream.close();
     }
+
+    for (int i = 0; i < max_vertices; i++)
+    {
+
+    }
+
+    ofstream output_stream(filename);
+
     for (auto& vertex_adjacency_list : graph)
     {
-        for (int i = 0; i < vertex_adjacency_list.size(); i++)
+        std::sort(vertex_adjacency_list.begin() + 1, vertex_adjacency_list.end());
+        vertex_adjacency_list.erase(std::unique(vertex_adjacency_list.begin() + 1, vertex_adjacency_list.end()), vertex_adjacency_list.end());
+
+        output_stream << vertex_adjacency_list[0] + 1 << ":\t";
+        for (int i = 1; i < vertex_adjacency_list.size(); i++)
         {
-            cout << vertex_adjacency_list[i] << "\t";
+            output_stream << vertex_adjacency_list[i] + 1 << "\t";
         }
-        cout << endl;
+        output_stream << endl;
     }
+
+    output_stream.close();
 }
