@@ -1,6 +1,7 @@
-﻿#include <iostream>
+﻿#include "graph.h"
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    Graph g("input.txt");
+    g.dijkstra(0);
 }
