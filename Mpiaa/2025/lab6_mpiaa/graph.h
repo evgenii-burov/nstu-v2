@@ -8,27 +8,10 @@
 class Graph
 {
 private:
-	struct edge
-	{
-		int vertex;
-		int neighbour_vertex;
-		int distance;
-
-		edge(int vertex0, int neighbour_vertex0, int distance0)
-		{
-			vertex = vertex0;
-			neighbour_vertex = neighbour_vertex0;
-			distance = distance0;
-		}
-
-		bool operator<(const edge& other) const
-		{
-			return this->distance < other.distance;
-		}
-	};
 
 	int n, m;
-	std::vector<std::vector<edge>> graph;
+	// pair<distance, vertex>
+	std::vector<std::vector<std::pair<int, int>>> graph;
 	//std::vector<std::vector<std::pair<int, int>>> minimal_distances;
 
 public:
