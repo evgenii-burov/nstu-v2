@@ -14,5 +14,6 @@ private:
 
 public:
 	double dichotomy_method(double eps);
-
+	double golden_ratio_method(double eps);
+	void find_interval_containing_minimum();
 };
