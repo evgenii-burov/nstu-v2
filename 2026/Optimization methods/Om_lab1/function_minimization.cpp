@@ -119,31 +119,35 @@ double FunctionMinimization::golden_ratio_method(double eps)
 
 void FunctionMinimization::find_interval_containing_minimum(double x0)
 {
-	bool failed = false;
 	double x = x0;
 	double delta = 1;
 	double h;
+	std::cout << "x\t\t" << "f_x" << '\n';
+	std::cout << x << "\t\t" << func(x) << '\n';
 	if (func(x) > func(x + delta))
 	{
 		x += delta;
 		h = delta;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
 	if (func(x) < func(x + delta))
 	{
 		x -= delta;
 		h = -delta;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
 	if (func(x) == func(x + delta))
 	{
 		a0 = x;
 		b0 = x + delta;
 	}
-	while (func(x) > func(x + h))
+	while (func(x) > func(x+h))
 	{
-		//std::cout << "x: " << x << "\txh: " << x + h << '\n';
 		x += h;
 		h *= 2;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
+	std::cout << x+h << "\t\t" << func(x+h) << '\n';
 	if (h > 0)
 	{
 		a0 = x - h;
@@ -154,10 +158,6 @@ void FunctionMinimization::find_interval_containing_minimum(double x0)
 		b0 = x - h;
 		a0 = x + h;
 	}
-	if (a0 > 4 || b0 < 4)
-	{
-		std::cout << "Failed a0 " << a0 << " b0 " << b0 << " x " << x;
-		failed = true;
-	}
+	
 	//std::cout << "a0: " << a0 << "\tb0: " << b0 << '\n';
 }
