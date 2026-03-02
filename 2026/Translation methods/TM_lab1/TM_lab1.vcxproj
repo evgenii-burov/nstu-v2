@@ -127,10 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="menu.cpp" />
     <ClCompile Include="TM_lab1.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dynamic_table.h" />
+    <ClInclude Include="menu.h" />
     <ClInclude Include="static_table.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
