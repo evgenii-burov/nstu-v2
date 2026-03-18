@@ -14,6 +14,11 @@ struct Point {
     Point operator+(const Point& other) const { return Point(x + other.x, y + other.y); }
     Point operator-(const Point& other) const { return Point(x - other.x, y - other.y); }
     Point operator*(double scalar) const { return Point(x * scalar, y * scalar); }
+    friend ostream& operator<<(ostream& out, const Point& p)
+    {
+        out << '(' << p.x << ", " << p.y << ')';
+        return out;
+    }
 };
 
 // Глобальные счетчики для статистики
@@ -86,18 +91,44 @@ public:
     string name() override { return "Variant4 (Max)"; }
 };
 
+class QuadraticFunction : public Function
+{
+public:
+    double operator()(const Point& p) override {
+        func_evaluations++;
+        return 100.0 * pow(p.y - p.x, 2) + pow(1.0 - p.x, 2);
+    }
+    Point grad(const Point& p) override {
+        // Градиент функции
+        double dfdx = -200.0 * (p.x - p.y) - 2.0 * (1.0 - p.x);
+        double dfdy = 200.0 * (p.y - p.x);
+        return Point(dfdx, dfdy);
+    }
+    string name() override { return "Quadratic"; }
+};
+
 // Одномерный поиск (Метод золотого сечения)
 // Минимизирует func(start + lambda * direction)
 double goldenSection(Function& func, const Point& start, const Point& direction, double eps = 1e-4) {
-    double phi = (1.0 + sqrt(5.0)) / 2.0;
-    double a = 0.0, b = 1.0; // Интервал поиска шага
-    double x1 = b - (b - a) / phi;
-    double x2 = a + (b - a) / phi;
-
+    int counter = 0;
     auto f_lambda = [&](double l) {
         Point p = start + direction * l;
         return func(p);
-        };
+    };
+    // Поиск интервала, содержащего минимум
+    double a = 0, delta = 1, h = delta;
+    double b = 1;
+    while (f_lambda(a) > f_lambda(a + h))
+    {
+        b = a + h;
+        h *= 2;
+    }
+    b = 4;
+    std::cout << b << '\n';
+    // Одномерный поиск
+    double phi = (1.0 + sqrt(5.0)) / 2.0;
+    double x1 = b - (b - a) / phi;
+    double x2 = a + (b - a) / phi;
 
     double y1 = f_lambda(x1);
     double y2 = f_lambda(x2);
@@ -117,7 +148,9 @@ double goldenSection(Function& func, const Point& start, const Point& direction,
             x2 = a + (b - a) / phi;
             y2 = f_lambda(x2);
         }
+        counter++;
     }
+    std::cout << "counter: " << counter << '\n';
     return (a + b) / 2.0;
 }
 
@@ -216,6 +249,7 @@ void gradientDescent(Function& func, Point start, double eps) {
         iterations_count++;
         Point g = func.grad(x_curr);
         double gradNorm = sqrt(g.x * g.x + g.y * g.y);
+        g = g * (1 / gradNorm);
 
         if (gradNorm < eps) break;
 
@@ -228,7 +262,7 @@ void gradientDescent(Function& func, Point start, double eps) {
         Point x_new = x_curr + direction * lambda;
         double f_new = func(x_new);
 
-        if (verbose) cout << iterations_count << "\t" << x_new.x << "\t" << x_new.y << "\t" << f_new << "\t" << gradNorm << "\t" << lambda << endl;
+        if (verbose) cout << iterations_count << "\t" << x_new.x << "\t" << x_new.y << "\t" << f_new << "\t" << gradNorm << "\t" << lambda << "\t" << g  <<endl;
 
         // Критерий остановки по изменению функции или точки
         if (abs(f_curr - f_new) < eps && abs(x_curr.x - x_new.x) < eps && abs(x_curr.y - x_new.y) < eps) {
@@ -241,7 +275,7 @@ void gradientDescent(Function& func, Point start, double eps) {
         f_curr = f_new;
 
         // Защита от зацикливания
-        if (iterations_count > 1000) break;
+        if (iterations_count > 100) break;
     }
 
     cout << "Result: (" << x_curr.x << ", " << x_curr.y << ")" << endl;
@@ -254,29 +288,35 @@ int main() {
     cout << fixed << setprecision(6);
 
     // Выбор режима вывода (true для подробностей, false для краткости)
-    verbose = false;
+    verbose = true;
 
     // Инициализация функций
     Rosenbrock rosen;
     Variant4 var4;
+    QuadraticFunction qf;
 
     // Начальные точки (как минимум две разные)
-    vector<Point> startPoints = { Point(-2, 2), Point(5, 5) };
+    vector<Point> startPoints = { Point(5, 1)};
 
     cout << "==========================================" << endl;
     cout << "LAB WORK 2: OPTIMIZATION METHODS" << endl;
     cout << "==========================================" << endl;
 
     // Тестирование на функции Розенброка
-    for (const auto& sp : startPoints) {
-        hookJeeves(rosen, sp, 1e-4);
-        gradientDescent(rosen, sp, 1e-4);
-    }
+    //for (const auto& sp : startPoints) {
+    //    hookJeeves(rosen, sp, 1e-4);
+    //    gradientDescent(rosen, sp, 1e-4);
+    //}
 
-    // Тестирование на функции Варианта 4
+    //// Тестирование на функции Варианта 4
+    //for (const auto& sp : startPoints) {
+    //    hookJeeves(var4, sp, 1e-4);
+    //    gradientDescent(var4, sp, 1e-4);
+    //}
+
     for (const auto& sp : startPoints) {
-        hookJeeves(var4, sp, 1e-4);
-        gradientDescent(var4, sp, 1e-4);
+    //hookJeeves(qf, sp, 1e-4);
+    gradientDescent(qf, sp, 1e-4);
     }
 
     return 0;
