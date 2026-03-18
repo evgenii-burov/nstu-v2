@@ -46,7 +46,7 @@ public:
 		return false;
 	}
 
-	bool insert(std::string name)
+	bool insert(std::string name, int value)
 	{
 		size_t name_hash = hash(name);
 		for (auto& lexem : table[name_hash])
@@ -56,7 +56,7 @@ public:
 				return false;
 			}
 		}
-		table[name_hash].push_back({ name, 0 });
+		table[name_hash].push_back({ name, value });
 		return true;
 	}
 

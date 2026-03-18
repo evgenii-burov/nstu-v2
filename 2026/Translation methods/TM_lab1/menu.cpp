@@ -12,7 +12,7 @@ void main_menu()
 	std::cout << "Enter:\n";
 	std::cout << "<1> To test the static table\n";
 	std::cout << "<2> To test the dynamic table\n";
-	std::cout << "<3> To exit\n";
+	std::cout << "<3> To exit\n>";
 	while (true)
 	{
 		getline(std::cin, user_input);
@@ -96,17 +96,33 @@ void dynamic_table_menu()
 	std::cout << "<6> To exit\n";
 	while (true)
 	{
+		std::cout << "\n>";
 		getline(std::cin, user_input);
 		switch (std::stoi(user_input))
 		{
 		case 1:
+		{
+			std::string value_string;
+			int new_value;
 			std::cout << "\nEnter the name of the element to be inserted: ";
 			getline(std::cin, user_input);
-			if (table.insert(user_input))
+			std::cout << "Enter the new value of the element: ";
+			getline(std::cin, value_string);
+			try
+			{
+				new_value = std::stoi(value_string);
+			}
+			catch (std::invalid_argument)
+			{
+				std::cerr << "Value must be an integer\n";
+				break;
+			}
+			if (table.insert(user_input, new_value))
 				std::cout << "Element inserted\n";
 			else
 				std::cout << "That element is already in the table\n";
 			break;
+		}
 		case 2:
 			std::cout << "\nEnter the name of the element to be checked for: ";
 			getline(std::cin, user_input);
@@ -123,7 +139,15 @@ void dynamic_table_menu()
 			getline(std::cin, user_input);
 			std::cout << "Enter the new value of the element: ";
 			getline(std::cin, value_string);
-			new_value = std::stoi(value_string);
+			try
+			{
+				new_value = std::stoi(value_string);
+			}
+			catch (std::invalid_argument)
+			{
+				std::cerr << "Value must be an integer\n";
+				break;
+			}
 			if (table.change_value(user_input, new_value))
 				std::cout << "Elements value is changed\n";
 			else
