@@ -1,0 +1,69 @@
+body{
+  background-color: rgb(221, 221, 221);
+  width: 70%;
+  margin: auto  ;
+}
+
+.container {
+  display: grid;
+  grid-template-areas:
+    "header nav-bar"
+    "feed content"
+    "footer footer";
+  grid-template-columns: 1fr 3fr;
+  /* gap: 3px; */
+  background-color: rgb(255, 245, 154);
+  /* padding: 5px; */
+}
+.container div {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+}
+.container a{
+  text-decoration: none;
+  color: inherit;
+}
+.container div.header {
+  grid-area: header;
+  background-color: blue;
+}
+.container div.nav-bar{
+  grid-area: nav-bar;
+  background-color: blue;
+}
+.container ul{
+  padding: auto;
+  margin: auto;
+}
+.container li{
+  display: inline;
+  padding: 16px;
+  
+}
+.container div.feed {
+  grid-area: feed;
+  background-color: rgb(83, 83, 83);
+  padding: 1px;
+}
+.container div.card{
+  /* padding: 0px;
+  margin: 0px; */
+}
+.container small
+{
+  color:gray;
+}
+.container div.content {
+  grid-area: content;
+  background-color: rgb(255, 255, 255);
+  border-color: aqua;
+  border: 1pt;
+  border-left: 0;
+  border-style: solid;
+
+}
+.container div.footer {
+  grid-area: footer;
+  text-align: center;  
+  background-color:darkseagreen;
+}
