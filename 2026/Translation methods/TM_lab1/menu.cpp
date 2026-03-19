@@ -174,7 +174,7 @@ void dynamic_table_menu()
 			}
 			else
 			{
-				std::cout << "Incorrect size value\n";
+				std::cout << "Incorrect size value, re-enter the command to attempt a new resize\n";
 			}
 			break;
 		}

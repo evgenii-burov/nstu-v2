@@ -119,6 +119,7 @@ double FunctionMinimization::golden_ratio_method(double eps)
 
 void FunctionMinimization::find_interval_containing_minimum(double x0)
 {
+
 	double x = x0;
 	double delta = 1;
 	double h;
@@ -158,6 +159,6 @@ void FunctionMinimization::find_interval_containing_minimum(double x0)
 		b0 = x - h;
 		a0 = x + h;
 	}
-	
-	//std::cout << "a0: " << a0 << "\tb0: " << b0 << '\n';
+
+	std::cout << "a0: " << a0 << "\tb0: " << b0 << '\n';
 }
