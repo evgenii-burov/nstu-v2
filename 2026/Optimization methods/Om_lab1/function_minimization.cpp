@@ -123,26 +123,32 @@ void FunctionMinimization::find_interval_containing_minimum(double x0)
 	double x = x0;
 	double delta = 1;
 	double h;
+	std::cout << "x\t\t" << "f_x" << '\n';
+	std::cout << x << "\t\t" << func(x) << '\n';
 	if (func(x) > func(x + delta))
 	{
 		x += delta;
 		h = delta;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
 	if (func(x) < func(x + delta))
 	{
 		x -= delta;
 		h = -delta;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
 	if (func(x) == func(x + delta))
 	{
 		a0 = x;
 		b0 = x + delta;
 	}
-	while (func(x) > func(x + h))
+	while (func(x) > func(x+h))
 	{
 		x += h;
 		h *= 2;
+		std::cout << x << "\t\t" << func(x) << '\n';
 	}
+	std::cout << x+h << "\t\t" << func(x+h) << '\n';
 	if (h > 0)
 	{
 		a0 = x - h;
