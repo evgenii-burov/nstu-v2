@@ -3,8 +3,8 @@ body{
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   width: 70%;
   margin: auto;
-  min-height: 100vh;
-  position: relative;
+  /* min-height: 100vh; */
+  /* position: relative; */
 }
 @media screen and (max-width:900px){
   body{
@@ -13,7 +13,7 @@ body{
 }
 @media screen and (min-width:1200px){
   body{
-    width: 70%;
+    width: 85%;
   }
 }
 .container {
@@ -37,12 +37,18 @@ body{
 }
 .container div.header {
   grid-area: header;
-  background-color: rgb(93, 91, 181);
+  background-color: rgb(84, 83, 163);
   color: white;
+}
+.header h2{
+  margin-right: 0;
+}
+.header h2:hover{
+  color: rgb(139, 226, 197);
 }
 .container div.nav-bar{
   grid-area: nav-bar;
-  background-color: rgb(93, 91, 181);
+  background-color: rgb(84, 83, 163);
   align-content: center;
   color: rgb(255, 255, 255);
   font-weight: bold;
@@ -57,7 +63,7 @@ body{
   font-size: large;
 }
 .container li:hover{
-  color: rgb(152, 255, 221);
+  color: rgb(139, 226, 197);
 }
 .container div.feed {
   grid-area: feed;
@@ -71,14 +77,24 @@ body{
   "img text";
   grid-template-columns: 1fr 3fr;
 }
-.container div.card h2{
+div.text{
+  padding-top: 0;
+}
+.container div.image-with-text h2{
+  margin-top: 0;
+}
+.container div.card p{
   margin-top: 0;
 }
 .container img{
   /* width: 240px;
   height: 135px; */
+  width: 60vh;
+  height: 35vh;
+}
+.container.big-img img{
   width: 100%;
-  height: 56.25%;
+  height: 100%;
 }
 .container small
 {
@@ -102,7 +118,7 @@ body{
   height: 25px; 
   background-color:rgb(45, 45, 93);
   color:rgb(212, 212, 212);
-  position: sticky;
+  /* position: sticky; */
   box-shadow: 5px 0px 10px rgb(185, 185, 185);
   box-shadow: -5px 0px 10px rgb(185, 185, 185);
 }
