@@ -100,7 +100,7 @@ public:
     }
     Point grad(const Point& p) override {
         // Градиент функции
-        double dfdx = -200.0 * (p.x - p.y) - 2.0 * (1.0 - p.x);
+        double dfdx = 200.0 * (p.x - p.y) - 2.0 * (1.0 - p.x);
         double dfdy = 200.0 * (p.y - p.x);
         return Point(dfdx, dfdy);
     }
