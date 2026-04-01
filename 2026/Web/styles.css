@@ -1,30 +1,31 @@
 body{
   background-color: rgb(221, 221, 221);
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  width: 70%;
   margin: auto;
   /* min-height: 100vh; */
   /* position: relative; */
 }
-@media screen and (max-width:900px){
-  body{
-    width: 100%;
-  }
+
+body{
+  width: 100%;
 }
+
 @media screen and (min-width:1200px){
   body{
-    width: 85%;
+    width: 80%;
   }
 }
+
 .container {
   display: grid;
   grid-template-areas:
     "header nav-bar"
     "feed content"
+    "pagination pagination"
     "footer footer";
   grid-template-columns: 1fr 3fr;
   /* gap: 3px; */
-  background-color: rgb(255, 0, 170);
+  background-color: rgb(255, 255, 255);
   /* padding: 5px; */
 }
 .container div {
@@ -39,9 +40,12 @@ body{
   grid-area: header;
   background-color: rgb(84, 83, 163);
   color: white;
+  font-size: xx-large;
 }
 .header h2{
-  margin-right: 0;
+  margin: 0;
+  transition: color 0.3s ease;
+  font-family: 'Trebuchet MS';
 }
 .header h2:hover{
   color: rgb(139, 226, 197);
@@ -54,16 +58,17 @@ body{
   font-weight: bold;
 }
 .container ul{
-  padding: auto;
+  padding-left: 0;
   margin: auto;
 }
 .container li{
   display: inline;
   padding: 16px;
-  font-size: large;
+  font-size: larger;
+  transition: color 0.3s ease;
 }
 .container li:hover{
-  color: rgb(139, 226, 197);
+ color: rgb(139, 226, 197);
 }
 .container div.feed {
   grid-area: feed;
@@ -71,17 +76,40 @@ body{
   padding: .5px;
   box-shadow: -5px 0px 10px rgb(185, 185, 185);
 }
+.container .card{
+  transition: color 0.3s ease;
+}
+.container .card:hover{
+  color:rgb(83, 89, 177);
+}
+hr{
+  color:rgb(236, 236, 236);
+}
 .container div.image-with-text{
   display: grid;
   grid-template-areas: 
   "img text";
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 2fr;
+}
+.container div.image-with-text:hover{
+  h2{
+
+    color:rgb(83, 89, 177);
+  }
 }
 div.text{
   padding-top: 0;
 }
 .container div.image-with-text h2{
   margin-top: 0;
+  transition: color 0.3s ease;
+}
+.container div.image-with-text h3{
+  font-weight: normal;
+  transition: none;
+}
+.container div.image-with-text small{
+  font-size: large;
 }
 .container div.card p{
   margin-top: 0;
@@ -89,12 +117,14 @@ div.text{
 .container img{
   /* width: 240px;
   height: 135px; */
-  width: 60vh;
-  height: 35vh;
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
-.container.big-img img{
-  width: 100%;
-  height: 100%;
+.big-img img{
+  /* width: auto; */
+  height: 50vh;
+  display: block;
 }
 .container small
 {
@@ -103,13 +133,31 @@ div.text{
 .container div.content {
   grid-area: content;
   background-color: rgb(255, 255, 255);
-  border-color: aqua;
-  border: 1pt;
-  border-left: 0;
-  border-bottom: 0;
   box-shadow: 5px 0px 10px rgb(185, 185, 185);
-  border-style: solid;
-
+  p{
+    font-weight: normal;
+    font-size: large;
+  }
+}
+.container div.pagination{
+  grid-area: pagination;
+  text-align: center;
+  padding: 20px;
+  /* margin: 15px; */
+  box-shadow:
+    5px 0px 5px rgb(185, 185, 185),
+    -5px 0px 5px rgb(185, 185, 185);
+}
+.container div.pagination li{
+  background-color: rgb(236, 236, 236);
+  padding: 10px;
+  border-radius: 100px;
+  margin: 5px;
+  transition: color 0.3s ease, background-color 0.3s ease;
+}
+.container div.pagination li:hover{
+  background-color: rgb(83, 89, 177);
+  color: white;
 }
 .container div.footer {
   grid-area: footer;
@@ -119,6 +167,11 @@ div.text{
   background-color:rgb(45, 45, 93);
   color:rgb(212, 212, 212);
   /* position: sticky; */
+  box-shadow:
+    5px 0px 10px rgb(185, 185, 185),
+    -5px 0px 10px rgb(185, 185, 185);
+}
+/* .container div.content, div.pagination, div.footer{
   box-shadow: 5px 0px 10px rgb(185, 185, 185);
   box-shadow: -5px 0px 10px rgb(185, 185, 185);
-}
+} */
