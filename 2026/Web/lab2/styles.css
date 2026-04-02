@@ -25,3 +25,47 @@ footer hr{
   border-top: 3px solid rgb(93, 93, 133);
   opacity: 1;
 }
+
+a{
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+a:hover{
+  color: rgb(83, 89, 177);
+}
+
+.navbar-brand{
+  transition: color 0.3s ease;
+}
+
+.navbar-brand:hover{
+  color: rgb(199, 203, 255);
+}
+
+.nav-link{
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover{
+  color: rgb(199, 203, 255);
+}
+
+.page-item a{
+  color: rgb(83, 89, 177);
+}
+
+.page-item a.active{
+  background-color: rgb(89, 89, 189);
+  border-color: rgb(199, 203, 255);
+}
+
+.card {
+  transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  background-color:rgb(221, 223, 255);
+}
