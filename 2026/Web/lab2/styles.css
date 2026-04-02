@@ -69,3 +69,12 @@ a:hover{
   transform: scale(1.03);
   background-color:rgb(221, 223, 255);
 }
+
+.announcement{
+  font-weight:normal;
+}
+
+.date{
+  font-weight: lighter;
+  font-size: large;
+}
