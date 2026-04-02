@@ -4,3 +4,9 @@ body{
 .container{
   background-color: rgb(136, 9, 255);
 }
+.navbar-brand{
+  font-size: xx-large;
+}
+.navbar{
+  font-size: larger;
+}
