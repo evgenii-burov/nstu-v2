@@ -13,7 +13,6 @@ protected:
     double eps_f;
     double eps_x;
 
-    virtual Point next_iteration() = 0;
     double goldenSection(Function& func, const Point& start, const Point& direction) {
         auto f_lambda = [&](double l) {
             Point p = start + direction * l;
@@ -229,7 +228,9 @@ public:
                 << setw(14) << "lambda"
                 << setw(14) << "dx"
                 << setw(14) << "dy"
-                << setw(14) << "df" << "\n";
+                << setw(14) << "df"
+                << setw(14) << "grad.x"
+                << setw(14) << "grad.y" << "\n";
         }
 
         Point x_curr = start;
@@ -239,6 +240,15 @@ public:
         double f_prev = f_curr;
 
         do {
+            x_prev = x_curr;
+            f_prev = func(x_curr);
+            Point direction = func.grad(x_curr) * -1;
+            double gradNorm = sqrt(direction.x * direction.x + direction.y * direction.y);
+            direction = direction * (1 / gradNorm);
+            double lambda = goldenSection(func, x_curr, direction);
+            
+            x_curr = x_curr + direction * lambda;
+            f_curr = func(x_curr);
             if (verbose) {
                 cout << setw(14) << x_curr.x
                     << setw(14) << x_curr.y
@@ -248,12 +258,16 @@ public:
                     << setw(14) << lambda
                     << setw(14) << abs(x_curr.x - x_prev.x)
                     << setw(14) << abs(x_curr.y - x_prev.y)
-                    << setw(14) << abs(f_curr - f_prev) << "\n";
+                    << setw(14) << abs(f_curr - f_prev)
+                    << setw(14) << func.grad(x_curr).x
+                    << setw(14) << func.grad(x_curr).y << "\n";
             }
         } while (abs(f_curr - f_prev) > eps_f && sqrt(pow(x_curr.x - x_prev.x, 2) + pow(x_curr.y - x_prev.y, 2)) > eps_x && iterations_count < 1000);
+        
         cout << "Minimization results:" << endl;
         cout << "(x0,y0)\t\teps_f\t\teps_x\t\titer\t\tf_eval\t\t(x,y)\t\tf\n";
         cout << start << "\t\t" << eps_f << "\t\t" << eps_x << "\t\t" << iterations_count << "\t\t";
+        cout << func_evaluations << "\t\t" << x_curr << "\t\t" << func(x_curr) << endl;
     }
 };
 
