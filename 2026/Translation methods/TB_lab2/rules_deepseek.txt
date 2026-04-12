@@ -1,0 +1,36 @@
+Start := Statement | Statement Start
+Statement := Switch | Assignment | Declaration
+
+Digit := 0 | 1 | 2 | ... | 9
+Letter := a | b | ... | z | A | B | ... | Z
+
+Number := Digit | Number Digit
+
+Identifier := Letter | _ | Identifier ( Letter | Digit | _ )
+
+Operator := + | - | * | == | != | <
+
+Declaration := int Identifier ; | int Assignment
+
+Assignment := Identifier = Expression ;
+
+Expression := Identifier | Number | (( Expression )) | Expression Operator Expression
+
+ConstExpression := Number | (( ConstExpression )) | ConstExpression Operator ConstExpression
+
+Switch := switch (( Expression )) { CaseList DefaultOptional }
+
+CaseList := CaseSingle | CaseList CaseSingle
+
+CaseSingle := case ConstExpression : StatementList 
+           | case ConstExpression : { StatementList } 
+           | case ConstExpression : StatementList break ; 
+           | case ConstExpression : { StatementList break ; }
+
+DefaultOptional := ε 
+                | default : StatementList 
+                | default : { StatementList } 
+                | default : StatementList break ; 
+                | default : { StatementList break ; }
+
+StatementList := Statement | Statement StatementList | { Start }

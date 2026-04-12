@@ -1,0 +1,19 @@
+Start := Statement | Statement Start
+Statement := Switch | Assignment | Declaration
+Digit := 0|1|2|..|9
+Number := (1|2|..|9) | Number Digit
+Letter := a|b|..|z|A|B|..|Z
+Operator := + | – | * | == | != | <
+Assignment := Identifier = Expression;
+Declaration := int Identifier; | int Assignment;
+Identifier := (Letter | _) | Identifier (Letter | _ | Digit)
+
+Expression := (I | N) | ((Expression)) | (Expression Operator Expression)
+Const expression := N | [Const expression] | (Const expression Operator Const expression)
+
+Switch := switch((Expression)){Case Default}
+Case single := (case Const expression: Start) | (case Const expression: {Start}) | (case Const expression: Start break;) | (case Const expression: {Start break;})
+Case := Case single | Case Case single
+Default := (default: Start) | (default: {Start}) | (default: Start break;) | (default: {Start break;})
+
+Operand := (I | N) | ( /(I | N /) )
