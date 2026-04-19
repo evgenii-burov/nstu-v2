@@ -241,7 +241,7 @@ public:
 
         do {
             x_prev = x_curr;
-            f_prev = func(x_curr);
+            f_prev = f_curr;
             Point direction = func.grad(x_curr) * -1;
             double gradNorm = sqrt(direction.x * direction.x + direction.y * direction.y);
             direction = direction * (1 / gradNorm);
@@ -249,10 +249,11 @@ public:
             
             x_curr = x_curr + direction * lambda;
             f_curr = func(x_curr);
+            func_evaluations++;
             if (verbose) {
                 cout << setw(14) << x_curr.x
                     << setw(14) << x_curr.y
-                    << setw(14) << func(x_curr)
+                    << setw(14) << f_curr
                     << setw(14) << direction.x
                     << setw(14) << direction.y
                     << setw(14) << lambda
@@ -270,53 +271,3 @@ public:
         cout << func_evaluations << "\t\t" << x_curr << "\t\t" << func(x_curr) << endl;
     }
 };
-
-//void gradientDescent(Function& func, Point start, double eps) {
-//    cout << "\n--- Method: Gradient Descent (1st Order) ---" << endl;
-//    cout << "Function: " << func.name() << ", Start: (" << start.x << ", " << start.y << ")" << endl;
-//
-//    func_evaluations = 0;
-//    iterations_count = 0;
-//
-//    Point x_curr = start;
-//    double f_curr = func(x_curr);
-//
-//    cout << fixed << setprecision(6);
-//    if (verbose) cout << "Iter\tX\t\tY\t\tF\t\tGradNorm\tLambda" << endl;
-//
-//    while (true) {
-//        iterations_count++;
-//        Point g = func.grad(x_curr);
-//        double gradNorm = sqrt(g.x * g.x + g.y * g.y);
-//        g = g * (1 / gradNorm);
-//
-//        if (gradNorm < eps) break;
-//
-//        Point direction = g * (-1.0);
-//
-//        double lambda = goldenSection(func, x_curr, direction);
-//
-//        Point x_new = x_curr + direction * lambda;
-//        double f_new = func(x_new);
-//
-//        if (verbose) {
-//            cout << iterations_count << "\t" << x_new.x << "\t" << x_new.y << "\t";
-//            cout << f_new << "\t" << gradNorm << "\t" << lambda << "\t" << g << endl;
-//        }
-//
-//        if (abs(f_curr - f_new) < eps && abs(x_curr.x - x_new.x) < eps && abs(x_curr.y - x_new.y) < eps) {
-//            x_curr = x_new;
-//            f_curr = f_new;
-//            break;
-//        }
-//
-//        x_curr = x_new;
-//        f_curr = f_new;
-//
-//        if (iterations_count > 1000) break;
-//    }
-//
-//    cout << "Result: (" << x_curr.x << ", " << x_curr.y << ")" << endl;
-//    cout << "Min Value: " << f_curr << " (Max Original: " << -f_curr << ")" << endl;
-//    cout << "Iterations: " << iterations_count << ", Func Evals: " << func_evaluations << endl;
-//}
