@@ -27,8 +27,6 @@ protected:
             h *= 2;
         }
 
-        //std::cout << "a:" << a << " b:" << b;
-
         double phi = (1.0 + sqrt(5.0)) / 2.0;
         double x1 = b - (b - a) / phi;
         double x2 = a + (b - a) / phi;
@@ -86,7 +84,8 @@ public:
         double f_prev = f_curr;
 
         if (verbose) {
-            cout << setw(14) << "x"
+            cout << setw(14) << "i"
+                << setw(14) << "x"
                 << setw(14) << "y"
                 << setw(14) << "f(x,y)"
                 << setw(14) << "d1"
@@ -167,18 +166,22 @@ public:
 
                 step *= alpha;
 
-            } while (unsuccesfull_step_x && unsuccesfull_step_y && step > eps_x);
+            } while ((unsuccesfull_step_x && unsuccesfull_step_y) && step > eps_x);
 
             //Pattern search
             Point direction = x_curr - x_prev;
+            if (sqrt(direction.x * direction.x + direction.y * direction.y) == 0)
+            {
+                break;
+            }
             direction = direction * (1 / (sqrt(direction.x * direction.x + direction.y * direction.y)));
-
             double lambda = goldenSection(func, x_curr, direction);
 
             x_curr = x_curr + direction * lambda;
 
             if (verbose){
-                cout << setw(14) << x_curr.x
+                cout << setw(14) << iterations_count
+                    << setw(14) << x_curr.x
                     << setw(14) << x_curr.y
                     << setw(14) << func(x_curr)
                     << setw(14) << direction.x
@@ -189,19 +192,29 @@ public:
                     << setw(14) << abs(f_curr - f_prev) << "\n";
             }
 
-            
-            if (abs(f_curr - f_prev) < eps_f)
-                cout << "FFFF";
-            if (sqrt(pow(x_curr.x - x_prev.x, 2) + pow(x_curr.y - x_prev.y, 2)) < eps_x)
-                cout << "XXXX";
-
         } while (abs(f_curr - f_prev) > eps_f && sqrt(pow(x_curr.x - x_prev.x, 2) + pow(x_curr.y - x_prev.y, 2)) > eps_x && iterations_count < 1000);
 
         cout << "Minimization results:" << endl;
-        cout << "(x0,y0)\t\teps_f\t\teps_x\t\titer\t\tf_eval\t\t(x,y)\t\tf\n";
-        cout << start << "\t\t" << eps_f << "\t\t" << eps_x << "\t\t" << iterations_count << "\t\t";
-        cout << func_evaluations << "\t\t" << x_curr << "\t\t" << func(x_curr) << endl;
 
+        cout << setw(14) << "x0"
+            << setw(14) << "y0"
+            << setw(14) << "eps_f"
+            << setw(14) << "eps_x"
+            << setw(14) << "iter"
+            << setw(14) << "f_eval"
+            << setw(14) << "xn"
+            << setw(14) << "yn"
+            << setw(14) << "fn" << "\n";
+
+        cout << setw(14) << start.x
+            << setw(14) << start.y
+            << setw(14) << eps_f
+            << setw(14) << eps_x
+            << setw(14) << iterations_count
+            << setw(14) << func_evaluations
+            << setw(14) << x_curr.x
+            << setw(14) << x_curr.y
+            << setw(14) << func(x_curr);
     }
 };
 
@@ -220,7 +233,8 @@ public:
         cout << "Function: " << func.name() << endl;
 
         if (verbose) {
-            cout << setw(14) << "x"
+            cout << setw(14) << "i"
+                << setw(14) << "x"
                 << setw(14) << "y"
                 << setw(14) << "f(x,y)"
                 << setw(14) << "d1"
@@ -240,6 +254,7 @@ public:
         double f_prev = f_curr;
 
         do {
+            iterations_count++;
             x_prev = x_curr;
             f_prev = f_curr;
             Point direction = func.grad(x_curr) * -1;
@@ -251,7 +266,8 @@ public:
             f_curr = func(x_curr);
             func_evaluations++;
             if (verbose) {
-                cout << setw(14) << x_curr.x
+                cout << setw(14) << iterations_count
+                    << setw(14) << x_curr.x
                     << setw(14) << x_curr.y
                     << setw(14) << f_curr
                     << setw(14) << direction.x
@@ -263,11 +279,28 @@ public:
                     << setw(14) << func.grad(x_curr).x
                     << setw(14) << func.grad(x_curr).y << "\n";
             }
-        } while (abs(f_curr - f_prev) > eps_f && sqrt(pow(x_curr.x - x_prev.x, 2) + pow(x_curr.y - x_prev.y, 2)) > eps_x && iterations_count < 1000);
+        } while (abs(f_curr - f_prev) > eps_f && sqrt(pow(x_curr.x - x_prev.x, 2) + pow(x_curr.y - x_prev.y, 2)) > eps_x && iterations_count < 10000);
         
         cout << "Minimization results:" << endl;
-        cout << "(x0,y0)\t\teps_f\t\teps_x\t\titer\t\tf_eval\t\t(x,y)\t\tf\n";
-        cout << start << "\t\t" << eps_f << "\t\t" << eps_x << "\t\t" << iterations_count << "\t\t";
-        cout << func_evaluations << "\t\t" << x_curr << "\t\t" << func(x_curr) << endl;
+
+        cout << setw(14) << "x0"
+            << setw(14) << "y0"
+            << setw(14) << "eps_f"
+            << setw(14) << "eps_x"
+            << setw(14) << "iter"
+            << setw(14) << "f_eval"
+            << setw(14) << "xn"
+            << setw(14) << "yn"
+            << setw(14) << "fn" << "\n";
+
+        cout << setw(14) << start.x
+            << setw(14) << start.y
+            << setw(14) << eps_f
+            << setw(14) << eps_x
+            << setw(14) << iterations_count
+            << setw(14) << func_evaluations
+            << setw(14) << x_curr.x
+            << setw(14) << x_curr.y
+            << setw(14) << func(x_curr);
     }
 };
