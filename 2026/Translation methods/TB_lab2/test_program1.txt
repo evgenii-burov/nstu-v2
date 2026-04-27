@@ -1,18 +1,12 @@
 int main(){
-	int a = 213;
+	int a;
 	switch(a){
-	case 0:
-		a = 1;
-		break;
 	case 1:
 	{
-		int b = (a == 2) != (a < 5);
+		const int CONST_NUMBERabc = 9l;
+		int b = (a++ && 2);
 		break;
 	}
-	case 2:
-		a = a < 1;
-		break;
-
 	default:
 		break;
 	}

@@ -86,7 +86,7 @@ public:
 			case S:
 			{
 				ch = input_stream.get();
-				std::cout << "~" << ch << '\n';
+				//std::cout << "~" << ch << '\n';
 				cur_offset++;
 				while (is_whitespace(ch)) {
 					if (ch == '\n') {
@@ -94,7 +94,7 @@ public:
 						cur_offset = 0;
 					}
 					ch = input_stream.get();
-					std::cout << "~" << ch << '\n';
+					//std::cout << "~" << ch << '\n';
 					cur_offset++;
 				}
 
@@ -135,7 +135,7 @@ public:
 				std::string identifier(1, ch);
 				while (is_id_character(input_stream.peek())) {
 					ch = input_stream.get(); // ch = ??????
-					std::cout << "~" << ch << '\n';
+					//std::cout << "~" << ch << '\n';
 					cur_offset++;
 					identifier += ch;
 				}
@@ -163,13 +163,13 @@ public:
 				std::string number(1, ch);
 				while (std::isdigit(input_stream.peek())) {
 					ch = input_stream.get();
-					std::cout << "~" << ch << '\n';
+					//std::cout << "~" << ch << '\n';
 					cur_offset++;
 					number += ch;
 				}
 				if (is_id_character(input_stream.peek())) {	// checks for letters, underscores and digits
 					ch = input_stream.get();				// (shouldn't be a digit since the
-					std::cout << "~" << ch << '\n';
+					//std::cout << "~" << ch << '\n';
 					cur_offset++;							// above while loop would've processed it)
 					current_state = ERROR;
 					error_sequence = ch;
@@ -184,7 +184,7 @@ public:
 				//process number
 				tokens.push_back(Token{ number, std::string("CONST") });
 				lexeme lx{ number, std::string("int") };
-				identifier_table.insert(number, "int");
+				const_table.insert(number, "int");
 
 				current_state = S;
 				break;
@@ -194,7 +194,7 @@ public:
 				std::string const_str(1, ch);
 				while (is_const_character(input_stream.peek())) {
 					ch = input_stream.get();
-					std::cout << "~" << ch << '\n';
+					//std::cout << "~" << ch << '\n';
 					cur_offset++;
 					const_str += ch;
 				}
@@ -248,7 +248,7 @@ public:
 			}
 			case ERROR:
 			{
-				std::cerr << "Error: " << error_msg << " at position (" << cur_line << ", " << cur_offset << ")\n";
+				std::cerr << "Error: " << error_msg << " at position (" << cur_line << ", " << cur_offset << ")\n\n";
 				current_state = S;
 				break;
 			}
@@ -256,13 +256,20 @@ public:
 		}
 		input_stream.close(); //finished tokenizing
 
-		identifier_table.output_table(std::cout);
-		const_table.output_table(std::cout);
+		std::ofstream output_stream("identifier_table.txt");
+		identifier_table.output_table(output_stream);
+		output_stream.close();
 
-		std::cout << "Tokens:\n";
-		std::cout << "TOKEN\t" << "TKN_TYPE\n";
+		output_stream.open("const_table.txt");
+		const_table.output_table(output_stream);
+		output_stream.close();
+
+		output_stream.open("tokens.txt");
+		output_stream << "Tokens:\n";
+		output_stream << "TOKEN\t" << "TKN_TYPE\n";
 		for (const auto token : tokens) {
-			std::cout << token.token << '\t' << token.type << '\n';
+			output_stream << token.token << '\t' << token.type << '\n';
 		}
+		output_stream.close();
 	}
 };
