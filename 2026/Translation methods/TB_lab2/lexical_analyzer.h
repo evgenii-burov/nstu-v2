@@ -25,7 +25,7 @@ private:
 	}
 
 	bool is_whitespace(char ch) {
-		return ch == ' ' || ch == '\n' || ch == '\t';
+		return ch == ' ' || ch == '\n' || ch == '\t' || ch == '\0';
 	}
 
 	bool is_id_character(char ch) {
@@ -46,6 +46,15 @@ private:
 
 	bool is_operator_lexeme(std::string s) {
 		return operator_lexeme_table.contains(s);
+	}
+
+	bool is_legal_symbol(char ch) {
+		return std::isupper(ch) ||
+			std::islower(ch) ||
+			std::isdigit(ch) ||
+			is_operator_character(ch) ||
+			is_delimiter(ch) ||
+			is_whitespace(ch);
 	}
 
 public:
@@ -114,6 +123,10 @@ public:
 					error_sequence = ch;
 					error_msg = "Unknown symbol";
 					error_pos = { cur_line, cur_offset };
+					while (!is_legal_symbol(input_stream.peek()) && !input_stream.eof())
+					{
+						input_stream.get();
+					}
 				}
 				break;
 			}
@@ -215,20 +228,19 @@ public:
 			case OPERATOR:
 			{
 				std::string operator_str(1, ch);
-				if (is_operator_character(input_stream.peek())) {
+				while (is_operator_character(input_stream.peek())) {
 					ch = input_stream.get();
-					std::cout << "~" << ch << '\n';
-					cur_offset++;
 					operator_str += ch;
+					cur_offset++;
 				}
-				if (is_operator_lexeme(operator_str) && !is_operator_character(input_stream.peek())) {
-					//process operator
-					tokens.push_back({ operator_str, "OPER" });
+				if (is_operator_lexeme(operator_str)) {
+					//process lexeme
+					tokens.push_back({ operator_str, std::string("OPER") });
 				}
 				else {
 					current_state = ERROR;
-					error_sequence = ch;
 					error_msg = "Unknown operator";
+					error_pos = { cur_line, cur_offset - operator_str.size() };
 					break;
 				}
 				current_state = S;

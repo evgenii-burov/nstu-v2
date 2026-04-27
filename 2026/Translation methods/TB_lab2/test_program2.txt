@@ -1,4 +1,6 @@
 int 1main(){
+	const int CONST_NUMdfshg=2;
+&&&&
 	int a ===== 213;
 	123switch(a){
 	case 0:
