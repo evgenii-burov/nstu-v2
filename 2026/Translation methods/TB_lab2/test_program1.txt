@@ -1,0 +1,13 @@
+int main(){
+	int a;
+	switch(a){
+	case 1:
+	{
+		const int CONST_NUMBERabc = 9l;
+		int b = (a++ && 2);
+		break;
+	}
+	default:
+		break;
+	}
+}
