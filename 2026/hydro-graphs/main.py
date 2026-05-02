@@ -61,7 +61,8 @@ with open('input.txt', 'r') as input_file:
             print('Invalid value number')
             continue
     #Process file
-    with open('output.txt','w') as output_file:
+    output_file_name = input('Name the output file (without .txt):\t')
+    with open(f'{output_file_name}.txt','w') as output_file:
         fixed_value = chosen_value
         lines_read = 0
         lines_matched = 0
