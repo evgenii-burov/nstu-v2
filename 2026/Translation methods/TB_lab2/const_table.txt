@@ -1,4 +1,6 @@
 Consts:
 NAME	TYPE	VALUE
 2	int	2
+9	int	9
 1	int	1
+CONST_NUMBER	int	
