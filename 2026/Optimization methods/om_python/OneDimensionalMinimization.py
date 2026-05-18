@@ -41,6 +41,6 @@ class GoldenRatio():
                 x1 = a + (b-a)*(3-math.sqrt(5))/2
                 f1 = self.f(x1)
         
-        return (b-a)/2
+        return (b+a)/2
     
     
