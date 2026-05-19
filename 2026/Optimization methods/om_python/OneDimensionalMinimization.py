@@ -1,7 +1,7 @@
 import math
 
 class OneDFunction():
-    def __call__(self, x: float):
+    def __call__(self, x: float)->float:
         pass
         
 
@@ -19,7 +19,7 @@ class GoldenRatio():
         self.b = b
         self.eps = eps
     
-    def __call__(self):
+    def __call__(self)->float:
         a=self.a
         b=self.b
         x1 = a + (b-a)*(3-math.sqrt(5))/2
@@ -41,6 +41,6 @@ class GoldenRatio():
                 x1 = a + (b-a)*(3-math.sqrt(5))/2
                 f1 = self.f(x1)
         
-        return (b-a)/2
+        return (b+a)/2
     
     
