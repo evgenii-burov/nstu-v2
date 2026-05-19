@@ -18,7 +18,11 @@ class GoldenRatio():
         self.a = a
         self.b = b
         self.eps = eps
-    
+
+    def function(self, x:float):
+        self.function_evaluations+=1
+        return self.f(x)
+
     def __call__(self)->float:
         a=self.a
         b=self.b
@@ -28,6 +32,7 @@ class GoldenRatio():
         f2 = self.f(x2)
 
         while b-a > self.eps:
+            self.iterations+=1
             if self.f(x1) > self.f(x2):
                 a = x1
                 x1 = x2
