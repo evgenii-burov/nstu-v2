@@ -1,6 +1,8 @@
 import math
-
 from OneDimensionalMinimization import *
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 class Point():
     def __init__(self, x:float, y:float):
@@ -39,7 +41,48 @@ class TwoDFunctionSection(OneDFunction):
         return self.f(self.current_point + x*self.direction)
 
 
-class RosenbrockFunction(TwoDFunction):
+class Variant4Function(TwoDFunction):
+    def __call__(self, p:Point):
+        A1 = 2
+        A2 = 1
+        a1 = 1
+        a2 = 3
+        b1 = 2
+        b2 = 3
+        c1 = 2
+        c2 = 1
+        d1 = 1
+        d2 = 3
+
+        term1 = 1.0 + pow((p.x - a1) / b1, 2) + pow((p.y - c1) / d1, 2)
+        term2 = 1.0 + pow((p.x - a2) / b2, 2) + pow((p.y - c2) / d2, 2)
+        return (A1 / term1) + (A2 / term2)
+
+    def gradient(self, p:Point) ->Point:
+        A1 = 2
+        A2 = 1
+        a1 = 1
+        a2 = 3
+        b1 = 2
+        b2 = 3
+        c1 = 2
+        c2 = 1
+        d1 = 1
+        d2 = 3
+        t1 = 1.0 + pow((p.x - a1) / b1, 2) + pow((p.y - c1) / d1, 2)
+        t2 = 1.0 + pow((p.x - a2) / b2, 2) + pow((p.y - c2) / d2, 2)
+
+        dfdx = -A1 * (2.0 * (p.x - a1) / (b1 * b1)) / (t1 * t1) - A2 * (2.0 * (p.x - a2) / (b2 * b2)) / (t2 * t2)
+
+        dfdy = -A1 * (2.0 * (p.y - c1) / (d1 * d1)) / (t1 * t1) - A2 * (2.0 * (p.y - c2) / (d2 * d2)) / (t2 * t2)
+
+        return Point(-dfdx, -dfdy)
+
+    def __str__(self):
+        return 'Variant4'
+
+
+class QuadraticFunction(TwoDFunction):
     def __call__(self, p:Point):
         return 100*(p.y-p.x)**2+(1-p.x)**2
     
@@ -47,7 +90,19 @@ class RosenbrockFunction(TwoDFunction):
         return Point(200*(p.x-p.y)+2*(p.x-1),200*(p.y-p.x))
 
     def __str__(self):
+        return 'Quadratic'
+
+
+class RosenbrockFunction(TwoDFunction):
+    def __call__(self, p:Point)->float:
+        return 100 * (p.y - p.x**2) ** 2 + (1 - p.x) ** 2
+
+    def gradient(self, p:Point) ->Point:
+        return Point(-400.0 * p.x * (p.y - p.x * p.x) - 2.0 * (1.0 - p.x),200.0 * (p.y - p.x * p.x))
+
+    def __str__(self):
         return 'Rosenbrock'
+
 
 def append_line_to_file(file_name:str, values_to_write: tuple)->None:
     with open(file_name, 'a') as out:
@@ -94,6 +149,9 @@ class GradientDescent(TwoDimensionalMinimization):
 
         if output_mode > 0:
             output = open(f'{self} {self.f} ({self.start.x} {self.start.y}) {-math.log10(self.eps_x)} {-math.log10(self.eps_f)}.txt', 'w')
+
+        if output_mode == 3:
+            points = [self.start]
 
         while True:
             self.iterations+=1
@@ -143,6 +201,9 @@ class GradientDescent(TwoDimensionalMinimization):
             if output_mode > 1:
                 output.write(iteration_output)
 
+            if output_mode == 3:
+                points.append(current_point)
+
             if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
             #if gradient.vector_norm() < self.eps_f or self.iterations > 10000:
                 break
@@ -157,6 +218,9 @@ class GradientDescent(TwoDimensionalMinimization):
 
         if output_mode > 0:
             output.write(method_output)
+            if output_mode == 3:
+                boundary = max(abs(self.start.x), abs(self.start.y))
+                plot_descent_path(self.f, points, (-boundary, boundary), (-boundary, boundary), 10)
 
         return current_point
 
@@ -179,10 +243,14 @@ class HookJeeves(TwoDimensionalMinimization):
                 f'{self} {self.f} ({self.start.x} {self.start.y}) {-math.log10(self.eps_x)} {-math.log10(self.eps_f)}.txt',
                 'w')
 
+        if output_mode == 3:
+            points = [self.start]
+
         while True:
             self.iterations += 1
             # finding a direction
             step = 1
+
             moved = False
 
             point_before_trial = current_point
@@ -267,8 +335,11 @@ class HookJeeves(TwoDimensionalMinimization):
                                 )
             if output_mode > 1:
                 output.write(iteration_output)
+                if output_mode == 3:
+                    points.append(current_point)
 
-            if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
+            #if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
+            if self.iterations > 10000:
                 break
 
         method_output = (f'\n{'*' * 20}\n{self.start}\t'
@@ -281,10 +352,61 @@ class HookJeeves(TwoDimensionalMinimization):
 
         if output_mode > 0:
             output.write(method_output)
-
+            output.close()
+            if output_mode == 3:
+                boundary = max(abs(self.start.x), abs(self.start.y))
+                plot_descent_path(self.f, points, (-boundary, boundary), (-boundary, boundary), 10)
         return current_point
 
-rb = RosenbrockFunction()
-g = GradientDescent(rb,Point(-7,5),1e-7,1e-7)
-h = HookJeeves(rb,Point(-7,5),1e-7,1e-7)
-print(h(2))
+
+def plot_descent_path(f, points, x_range, y_range, n_levels=20):
+    """
+    Draw contour map of f and descent path of points.
+
+    Parameters:
+    -----------
+    f : callable
+        Function f(x, y) taking two floats
+    points : list of Point
+        List of Point objects representing the descent path
+    x_range, y_range : tuple
+        Plot boundaries
+    n_levels : int
+        Number of contour levels
+    """
+
+    # Extract x, y coordinates from Point objects
+    x_coords = [p.x for p in points]
+    y_coords = [p.y for p in points]
+
+    # Create grid
+    x = np.linspace(x_range[0], x_range[1], 200)
+    y = np.linspace(y_range[0], y_range[1], 200)
+    X, Y = np.meshgrid(x, y)
+
+    Z = np.zeros_like(X)
+    for i in range(X.shape[0]):
+        for j in range(X.shape[1]):
+            Z[i, j] = f(Point(X[i, j], Y[i, j]))
+
+    # Plot
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    # Level map
+    ax.contour(X, Y, Z, levels=n_levels, cmap='viridis')
+
+    # Path with lines connecting points
+    ax.plot(x_coords, y_coords, 'r-o', markersize=4, linewidth=1.5)
+
+    # Mark start and end
+    ax.plot(x_coords[0], y_coords[0], 'go', markersize=8)
+    ax.plot(x_coords[-1], y_coords[-1], 'ro', markersize=8)
+
+    ax.set_xlim(x_range)
+    ax.set_ylim(y_range)
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_title('Descent Path')
+    ax.grid(True, alpha=0.3)
+
+    plt.show()
