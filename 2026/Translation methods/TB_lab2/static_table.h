@@ -2,28 +2,43 @@
 #include <set>
 #include <string>
 #include <fstream>
+#include "grammar.h"
 
 class StaticTable
 {
 private:
-	std::set<std::string> table;
-	std::string table_type;
+	std::vector<std::pair<int, std::string>> table;
+
 public:
-	StaticTable(std::string file_name, std::string type0) : table_type(type0)
+	StaticTable(std::string file_name)
 	{
-		std::string word_type;
+		std::string type;
 		std::string word;
 		std::ifstream input_stream(file_name);
 		while (!input_stream.eof())
 		{
-			input_stream >> word_type >> word;
-			if(word_type == table_type)
-				table.insert(word);
+			input_stream >> type >> word;
+			if (type == "EXPR_OPERATOR")
+				table.push_back({ terminals::EXPR_OPERATOR, word });
+			if (type == "ASGN_OPERATOR")
+				table.push_back({ terminals::ASGN_OPERATOR, word });
+			if (type == "OPERATOR_CH")
+				table.push_back({ terminals::OPERATOR_CH, word });
+			if (type == "DELIMITER")
+				table.push_back({ terminals::DELIMITER, word });
+			if (type == "KEYWORD")
+				table.push_back({ terminals::KEYWORD, word });
+
 		}
 		input_stream.close();
 	}
-	bool contains(std::string word)
+	int contains(std::string word)
 	{
-		return table.find(word) != table.end();
+		for (int i =0;i<table.size();i++)
+		{
+			if (table[i].second == word)
+				return i;
+		}
+		return -1;
 	}
 };
