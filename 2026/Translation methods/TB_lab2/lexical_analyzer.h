@@ -5,16 +5,20 @@
 #include <vector>
 #include "static_table.h"
 #include "dynamic_table.h"
+#include "grammar.h"
 
 struct Token {
-	std::string token;
-	std::string type;
+	// corresponds to enum terminals
+	int type;
+	// index in the static table
+	int index;
 };
 
 class LexicalAnalyzer {
 private:
-	StaticTable delimiter_table, operator_lexeme_table, operator_character_table, keyword_table;
-	DynamicTable identifier_table, const_table;
+	StaticTable static_table;
+
+	DynamicTable dynamic_table;
 
 	std::vector<Token> tokens;
 
@@ -59,12 +63,7 @@ private:
 
 public:
 	LexicalAnalyzer(std::string file_name)
-		: delimiter_table(file_name, "DELIMITER"),
-		operator_character_table(file_name, "OPERATOR_CH"),
-		operator_lexeme_table(file_name, "OPERATOR_LX"),
-		keyword_table(file_name, "KEYWORD"),
-		identifier_table(std::string("Identifiers")),
-		const_table(std::string("Consts")),
+		: static_table("static_characters.txt"),
 		tokens({})
 	{};
 
@@ -141,8 +140,13 @@ public:
 				}
 
 				//process identifier
-				if (keyword_table.contains(identifier)) {
-					tokens.push_back(Token{ identifier, std::string("KEYWRD") });
+				int identifier_index = static_table.contains(identifier);
+				if (identifier_index == -1) {
+					if (dynamic_table.contains(identifier) != -1)
+					{
+
+					}
+					tokens.push_back(Token{ terminals::, identifier });
 				}
 				else {
 					tokens.push_back(Token{ identifier, std::string("ID") });
