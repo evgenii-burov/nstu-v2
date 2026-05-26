@@ -1,6 +1,7 @@
 #pragma once
+#include <map>
 
-enum terminals  {
+enum symbol_type {
 	ID,
 	CONST_ID,
 	INT_LITERAL,
@@ -9,10 +10,9 @@ enum terminals  {
 	ASGN_OPERATOR,
 	OPERATOR_CH,
 	KEYWORD,
-	EPSILON
-};
+	EPSILON,
+	ENDOFFILE,
 
-enum nonterminals {
 	S,
 	BLOCK,
 	LOOP_BLOCK,
@@ -34,3 +34,17 @@ enum nonterminals {
 	CASE,
 	DEFAULT
 };
+
+bool is_terminal(symbol_type s) {
+	return s <= ENDOFFILE;
+}
+
+struct symbol {
+	// corresponds to enum terminals
+	int type;
+	// index in the static table
+	int index;
+};
+
+std::map<std::pair<symbol_type, symbol_type>, std::vector<symbol>> parsing_table;
+

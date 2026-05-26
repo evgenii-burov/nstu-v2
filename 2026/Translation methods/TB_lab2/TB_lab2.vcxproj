@@ -135,6 +135,7 @@
     <ClInclude Include="grammar.h" />
     <ClInclude Include="lexical_analyzer.h" />
     <ClInclude Include="static_table.h" />
+    <ClInclude Include="syntax_analyzer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
