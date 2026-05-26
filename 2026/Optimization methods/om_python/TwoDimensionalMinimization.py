@@ -35,8 +35,8 @@ class TwoDFunction():
 class TwoDFunctionSection(OneDFunction):
     def __init__(self, f:TwoDFunction, current_point:Point, direction:Point):
         self.f = f
-        self.direction = direction
         self.current_point = current_point
+        self.direction = direction
     def __call__(self, x):
         return self.f(self.current_point + x*self.direction)
 
@@ -213,7 +213,8 @@ class GradientDescent(TwoDimensionalMinimization):
                          f'{-math.log10(self.eps_f)}\t'
                          f'{self.iterations}\t'
                          f'{self.function_evaluations}\t'
-                         f'{current_point}\t'
+                         f'{current_point.x:.6e}\t'
+                         f'{current_point.y:.6e}\t'
                          f'{self.f(current_point):.6e}\n')
 
         if output_mode > 0:
@@ -246,16 +247,17 @@ class HookJeeves(TwoDimensionalMinimization):
         if output_mode == 3:
             points = [self.start]
 
+
         while True:
             self.iterations += 1
             # finding a direction
-            step = 1
 
             moved = False
-
+            step = 1
             point_before_trial = current_point
             while True:
                 # probing on x
+
                 trial_point = current_point + Point(step, 0)
                 trial_point_f = self.function(trial_point)
                 if trial_point_f < current_point_f:
@@ -289,15 +291,18 @@ class HookJeeves(TwoDimensionalMinimization):
                     step/=2
 
             if step < self.eps_x:
+                output.write("cant move\n")
                 break
 
             direction = current_point + -1*point_before_trial
-
+            direction = direction * (1 / math.sqrt(direction.x ** 2 + direction.y ** 2))
+            print(current_point)
             function_section = TwoDFunctionSection(self.f, current_point, direction)
 
             # finding a and b for golden ratio (a:=prev b:=next)
             previous_x = 0
             current_x = 0
+
             step = 1
             next_x = step
             current_f = function_section(current_x)
@@ -315,20 +320,26 @@ class HookJeeves(TwoDimensionalMinimization):
 
             a = previous_x
             b = next_x
+            print(f'{a} {b}')
             gr = GoldenRatio(function_section, a, b, self.eps_x)
             self.function_evaluations += gr.function_evaluations
             # shouldn't be negative
             lambd = gr()
             shift = lambd * direction
-            current_point += lambd * direction
+            current_point += shift
 
             df = abs(current_point_f - self.function(current_point))
             current_point_f = self.f(current_point)
 
-            iteration_output = (f'{current_point}\t'
+            change_from_start = current_point + -1*point_before_trial
+            l = math.sqrt(change_from_start.x**2 + change_from_start.y**2)
+
+            iteration_output = (f'{current_point.x:.6e}\t'
+                                f'{current_point.y:.6e}\t'
                                 f'{current_point_f:.6e}\t'
-                                f'{direction}\t'
-                                f'{lambd:.6e}\t'
+                                f'{direction.x:.6e}\t'
+                                f'{direction.y:.6e}\t'
+                                f'{l:.6e}\t'
                                 f'{abs(current_point.x - shift.x):.6e}\t'
                                 f'{abs(current_point.y - shift.y):.6e}\t'
                                 f'{df:.6e}\n'
@@ -338,8 +349,9 @@ class HookJeeves(TwoDimensionalMinimization):
                 if output_mode == 3:
                     points.append(current_point)
 
-            #if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
-            if self.iterations > 10000:
+            # if l < self.eps_x or self.iterations > 10000:
+            if df < self.eps_f and l < self.eps_x or self.iterations > 10000:
+            # if self.iterations > 10000:
                 break
 
         method_output = (f'\n{'*' * 20}\n{self.start}\t'
@@ -347,7 +359,8 @@ class HookJeeves(TwoDimensionalMinimization):
                          f'{-math.log10(self.eps_f)}\t'
                          f'{self.iterations}\t'
                          f'{self.function_evaluations}\t'
-                         f'{current_point}\t'
+                         f'{current_point.x:.6e}\t'
+                         f'{current_point.y:.6e}\t'
                          f'{self.f(current_point):.6e}\n')
 
         if output_mode > 0:
