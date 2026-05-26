@@ -33,7 +33,7 @@ class GoldenRatio():
 
         while b-a > self.eps:
             self.iterations+=1
-            if self.f(x1) > self.f(x2):
+            if f1 > f2:
                 a = x1
                 x1 = x2
                 f1 = f2
