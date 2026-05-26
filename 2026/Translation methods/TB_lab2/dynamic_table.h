@@ -19,7 +19,7 @@ private:
 	std::vector<lexeme> table;
 
 public:
-	int contains(std::string name)
+	int find(std::string name)
 	{
 		for (const auto lexem : table)
 		{
@@ -31,7 +31,7 @@ public:
 
 	int insert(std::string name, std::string type, int token_type, std::string value)
 	{
-		if (contains(name)) {
+		if (find(name)) {
 			return false;
 		}
 		try {
@@ -56,5 +56,10 @@ public:
 			}
 		}
 		std::cout << '\n';
+	}
+
+	lexeme at(int index)
+	{
+		return table[index];
 	}
 };

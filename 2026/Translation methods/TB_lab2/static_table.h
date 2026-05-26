@@ -32,7 +32,8 @@ public:
 		}
 		input_stream.close();
 	}
-	int contains(std::string word)
+	// -1 if not found, otherwise index in the table
+	int find(std::string word)
 	{
 		for (int i =0;i<table.size();i++)
 		{
@@ -40,5 +41,9 @@ public:
 				return i;
 		}
 		return -1;
+	}
+	std::pair<int, std::string> at(int index)
+	{
+		return table[index];
 	}
 };

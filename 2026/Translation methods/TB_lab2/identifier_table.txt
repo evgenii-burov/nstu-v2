@@ -1,4 +1,7 @@
-Identifiers:
-NAME	TYPE	VALUE
-b	int	
-a	int	
+NAME	TYPE	TOK_TYPE	VALUE
+a	int	0	
+1	int	2	1
+CONST_NUMBER	int	1	
+9	int	2	9
+b	int	0	
+2	int	2	2
