@@ -8,20 +8,13 @@
 #include "dynamic_table.h"
 #include "grammar.h"
 
-struct Token{
-	// corresponds to enum terminals
-	int type;
-	// index in the static table
-	int index;
-};
-
 class LexicalAnalyzer {
 private:
 	StaticTable static_table;
 
 	DynamicTable dynamic_table;
 
-	std::vector<Token> tokens;
+	std::vector<symbol> tokens;
 
 	enum states { S, ID, NUMBER, CONST, DELIMITER, OPERATOR, ERROR };
 
@@ -146,11 +139,11 @@ public:
 				//process identifier
 				int identifier_index = static_table.find(identifier);
 				if (identifier_index == -1) {
-					identifier_index = dynamic_table.insert(identifier, "int", terminals::ID, "");
-					tokens.push_back(Token{ terminals::ID, identifier_index });
+					identifier_index = dynamic_table.insert(identifier, "int", symbol_type::ID, "");
+					tokens.push_back(symbol{ symbol_type::ID, identifier_index });
 				}
 				else {
-					tokens.push_back(Token{ terminals::KEYWORD, identifier_index });
+					tokens.push_back(symbol{ symbol_type::KEYWORD, identifier_index });
 				}
 
 				current_state = S;
@@ -185,8 +178,8 @@ public:
 				}
 
 				//process number
-				int number_index = dynamic_table.insert(number, "int", terminals::INT_LITERAL, number);
-				tokens.push_back(Token{ terminals::INT_LITERAL, number_index});
+				int number_index = dynamic_table.insert(number, "int", symbol_type::INT_LITERAL, number);
+				tokens.push_back(symbol{ symbol_type::INT_LITERAL, number_index});
 
 				current_state = S;
 				break;
@@ -212,8 +205,8 @@ public:
 				}
 
 				//process const
-				int const_index = dynamic_table.insert(const_str, "int", terminals::CONST_ID, "");
-				tokens.push_back(Token{ terminals::CONST_ID, const_index });
+				int const_index = dynamic_table.insert(const_str, "int", symbol_type::CONST_ID, "");
+				tokens.push_back(symbol{ symbol_type::CONST_ID, const_index });
 
 				current_state = S;
 				break;
@@ -222,7 +215,7 @@ public:
 			{
 				//process delimiter
 				int delimiter_index = static_table.find(std::string(1, ch));
-				tokens.push_back({ terminals::DELIMITER, delimiter_index });
+				tokens.push_back({ symbol_type::DELIMITER, delimiter_index });
 
 				current_state = S;
 				break;
@@ -244,7 +237,7 @@ public:
 				}
 				else
 				{
-					tokens.push_back({ static_table.at(operator_index).first, operator_index});
+					tokens.push_back(symbol{ static_table.at(operator_index).first, operator_index});
 				}
 				current_state = S;
 				break;
@@ -265,9 +258,9 @@ public:
 
 		output_stream.open("tokens.txt");
 		output_stream << "Tokens:\n";
-		output_stream << "TOKEN\t" << "TKN_TYPE\n";
+		output_stream << "TKN_TYPE\t" << "TOKEN\n";
 		for (const auto token : tokens) {
-			output_stream << ((token.type < 3) ? dynamic_table.at(token.index).name : static_table.at(token.index).second) << '\t' << token.type << '\n';
+			output_stream << token.type << '\t' << ((token.type < 3) ? dynamic_table.at(token.index).name : static_table.at(token.index).second) << '\n';
 		}
 		output_stream.close();
 	}
