@@ -19,20 +19,21 @@ public:
 		{
 			input_stream >> type >> word;
 			if (type == "EXPR_OPERATOR")
-				table.push_back({ terminals::EXPR_OPERATOR, word });
+				table.push_back({ symbol_type::EXPR_OPERATOR, word });
 			if (type == "ASGN_OPERATOR")
-				table.push_back({ terminals::ASGN_OPERATOR, word });
+				table.push_back({ symbol_type::ASGN_OPERATOR, word });
 			if (type == "OPERATOR_CH")
-				table.push_back({ terminals::OPERATOR_CH, word });
+				table.push_back({ symbol_type::OPERATOR_CH, word });
 			if (type == "DELIMITER")
-				table.push_back({ terminals::DELIMITER, word });
+				table.push_back({ symbol_type::DELIMITER, word });
 			if (type == "KEYWORD")
-				table.push_back({ terminals::KEYWORD, word });
+				table.push_back({ symbol_type::KEYWORD, word });
 
 		}
 		input_stream.close();
 	}
-	int contains(std::string word)
+	// -1 if not found, otherwise index in the table
+	int find(std::string word)
 	{
 		for (int i =0;i<table.size();i++)
 		{
@@ -40,5 +41,9 @@ public:
 				return i;
 		}
 		return -1;
+	}
+	std::pair<int, std::string> at(int index)
+	{
+		return table[index];
 	}
 };

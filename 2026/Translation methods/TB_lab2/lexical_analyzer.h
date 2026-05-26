@@ -3,16 +3,10 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <set>
 #include "static_table.h"
 #include "dynamic_table.h"
 #include "grammar.h"
-
-struct Token {
-	// corresponds to enum terminals
-	int type;
-	// index in the static table
-	int index;
-};
 
 class LexicalAnalyzer {
 private:
@@ -20,9 +14,12 @@ private:
 
 	DynamicTable dynamic_table;
 
-	std::vector<Token> tokens;
+	std::vector<symbol> tokens;
 
 	enum states { S, ID, NUMBER, CONST, DELIMITER, OPERATOR, ERROR };
+
+	std::set<char> operator_character_table{ '+','-', '*', '=', '!', '<'};
+	std::set<char> delimiter_table{ ';',':','(',')','{','}' };
 
 	bool is_id_start(char ch) {
 		return std::islower(ch) || (ch == '_');
@@ -37,11 +34,11 @@ private:
 	}
 
 	bool is_delimiter(char ch) {
-		return delimiter_table.contains(std::string(1,ch));
+		return delimiter_table.contains(ch);
 	}
 
 	bool is_operator_character(char ch) {
-		return operator_character_table.contains(std::string(1, ch));
+		return operator_character_table.contains(ch);
 	}
 
 	bool is_const_character(char ch) {
@@ -49,7 +46,7 @@ private:
 	}
 
 	bool is_operator_lexeme(std::string s) {
-		return operator_lexeme_table.contains(s);
+		return static_table.find(s) != -1;
 	}
 
 	bool is_legal_symbol(char ch) {
@@ -140,18 +137,13 @@ public:
 				}
 
 				//process identifier
-				int identifier_index = static_table.contains(identifier);
+				int identifier_index = static_table.find(identifier);
 				if (identifier_index == -1) {
-					if (dynamic_table.contains(identifier) != -1)
-					{
-
-					}
-					tokens.push_back(Token{ terminals::, identifier });
+					identifier_index = dynamic_table.insert(identifier, "int", symbol_type::ID, "");
+					tokens.push_back(symbol{ symbol_type::ID, identifier_index });
 				}
 				else {
-					tokens.push_back(Token{ identifier, std::string("ID") });
-					lexeme lx{ identifier, std::string("int") };
-					identifier_table.insert(identifier, "int");
+					tokens.push_back(symbol{ symbol_type::KEYWORD, identifier_index });
 				}
 
 				current_state = S;
@@ -186,9 +178,8 @@ public:
 				}
 
 				//process number
-				tokens.push_back(Token{ number, std::string("CONST") });
-				lexeme lx{ number, std::string("int") };
-				const_table.insert(number, "int");
+				int number_index = dynamic_table.insert(number, "int", symbol_type::INT_LITERAL, number);
+				tokens.push_back(symbol{ symbol_type::INT_LITERAL, number_index});
 
 				current_state = S;
 				break;
@@ -214,9 +205,8 @@ public:
 				}
 
 				//process const
-				tokens.push_back(Token{ const_str, std::string("CONST") });
-				lexeme lx{ const_str, std::string("int") };
-				const_table.insert(const_str, "int");
+				int const_index = dynamic_table.insert(const_str, "int", symbol_type::CONST_ID, "");
+				tokens.push_back(symbol{ symbol_type::CONST_ID, const_index });
 
 				current_state = S;
 				break;
@@ -224,7 +214,8 @@ public:
 			case DELIMITER:
 			{
 				//process delimiter
-				tokens.push_back({ std::string(1,ch), "DELIM" });
+				int delimiter_index = static_table.find(std::string(1, ch));
+				tokens.push_back({ symbol_type::DELIMITER, delimiter_index });
 
 				current_state = S;
 				break;
@@ -237,15 +228,16 @@ public:
 					operator_str += ch;
 					cur_offset++;
 				}
-				if (is_operator_lexeme(operator_str)) {
-					//process lexeme
-					tokens.push_back({ operator_str, std::string("OPER") });
-				}
-				else {
+				int operator_index = static_table.find(operator_str);
+				if(operator_index == -1) {
 					current_state = ERROR;
 					error_msg = "Unknown operator";
 					error_pos = { cur_line, cur_offset - operator_str.size() };
 					break;
+				}
+				else
+				{
+					tokens.push_back(symbol{ static_table.at(operator_index).first, operator_index});
 				}
 				current_state = S;
 				break;
@@ -261,18 +253,14 @@ public:
 		input_stream.close(); //finished tokenizing
 
 		std::ofstream output_stream("identifier_table.txt");
-		identifier_table.output_table(output_stream);
-		output_stream.close();
-
-		output_stream.open("const_table.txt");
-		const_table.output_table(output_stream);
+		dynamic_table.output_table(output_stream);
 		output_stream.close();
 
 		output_stream.open("tokens.txt");
 		output_stream << "Tokens:\n";
-		output_stream << "TOKEN\t" << "TKN_TYPE\n";
+		output_stream << "TKN_TYPE\t" << "TOKEN\n";
 		for (const auto token : tokens) {
-			output_stream << token.token << '\t' << token.type << '\n';
+			output_stream << token.type << '\t' << ((token.type < 3) ? dynamic_table.at(token.index).name : static_table.at(token.index).second) << '\n';
 		}
 		output_stream.close();
 	}
