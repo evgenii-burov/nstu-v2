@@ -247,16 +247,17 @@ class HookJeeves(TwoDimensionalMinimization):
         if output_mode == 3:
             points = [self.start]
 
-        step = 1
+
         while True:
             self.iterations += 1
             # finding a direction
 
             moved = False
-
+            step = 1
             point_before_trial = current_point
             while True:
                 # probing on x
+
                 trial_point = current_point + Point(step, 0)
                 trial_point_f = self.function(trial_point)
                 if trial_point_f < current_point_f:
@@ -330,12 +331,15 @@ class HookJeeves(TwoDimensionalMinimization):
             df = abs(current_point_f - self.function(current_point))
             current_point_f = self.f(current_point)
 
+            change_from_start = current_point + -1*point_before_trial
+            l = math.sqrt(change_from_start.x**2 + change_from_start.y**2)
+
             iteration_output = (f'{current_point.x:.6e}\t'
                                 f'{current_point.y:.6e}\t'
                                 f'{current_point_f:.6e}\t'
                                 f'{direction.x:.6e}\t'
                                 f'{direction.y:.6e}\t'
-                                f'{lambd:.6e}\t'
+                                f'{l:.6e}\t'
                                 f'{abs(current_point.x - shift.x):.6e}\t'
                                 f'{abs(current_point.y - shift.y):.6e}\t'
                                 f'{df:.6e}\n'
@@ -345,7 +349,8 @@ class HookJeeves(TwoDimensionalMinimization):
                 if output_mode == 3:
                     points.append(current_point)
 
-            if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
+            # if l < self.eps_x or self.iterations > 10000:
+            if df < self.eps_f and l < self.eps_x or self.iterations > 10000:
             # if self.iterations > 10000:
                 break
 
