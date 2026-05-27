@@ -35,16 +35,17 @@ enum symbol_type {
 	DEFAULT
 };
 
-bool is_terminal(symbol_type s) {
+bool is_terminal(int s) {
 	return s <= ENDOFFILE;
 }
 
+// specifies any grammar symbol
 struct symbol {
-	// corresponds to enum terminals
+	// symbol type
 	int type;
-	// index in the static table
+	// index in the corresponding table
 	int index;
 };
 
-std::map<std::pair<symbol_type, symbol_type>, std::vector<symbol>> parsing_table;
+std::map<std::pair<symbol_type, symbol>, std::vector<symbol>> parsing_table;
 

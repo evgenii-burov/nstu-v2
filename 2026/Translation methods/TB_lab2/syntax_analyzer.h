@@ -8,13 +8,13 @@
 class SyntaxAnalyzer
 {
 private:
-	std::stack<symbol_type> parse_stack;
+	std::stack<symbol> parse_stack;
 public:
 	void parse(std::string file_name)
 	{
 		std::ifstream input_stream(file_name);
 
-		std::vector<token> tokens;
+		std::vector<symbol> tokens;
 
 		int token_index = 0;
 		int token_type = 0;
@@ -24,8 +24,11 @@ public:
 			input_stream >> token_type >> token_index;
 			tokens.push_back({ token_type, token_index });
 		}
-		tokens.push_back({ terminals::ENDOFFILE, -1 });
+		tokens.push_back(symbol{ symbol_type::ENDOFFILE, -1 });
 
+		parse_stack.push(symbol{ symbol_type::ENDOFFILE, -1 });
+		parse_stack.push(symbol{ symbol_type::S, -1 });
 
+		while(parse_stack.top)
 	}
 }
