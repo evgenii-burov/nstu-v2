@@ -11,12 +11,7 @@ private:
 
 	std::map<int, std::vector<std::vector<symbol>>> grammar;
 
-	std::map<int, bool> nullability;
-
-	bool is_nullable(int nonterminal_index)
-	{
-		return nullability.at(nonterminal_index);
-	}
+	std::map<int, bool> is_nullable;
 
 	void build_nullable()
 	{
@@ -31,13 +26,47 @@ private:
 		{
 			for (const auto& nonterminal_production_rules : grammar)
 			{
+				int current_nonterminal = nonterminal_production_rules.first;
+				if (is_decided[current_nonterminal])
+					continue;
+				bool all_rules_non_nullable = true;
 				for (const auto& rule : nonterminal_production_rules.second)
 				{
-
+					bool all_symbols_nullable = true;
+					for (const auto& symbol : rule)
+					{
+						if (symbol.type != NONTERMINAL)
+						{
+							all_symbols_nullable = false;
+							break;
+						}
+						if (!is_decided[symbol.index])
+						{
+							all_symbols_nullable = false;
+							all_rules_non_nullable = false;
+							break;
+						}
+						if(!is_nullable[symbol.index])
+						{
+							all_symbols_nullable = false;
+							break;
+						}
+					}
+					if (all_symbols_nullable)
+					{
+						is_decided[current_nonterminal] = true;
+						is_nullable[current_nonterminal] = true;
+						all_rules_non_nullable = false;
+					}
+				}
+				if (all_rules_non_nullable)
+				{
+					is_decided[current_nonterminal] = true;
+					is_nullable[current_nonterminal] = false;
 				}
 			}
 
-			bool all_decided;
+			bool all_decided = true;
 			for (const auto& bucket : is_decided)
 			{
 				if (bucket.second == false)
@@ -45,35 +74,23 @@ private:
 					all_decided = false;
 					break;
 				}
-				all_decided = true;
 			}
 			if (all_decided == true)
 				break;
+
+			for (const auto& bucket : is_decided)
+			{
+				std::cout << std::boolalpha;
+				std::cout << bucket.first << ' ' << bucket.second << "\t";
+			}
+			std::cout << std::endl;
 		}
 	}
-
-	enum states {
-		S,
-		// NONTERMINAL
-		NONTERMINAL,
-		// 'terminal'
-		TERMINAL,
-		// id, const_id, int_literal
-		INT,
-		// |
-		ENDRULE,
-		// ;
-		ENDSECTION
-	};
-public:
-
-	GrammarParser() : static_table("static_characters.txt") {};
 	
 	void parse(std::string file_name)
 	{
 		std::ifstream input_stream(file_name);
 		
-		std::map<int, std::vector<std::vector<symbol>>> grammar;
 		std::vector<std::vector<symbol>> nonterminal_rules = {};
 		std::vector<symbol> rule = {};
 		// static table nonterminal index
@@ -191,25 +208,33 @@ public:
 		}
 	}
 
-};
-
-
-class TableBuilder {
-private:
-
-
-	std::map<int, bool> nullability;
-
-	bool is_nullable(int nonterminal_index)
-	{
-		return nullability.at(nonterminal_index);
-	}
-
-	void build_nullable()
-	{
-		std::map<int, bool> is_decided;
-
-	}
+	enum states {
+		S,
+		// NONTERMINAL
+		NONTERMINAL,
+		// 'terminal'
+		TERMINAL,
+		// id, const_id, int_literal
+		INT,
+		// |
+		ENDRULE,
+		// ;
+		ENDSECTION
+	};
 public:
 
+	GrammarParser() : static_table("static_characters.txt")
+	{
+		parse("grammar_for_parsing.txt");
+		build_nullable();
+	};
+
+	void print_nullable()
+	{
+		for (const auto& bucket : is_nullable)
+		{
+			std::cout << bucket.first << "\t" << bucket.second << "\n";
+		}
+		std::cout << "\n";
+	}
 };
