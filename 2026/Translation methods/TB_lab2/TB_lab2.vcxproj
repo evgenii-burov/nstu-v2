@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="dynamic_table.h" />
     <ClInclude Include="grammar.h" />
+    <ClInclude Include="grammar_parser.h" />
     <ClInclude Include="lexical_analyzer.h" />
     <ClInclude Include="static_table.h" />
     <ClInclude Include="syntax_analyzer.h" />

@@ -28,7 +28,10 @@ public:
 				table.push_back({ symbol_type::DELIMITER, word });
 			if (type == "KEYWORD")
 				table.push_back({ symbol_type::KEYWORD, word });
-
+			if (type == "EPSILON")
+				table.push_back({ symbol_type::EPSILON, word });
+			if (type == "NONTERMINAL")
+				table.push_back({ symbol_type::NONTERMINAL, word });
 		}
 		input_stream.close();
 	}
