@@ -204,7 +204,7 @@ class GradientDescent(TwoDimensionalMinimization):
             if output_mode == 3:
                 points.append(current_point)
 
-            if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
+            if lambd < self.eps_x or self.iterations > 10000:
             #if gradient.vector_norm() < self.eps_f or self.iterations > 10000:
                 break
 
@@ -250,48 +250,49 @@ class HookJeeves(TwoDimensionalMinimization):
 
         while True:
             self.iterations += 1
-            # finding a direction
-
-            moved = False
-            step = 1
             point_before_trial = current_point
+            current_f = self.function(current_point)
+
+            step_x = 1
+            step_y = 1
+
             while True:
-                # probing on x
-
-                trial_point = current_point + Point(step, 0)
-                trial_point_f = self.function(trial_point)
-                if trial_point_f < current_point_f:
-                    moved = True
-                    current_point = trial_point
-                    current_point_f = trial_point_f
-                else:
-                    trial_point = current_point + Point(-step, 0)
-                    trial_point_f = self.function(trial_point)
-                    if trial_point_f < current_point_f:
-                        moved = True
-                        current_point = trial_point
-                        current_point_f = trial_point_f
-                # probing on y
-                trial_point = current_point + Point(0, step)
-                trial_point_f = self.function(trial_point)
-                if trial_point_f < current_point_f:
-                    moved = True
-                    current_point = trial_point
-                    current_point_f = trial_point_f
-                else:
-                    trial_point = current_point + Point(0, -step)
-                    trial_point_f = self.function(trial_point)
-                    if trial_point_f < current_point_f:
-                        moved = True
-                        current_point = trial_point
-                        current_point_f = trial_point_f
-                if moved or step < self.eps_x:
+                trial_point_pos = current_point + Point(step_x, 0)
+                trial_f_pos = self.function(trial_point_pos)
+                trial_point_neg = current_point + Point(-step_x, 0)
+                trial_f_neg = self.function(trial_point_neg)
+                if trial_f_pos < trial_f_neg and trial_f_pos < current_f:
+                    current_point = trial_point_pos
+                    current_f = trial_f_pos
                     break
-                else:
-                    step/=2
+                if trial_f_neg < trial_f_pos and trial_f_neg < current_f:
+                    current_point = trial_point_neg
+                    current_f = trial_f_neg
+                    break
+                step_x/=2
+                if step_x < self.eps_x:
+                    break
 
-            if step < self.eps_x:
+            while True:
+                trial_point_pos = current_point + Point(0, step_y)
+                trial_f_pos = self.function(trial_point_pos)
+                trial_point_neg = current_point + Point(0, -step_y)
+                trial_f_neg = self.function(trial_point_neg)
+                if trial_f_pos < trial_f_neg and trial_f_pos < current_f:
+                    current_point = trial_point_pos
+                    current_f = trial_f_pos
+                    break
+                if trial_f_neg < trial_f_pos and trial_f_neg < current_f:
+                    current_point = trial_point_neg
+                    current_f = trial_f_neg
+                    break
+                step_y/=2
+                if step_y < self.eps_x:
+                    break
+
+            if step_x < self.eps_x and step_y < self.eps_x or self.iterations > 10000:
                 break
+
 
             direction = current_point + -1*point_before_trial
             direction = direction * (1 / math.sqrt(direction.x ** 2 + direction.y ** 2))
@@ -349,9 +350,9 @@ class HookJeeves(TwoDimensionalMinimization):
                     points.append(current_point)
 
             # if l < self.eps_x or self.iterations > 10000:
-            if l < self.eps_x or self.iterations > 10000:
+            # if l < self.eps_x or self.iterations > 10000:
             # if self.iterations > 10000:
-                break
+            #     break
 
         method_output = (f'\n{'*' * 20}\n{self.start}\t'
                          f'{-math.log10(self.eps_x)}\t'
