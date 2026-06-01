@@ -389,7 +389,39 @@ private:
 
 	void build_parsing_table()
 	{
-
+		for (const auto& nonterminal_production_rules : grammar)
+		{
+			int current_nonterminal = nonterminal_production_rules.first;
+			if (is_nullable[current_nonterminal])
+			{
+				for (const auto& s : follow_s[current_nonterminal])
+				{
+					int eps_index = static_table.find("eps");
+					std::vector<symbol> eps_rule = { symbol{symbol_type::EPSILON, eps_index} };
+					parsing_table[{current_nonterminal, s}] = eps_rule;
+				}
+			}
+			for (const auto& rule : nonterminal_production_rules.second)
+			{
+				for (const auto& symbol : rule)
+				{
+					if (symbol.type != symbol_type::NONTERMINAL && symbol.type != symbol_type::EPSILON)
+					{
+						parsing_table[{current_nonterminal, symbol}] = rule;
+						break;
+					}
+					if (symbol.type == symbol_type::NONTERMINAL)
+					{
+						for (const auto& s : first_s[symbol.index])
+						{
+							parsing_table[{current_nonterminal, s}] = rule;
+						}
+						if (!is_nullable[symbol.index])
+							break;
+					}
+				}
+			}
+		}
 	}
 
 	enum states {
@@ -413,6 +445,7 @@ public:
 		build_nullable();
 		build_first();
 		build_follow();
+		build_parsing_table();
 	};
 
 	void print_nullable()
@@ -448,6 +481,19 @@ public:
 				std::cout << symbol.type << "&" << symbol.index << "\t";
 			}
 			std::cout << "|" << bucket.second.size() << '\n';
+		}
+	}
+
+	void print_parsing_table()
+	{
+		for (const auto& bucket : parsing_table)
+		{
+			std::cout << bucket.first.first << ", " << bucket.first.second.type << "&" << bucket.first.second.index << ":\t";
+			for (const auto& symbol : bucket.second)
+			{
+				std::cout << symbol.type << "&" << symbol.index << '\t';
+			}
+			std::cout << '\n';
 		}
 	}
 };

@@ -7,5 +7,6 @@ int main()
 
 	//gp.print_nullable();
 	//gp.print_first();
-	gp.print_follow();
+	//gp.print_follow();
+	gp.print_parsing_table();
 }
