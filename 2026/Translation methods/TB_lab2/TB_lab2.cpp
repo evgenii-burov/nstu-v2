@@ -1,7 +1,12 @@
 ﻿#include "lexical_analyzer.h"
+#include "grammar_parser.h"
 
 int main()
 {
-	LexicalAnalyzer lexer(std::string("static_characters.txt"));
-	lexer.tokenize(std::string("test_program1.txt"));
+	GrammarParser gp;
+
+	//gp.print_nullable();
+	//gp.print_first();
+	//gp.print_follow();
+	gp.print_parsing_table();
 }

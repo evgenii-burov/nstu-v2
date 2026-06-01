@@ -126,7 +126,7 @@ class TwoDimensionalMinimization():
         self.function_evaluations+=1
         return self.f(p)
 
-    def __call__(self, output_mode:int)->float:
+    def __call__(self, output_mode:int)->Point:
         """
         :param output_mode: 0: no output; 1: result out to file; 2: result and iterations out to file
         :return:
@@ -180,7 +180,7 @@ class GradientDescent(TwoDimensionalMinimization):
 
             a = previous_x
             b = next_x
-            gr = GoldenRatio(function_section, a, b, self.eps_x)
+            gr = GoldenRatio(function_section, a, b, 1e-8)
             self.function_evaluations+=gr.function_evaluations
             # shouldn't be negative
             lambd = gr()
@@ -291,12 +291,11 @@ class HookJeeves(TwoDimensionalMinimization):
                     step/=2
 
             if step < self.eps_x:
-                output.write("cant move\n")
                 break
 
             direction = current_point + -1*point_before_trial
             direction = direction * (1 / math.sqrt(direction.x ** 2 + direction.y ** 2))
-            print(current_point)
+
             function_section = TwoDFunctionSection(self.f, current_point, direction)
 
             # finding a and b for golden ratio (a:=prev b:=next)
@@ -320,8 +319,8 @@ class HookJeeves(TwoDimensionalMinimization):
 
             a = previous_x
             b = next_x
-            print(f'{a} {b}')
-            gr = GoldenRatio(function_section, a, b, self.eps_x)
+
+            gr = GoldenRatio(function_section, a, b, 1e-8)
             self.function_evaluations += gr.function_evaluations
             # shouldn't be negative
             lambd = gr()
@@ -350,7 +349,7 @@ class HookJeeves(TwoDimensionalMinimization):
                     points.append(current_point)
 
             # if l < self.eps_x or self.iterations > 10000:
-            if df < self.eps_f and l < self.eps_x or self.iterations > 10000:
+            if l < self.eps_x or self.iterations > 10000:
             # if self.iterations > 10000:
                 break
 
