@@ -460,8 +460,7 @@ public:
 
 	void print_first()
 	{
-		for (const auto& bucket : first_s)
-		{
+		for (const auto& bucket : first_s)		{
 			std::cout << bucket.first << "|\t";
 			for (const auto& symbol : bucket.second)
 			{
@@ -495,5 +494,10 @@ public:
 			}
 			std::cout << '\n';
 		}
+	}
+
+	std::map<std::pair<int, symbol>, std::vector<symbol>> get_parsing_table()
+	{
+		return parsing_table;
 	}
 };
