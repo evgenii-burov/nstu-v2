@@ -24,6 +24,13 @@ struct symbol {
 	// index in the corresponding table,
 	// table contains pairs of symbol_types and corresponding symbol strings
 	int index;
+
+	bool operator<(const symbol& other) const
+	{
+		if (type != other.type)
+			return type < other.type;
+		return index < other.index;
+	}
 };
 
 //std::map<int, std::vector<std::vector<symbol>>> grammar_rules;
