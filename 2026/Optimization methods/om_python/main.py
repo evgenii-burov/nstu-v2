@@ -25,8 +25,8 @@ if __name__ == '__main__':
     #     gd(2)
 
     #lab 3
-    start = Point(10,10)
-    p = PentaltyExp()
+    start = Point(5,10)
+    p = PenaltyExp()
     c = Coefficient(.1)
     function = TargetFunction(p, c)
     hj = HookJeeves(function, start, 1e-8, 1e-8)
