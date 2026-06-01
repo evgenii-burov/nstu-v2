@@ -257,8 +257,6 @@ public:
 		output_stream.close();
 
 		output_stream.open("tokens.txt");
-		output_stream << "Tokens:\n";
-		output_stream << "TKN_TYPE\t" << "TOKEN\n";
 		for (const auto token : tokens) {
 			output_stream << token.type << '\t' << ((token.type < 3) ? dynamic_table.at(token.index).name : static_table.at(token.index).second) << '\n';
 		}

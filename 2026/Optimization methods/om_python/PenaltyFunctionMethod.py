@@ -8,18 +8,17 @@ b)  x=-y
 
 penalty function | r0 | r change function | start point | eps | iter | f_eval | end point | f(end point)
 '''
-class Penalty:
-    def __call__(self, p:Point) -> float:
-        pass
+
+class PenaltyExp:
+    def __init__(self, power: int):
+        self.power = power
+
+    def __call__(self, p:Point):
+        return self.condition_expression(p)**self.power
 
     def condition_expression(self, p: Point) -> float:
         a = p.y - p.x - 1
-        return -(abs(a) + a)/2
-
-
-class PentaltyExp(Penalty):
-    def __call__(self, p:Point):
-        return self.condition_expression(p)**2
+        return (abs(a) - a)/2
 
 
 class Coefficient:
@@ -40,9 +39,11 @@ class CoefficientMult(Coefficient):
 
 class TargetFunction(TwoDFunction):
     def __init__(self,
-                 penalty:Penalty,
+                 penalty:PenaltyExp,
+                 penalty_power: int,
                  coefficient:Coefficient):
-        self.penalty = penalty
+        self.penalty_power = penalty_power
+        self.penalty = penalty()
         self.coefficient = coefficient
 
     def __call__(self, p:Point):
@@ -56,18 +57,22 @@ class PenaltyMinimization:
     def __init__(self,
                  minimize:TwoDimensionalMinimization,
                  function:TargetFunction,
+                 penalty_power: int,
                  eps:float):
         self.minimize = minimize
         self.function = function
+        self.penalty_power = penalty_power
+        self.function.penalty
         self.eps = eps
         self.iterations = 0
         self.function_evaluations = 0
 
-    def __call__(self):
+    def __call__(self, output_mode: int):
         #minimize
         #check if within bounds
         #if true, stop
         #else, change coefficient
+        #penalty function | r0 | r change function | start point | eps | iter | f_eval | end point | f(end point)
         while True:
             self.iterations += 1
             resulting_point = self.minimize(0)
@@ -75,8 +80,8 @@ class PenaltyMinimization:
             self.minimize.function_evaluations = 0
             print(self.function.penalty(resulting_point))
             if self.function.penalty(resulting_point) < self.eps or self.iterations > 100:
-                print(f'{resulting_point}\t{self.function(resulting_point)}')
-                print(f'{self.iterations}\t{self.function_evaluations}')
+                if output_mode>0:
+                    output = open("")
                 break
 
             else:
