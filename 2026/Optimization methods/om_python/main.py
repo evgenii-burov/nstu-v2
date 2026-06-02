@@ -7,8 +7,8 @@ q = QuadraticFunction()
 r = RosenbrockFunction()
 v = Variant4Function()
 
-eps_list = [1e-3,1e-4,1e-5,1e-6,1e-7]
-start = Point(5, 10)
+
+
 
 if __name__ == '__main__':
     project_dir = Path('.')
@@ -17,18 +17,20 @@ if __name__ == '__main__':
         txt_file.unlink()
 
     #lab 2
-
-    # for eps in eps_list:
-    #     hj = HookJeeves(q, start, eps, eps)
-    #     gd = GradientDescent(q, start, eps, eps)
-    #     hj(2)
-    #     gd(2)
+    eps_list = [1e-3, 1e-4, 1e-5, 1e-6, 1e-7]
+    # eps_list = [1e-3]
+    start = Point(-4, -7)
+    for eps in eps_list:
+        hj = HookJeeves(q, start, eps, eps)
+        # gd = GradientDescent(q, start, eps, eps)
+        hj(2)
+        # gd(2)
 
     #lab 3
-    start = Point(5,10)
-    p = PenaltyExp()
-    c = Coefficient(.1)
-    function = TargetFunction(p, c)
-    hj = HookJeeves(function, start, 1e-8, 1e-8)
-    pm = PenaltyMinimization(hj, function, 1e-7)
-    pm()
+    # start = Point(5,10)
+    # p = PenaltyExp(1)
+    # c = Coefficient(.1)
+    # function = TargetFunction(p, c)
+    # hj = HookJeeves(function, start, 1e-8, 1e-8)
+    # pm = PenaltyMinimization(hj, function, 1e-7)
+    # pm(1)

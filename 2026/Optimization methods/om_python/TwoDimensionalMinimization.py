@@ -204,7 +204,7 @@ class GradientDescent(TwoDimensionalMinimization):
             if output_mode == 3:
                 points.append(current_point)
 
-            if df < self.eps_f or lambd < self.eps_x or self.iterations > 10000:
+            if lambd < self.eps_x or self.iterations > 10000:
             #if gradient.vector_norm() < self.eps_f or self.iterations > 10000:
                 break
 
@@ -233,11 +233,35 @@ class HookJeeves(TwoDimensionalMinimization):
     def __str__(self):
         return 'Hook-Jeeves'
 
+    def _exploratory_move(self, base_point, step_x, step_y):
+        """
+        Perform exploratory moves around base_point along each axis.
+        Returns the best point found (may equal base_point if no improvement).
+        """
+        current = base_point
+        current_f = self.function(current)
+
+        for delta in [Point(step_x, 0), Point(-step_x, 0)]:
+            trial = current + delta
+            trial_f = self.function(trial)
+            if trial_f < current_f:
+                current = trial
+                current_f = trial_f
+                break
+
+        for delta in [Point(0, step_y), Point(0, -step_y)]:
+            trial = current + delta
+            trial_f = self.function(trial)
+            if trial_f < current_f:
+                current = trial
+                current_f = trial_f
+                break
+
+        return current
+
     def __call__(self, output_mode: int):
-        current_point = self.start
         self.function_evaluations = 0
         self.iterations = 0
-        current_point_f = self.function(current_point)
 
         if output_mode > 0:
             output = open(
@@ -247,91 +271,73 @@ class HookJeeves(TwoDimensionalMinimization):
         if output_mode == 3:
             points = [self.start]
 
+        base_point = self.start
+        step_x = 1.0
+        step_y = 1.0
 
         while True:
             self.iterations += 1
-            # finding a direction
 
-            moved = False
-            step = 1
-            point_before_trial = current_point
-            while True:
-                # probing on x
+            # --- Exploratory phase ---
+            explored = self._exploratory_move(base_point, step_x, step_y)
 
-                trial_point = current_point + Point(step, 0)
-                trial_point_f = self.function(trial_point)
-                if trial_point_f < current_point_f:
-                    moved = True
-                    current_point = trial_point
-                    current_point_f = trial_point_f
-                else:
-                    trial_point = current_point + Point(-step, 0)
-                    trial_point_f = self.function(trial_point)
-                    if trial_point_f < current_point_f:
-                        moved = True
-                        current_point = trial_point
-                        current_point_f = trial_point_f
-                # probing on y
-                trial_point = current_point + Point(0, step)
-                trial_point_f = self.function(trial_point)
-                if trial_point_f < current_point_f:
-                    moved = True
-                    current_point = trial_point
-                    current_point_f = trial_point_f
-                else:
-                    trial_point = current_point + Point(0, -step)
-                    trial_point_f = self.function(trial_point)
-                    if trial_point_f < current_point_f:
-                        moved = True
-                        current_point = trial_point
-                        current_point_f = trial_point_f
-                if moved or step < self.eps_x:
+            # If no improvement, halve both steps and retry from base
+            if explored == base_point:
+                step_x /= 2
+                step_y /= 2
+                if step_x < self.eps_x and step_y < self.eps_x:
                     break
-                else:
-                    step/=2
+                if self.iterations > 10000:
+                    break
+                continue
 
-            if step < self.eps_x:
-                break
+            # --- Pattern move phase ---
+            # Direction from base to explored point
+            diff = explored + -1 * base_point
+            length = math.sqrt(diff.x ** 2 + diff.y ** 2)
 
-            direction = current_point + -1*point_before_trial
-            direction = direction * (1 / math.sqrt(direction.x ** 2 + direction.y ** 2))
+            if length < 1e-15:
+                # Degenerate direction; just accept the exploratory point
+                current_point = explored
+            else:
+                direction = diff * (1.0 / length)
 
-            function_section = TwoDFunctionSection(self.f, current_point, direction)
+                # Find bracket [a, b] for line search along direction
+                function_section = TwoDFunctionSection(self.f, explored, direction)
 
-            # finding a and b for golden ratio (a:=prev b:=next)
-            previous_x = 0
-            current_x = 0
+                previous_x = 0.0
+                current_x = 0.0
+                step = 1.0
+                next_x = step
 
-            step = 1
-            next_x = step
-            current_f = function_section(current_x)
-            next_f = function_section(next_x)
-            self.function_evaluations += 2
+                current_f_ls = function_section(current_x)
+                next_f_ls = function_section(next_x)
+                self.function_evaluations += 2
 
-            while next_f < current_f:
-                previous_x = current_x
-                current_x = next_x
-                current_f = next_f
-                step *= 2
-                next_x = current_x + step
-                next_f = function_section(next_x)
-                self.function_evaluations += 1
+                while next_f_ls < current_f_ls:
+                    previous_x = current_x
+                    current_x = next_x
+                    current_f_ls = next_f_ls
+                    step *= 2
+                    next_x = current_x + step
+                    next_f_ls = function_section(next_x)
+                    self.function_evaluations += 1
 
-            a = previous_x
-            b = next_x
+                a = previous_x
+                b = next_x
 
-            gr = GoldenRatio(function_section, a, b, 1e-8)
-            self.function_evaluations += gr.function_evaluations
-            # shouldn't be negative
-            lambd = gr()
-            shift = lambd * direction
-            current_point += shift
+                gr = GoldenRatio(function_section, a, b, 1e-8)
+                self.function_evaluations += gr.function_evaluations
+                lambd = gr()
 
-            df = abs(current_point_f - self.function(current_point))
+                current_point = explored + direction * lambd
+
+            # --- Convergence check ---
+            change_from_base = current_point + -1 * base_point
+            l = math.sqrt(change_from_base.x ** 2 + change_from_base.y ** 2)
+
+            df = abs(self.function(base_point) - self.function(current_point))
             current_point_f = self.f(current_point)
-
-            change_from_start = current_point + -1*point_before_trial
-            l = math.sqrt(change_from_start.x**2 + change_from_start.y**2)
 
             iteration_output = (f'{current_point.x:.6e}\t'
                                 f'{current_point.y:.6e}\t'
@@ -339,28 +345,32 @@ class HookJeeves(TwoDimensionalMinimization):
                                 f'{direction.x:.6e}\t'
                                 f'{direction.y:.6e}\t'
                                 f'{l:.6e}\t'
-                                f'{abs(current_point.x - shift.x):.6e}\t'
-                                f'{abs(current_point.y - shift.y):.6e}\t'
+                                f'{abs(current_point.x - (current_point.x - change_from_base.x)):.6e}\t'
+                                f'{abs(current_point.y - (current_point.y - change_from_base.y)):.6e}\t'
                                 f'{df:.6e}\n'
                                 )
+
             if output_mode > 1:
                 output.write(iteration_output)
                 if output_mode == 3:
                     points.append(current_point)
 
-            # if l < self.eps_x or self.iterations > 10000:
-            if l < self.eps_x or self.iterations > 10000:
-            # if self.iterations > 10000:
+            # Advance base for next iteration
+            base_point = current_point
+
+            if l < self.eps_x or (df < self.eps_f and l < self.eps_x):
+                break
+            if self.iterations > 10000:
                 break
 
-        method_output = (f'\n{'*' * 20}\n{self.start}\t'
+        method_output = (f'\n{"*" * 20}\n{self.start}\t'
                          f'{-math.log10(self.eps_x)}\t'
                          f'{-math.log10(self.eps_f)}\t'
                          f'{self.iterations}\t'
                          f'{self.function_evaluations}\t'
-                         f'{current_point.x:.6e}\t'
-                         f'{current_point.y:.6e}\t'
-                         f'{self.f(current_point):.6e}\n')
+                         f'{base_point.x:.6e}\t'
+                         f'{base_point.y:.6e}\t'
+                         f'{self.f(base_point):.6e}\n')
 
         if output_mode > 0:
             output.write(method_output)
@@ -368,7 +378,8 @@ class HookJeeves(TwoDimensionalMinimization):
             if output_mode == 3:
                 boundary = max(abs(self.start.x), abs(self.start.y))
                 plot_descent_path(self.f, points, (-boundary, boundary), (-boundary, boundary), 10)
-        return current_point
+
+        return base_point
 
 
 def plot_descent_path(f, points, x_range, y_range, n_levels=20):
