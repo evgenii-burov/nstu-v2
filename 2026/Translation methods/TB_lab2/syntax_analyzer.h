@@ -52,7 +52,7 @@ public:
 			{
 				if (compare_symbols(parse_stack.top(), tokens.front()))
 				{
-					std::cout << "terminal:"<<tokens.front().type <<'&'
+					std::cout << "terminal:" << tokens.front().type << '&';
 					parse_stack.pop();
 					tokens.pop();
 				}
