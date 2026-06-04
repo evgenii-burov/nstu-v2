@@ -1,5 +1,7 @@
 #pragma once
 #include <map>
+#include <set>
+#include "static_table.h"
 
 enum symbol_type {
 	ID,
@@ -31,26 +33,22 @@ struct symbol {
 			return type < other.type;
 		return index < other.index;
 	}
+};
 
-	std::ostream& operator<<(std::ostream& out)
-	{
-		std::string s;
-		if (type == symbol_type::ID)
-			s = "id";
-		if (type == symbol_type::CONST_ID)
-			s = "const_id";
-		if (type == symbol_type::INT_LITERAL)
-			s = "int_literal";
-		if (type == symbol_type::EXPR_OPERATOR)
-			s = "operator";
-		if (type == symbol_type::EPSILON)
-			s = "eps";
-		if (type == symbol_type::ENDOFFILE)
-			s = "#";
+std::set<int> nonspecific_symbols{ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE };
+
+StaticTable static_table = StaticTable("static_characters.txt");
+
+struct SymbolKeyCompare {
+	bool operator()(const std::pair<int, symbol>& a,
+		const std::pair<int, symbol>& b) const {
+		if (a.first != b.first) return a.first < b.first;
+		if (a.second.type != b.second.type) return a.second.type < b.second.type;
+		// -1 is wildcard: treat as equal to anything
+		if (a.second.index == -1 || b.second.index == -1) return false;
+		return a.second.index < b.second.index;
 	}
 };
 
-//std::map<int, std::vector<std::vector<symbol>>> grammar_rules;
-
-//std::map<std::pair<symbol_type, symbol>, std::vector<symbol>> parsing_table;
+std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare> parsing_table;
 

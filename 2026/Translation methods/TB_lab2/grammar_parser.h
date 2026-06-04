@@ -17,8 +17,6 @@ private:
 
 	std::map<int, std::set<symbol>> follow_s;
 
-	std::map<std::pair<int, symbol>, std::vector<symbol>> parsing_table;
-
 	void parse(std::string file_name)
 	{
 		std::ifstream input_stream(file_name);
@@ -398,6 +396,11 @@ private:
 				{
 					int eps_index = static_table.find("eps");
 					std::vector<symbol> eps_rule = { symbol{symbol_type::EPSILON, eps_index} };
+					if (parsing_table.contains({ current_nonterminal, s }))
+					{
+						std::cerr << "non ll1";
+						exit(0);
+					}
 					parsing_table[{current_nonterminal, s}] = eps_rule;
 				}
 			}
@@ -407,6 +410,11 @@ private:
 				{
 					if (symbol.type != symbol_type::NONTERMINAL && symbol.type != symbol_type::EPSILON)
 					{
+						if (parsing_table.contains({ current_nonterminal, symbol }))
+						{
+							std::cerr << "non ll1";
+							exit(0);
+						}
 						parsing_table[{current_nonterminal, symbol}] = rule;
 						break;
 					}
@@ -414,6 +422,11 @@ private:
 					{
 						for (const auto& s : first_s[symbol.index])
 						{
+							if (parsing_table.contains({ current_nonterminal, s }))
+							{
+								std::cerr << "non ll1";
+								exit(0);
+							}
 							parsing_table[{current_nonterminal, s}] = rule;
 						}
 						if (!is_nullable[symbol.index])
@@ -422,6 +435,27 @@ private:
 				}
 			}
 		}
+	}
+
+	std::string readable(symbol sym)
+	{
+		std::string s;
+		int type = sym.type;
+		if (type == symbol_type::ID)
+			s = "id";
+		else if (type == symbol_type::CONST_ID)
+			s = "const_id";
+		else if (type == symbol_type::INT_LITERAL)
+			s = "int_literal";
+		else if (type == symbol_type::EXPR_OPERATOR)
+			s = "operator";
+		else if (type == symbol_type::EPSILON)
+			s = "eps";
+		else if (type == symbol_type::ENDOFFILE)
+			s = "#";
+		else
+			s = static_table.at(sym.index).second;
+		return s;
 	}
 
 	enum states {
@@ -464,10 +498,11 @@ public:
 			std::cout << bucket.first << "|\t";
 			for (const auto& symbol : bucket.second)
 			{
-				std::cout << symbol.type << "&" << symbol.index << "\t";
+				std::cout << readable(symbol) << "\t";
 			}
 			std::cout << "|" << bucket.second.size() << '\n';
 		}
+		std::cout << '\n';
 	}
 
 	void print_follow()
@@ -477,23 +512,26 @@ public:
 			std::cout << bucket.first << "|\t";
 			for (const auto& symbol : bucket.second)
 			{
-				std::cout << symbol.type << "&" << symbol.index << "\t";
+				std::cout << readable(symbol) << "\t";
 			}
 			std::cout << "|" << bucket.second.size() << '\n';
 		}
+		std::cout << '\n';
 	}
 
 	void print_parsing_table()
 	{
 		for (const auto& bucket : parsing_table)
 		{
-			std::cout << bucket.first.first << ", " << bucket.first.second.type << "&" << bucket.first.second.index << ":\t";
+			std::cout << static_table.at(bucket.first.first).second << ", " << readable(bucket.first.second) << ":=\t";
 			for (const auto& symbol : bucket.second)
 			{
-				std::cout << symbol.type << "&" << symbol.index << '\t';
+				std::cout << readable(symbol) << '\t';
 			}
 			std::cout << '\n';
 		}
+		std::cout << "TABLE SIZE: " << parsing_table.size() << '\n';
+		std::cout << '\n';
 	}
 
 	std::map<std::pair<int, symbol>, std::vector<symbol>> get_parsing_table()
