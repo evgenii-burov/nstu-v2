@@ -59,7 +59,7 @@ private:
 	}
 
 public:
-	LexicalAnalyzer(std::string file_name)
+	LexicalAnalyzer()
 		: static_table("static_characters.txt"),
 		tokens({})
 	{};
@@ -258,7 +258,7 @@ public:
 
 		output_stream.open("tokens.txt");
 		for (const auto token : tokens) {
-			output_stream << token.type << '\t' << ((token.type < 3) ? dynamic_table.at(token.index).name : static_table.at(token.index).second) << '\n';
+			output_stream << token.type << '\t' << token.index << '\n';
 		}
 		output_stream.close();
 	}
