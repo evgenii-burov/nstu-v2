@@ -22,6 +22,8 @@ bool compare_symbols(symbol s1, symbol s2)
 class SyntaxAnalyzer
 {
 private:
+	StaticTable static_table = StaticTable("static_characters.txt");
+
 	std::stack<symbol> parse_stack;
 
 	std::map<std::pair<int, symbol>, std::vector<symbol>> parsing_table;
@@ -45,8 +47,12 @@ public:
 		}
 		tokens.push(symbol{ symbol_type::ENDOFFILE, -1 });
 
+		parse_stack.push(symbol{ symbol_type::ENDOFFILE, -1 });
+		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});
+
 		while (!compare_symbols(parse_stack.top(), symbol{ ENDOFFILE, -1 }))
 		{
+			std::cout << parse_stack.top().type << "&" << parse_stack.top().index;
 			// terminal symbol
 			if (parse_stack.top().type != NONTERMINAL)
 			{
