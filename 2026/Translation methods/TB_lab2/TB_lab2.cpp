@@ -4,15 +4,15 @@
 
 int main()
 {
-	LexicalAnalyzer lx;
-	lx.tokenize("test_program1.txt");
+	//LexicalAnalyzer lx;
+	//lx.tokenize("test_program1.txt");
 
 	GrammarParser gp;
 
-	//gp.print_nullable();
-	//gp.print_first();
-	//gp.print_follow();
-	//gp.print_parsing_table();
+	gp.print_nullable();
+	gp.print_first();
+	gp.print_follow();
+	gp.print_parsing_table();
 
 	SyntaxAnalyzer s(gp.get_parsing_table());
 	s.parse("tokens.txt");

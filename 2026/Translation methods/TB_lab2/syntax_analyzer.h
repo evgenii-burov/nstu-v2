@@ -27,6 +27,27 @@ private:
 	std::stack<symbol> parse_stack;
 
 	std::map<std::pair<int, symbol>, std::vector<symbol>> parsing_table;
+
+	std::string readable(symbol sym)
+	{
+		std::string s;
+		int type = sym.type;
+		if (type == symbol_type::ID)
+			s = "id";
+		else if (type == symbol_type::CONST_ID)
+			s = "const_id";
+		else if (type == symbol_type::INT_LITERAL)
+			s = "int_literal";
+		else if (type == symbol_type::EXPR_OPERATOR)
+			s = "operator";
+		else if (type == symbol_type::EPSILON)
+			s = "eps";
+		else if (type == symbol_type::ENDOFFILE)
+			s = "#";
+		else
+			s = static_table.at(sym.index).second;
+		return s;
+	}
 public:
 
 	SyntaxAnalyzer(std::map<std::pair<int, symbol>, std::vector<symbol>> table) : parsing_table(table) {};
@@ -50,38 +71,46 @@ public:
 		parse_stack.push(symbol{ symbol_type::ENDOFFILE, -1 });
 		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});
 
+		int count = 0;
 		while (!compare_symbols(parse_stack.top(), symbol{ ENDOFFILE, -1 }))
 		{
-			std::cout << parse_stack.top().type << "&" << parse_stack.top().index;
+			count++;
+			std::cout << count << " stack:\t" << readable(parse_stack.top()) << '\t';
 			// terminal symbol
+			std::cout << "token:" << readable(tokens.front()) << '\n';
 			if (parse_stack.top().type != NONTERMINAL)
 			{
 				if (compare_symbols(parse_stack.top(), tokens.front()))
 				{
-					std::cout << "terminal:" << tokens.front().type << '&';
 					parse_stack.pop();
 					tokens.pop();
 				}
 				else
 				{
-					std::cerr << "Expected symbol: " << parse_stack.top().type << '&' << parse_stack.top().index << '\n';
+					std::cerr << "Expected symbol: " << readable(parse_stack.top()) << '\n';
 					exit(0);
 				}
 			}
 			// nonterminal symbol
-			if (!parsing_table.contains({ parse_stack.top().index, tokens.front() }))
-			{
-				std::cerr << "No usable rule\n";
-				exit(0);
-			}
-			symbol stack_top = parse_stack.top();
-			parse_stack.pop();
+			else
+			{ 
+				if (!parsing_table.contains({ parse_stack.top().index, tokens.front() }))
+				{
+					std::cerr << "No usable rule\n";
+					exit(0);
+				}
+				symbol stack_top = parse_stack.top();
+				parse_stack.pop();
 
-			std::vector<symbol> rule = parsing_table[{stack_top.index, tokens.front()}];
+				std::vector<symbol> rule = parsing_table[{stack_top.index, tokens.front()}];
 
-			for (int i = rule.size(); i >= 0; i--)
-			{
-				parse_stack.push(rule[i]);
+				if (compare_symbols(rule[0], symbol{symbol_type::EPSILON, -1}))
+					continue;
+
+				for (int i = rule.size() - 1; i >= 0; i--)
+				{
+					parse_stack.push(rule[i]);
+				}
 			}
 		}
 		if (!compare_symbols(parse_stack.top(), tokens.front()) || !(tokens.front().type == symbol_type::ENDOFFILE))
