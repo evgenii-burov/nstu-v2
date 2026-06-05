@@ -35,10 +35,6 @@ struct symbol {
 	}
 };
 
-std::set<int> nonspecific_symbols{ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE };
-
-StaticTable static_table = StaticTable("static_characters.txt");
-
 struct SymbolKeyCompare {
 	bool operator()(const std::pair<int, symbol>& a,
 		const std::pair<int, symbol>& b) const {
@@ -50,5 +46,10 @@ struct SymbolKeyCompare {
 	}
 };
 
-std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare> parsing_table;
+using ParsingTable = std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare>;
 
+std::set<int> NONSPECIFIC_SYMBOLS{ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE };
+
+StaticTable STATIC_TABLE = StaticTable("static_characters.txt");
+
+ParsingTable PARSING_TABLE{};

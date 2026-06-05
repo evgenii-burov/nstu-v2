@@ -6,13 +6,10 @@
 #include <queue>
 #include <set>
 #include "grammar.h"
-#include "grammar_parser.h"
-
-
 
 bool compare_symbols(symbol s1, symbol s2)
 {
-	if (nonspecific_symbols.contains(s1.type) && nonspecific_symbols.contains(s2.type))
+	if (NONSPECIFIC_SYMBOLS.contains(s1.type) && NONSPECIFIC_SYMBOLS.contains(s2.type))
 	{
 		return s1.type == s2.type;
 	}
@@ -22,9 +19,9 @@ bool compare_symbols(symbol s1, symbol s2)
 class SyntaxAnalyzer
 {
 private:
-	StaticTable static_table = StaticTable("static_characters.txt");
+	const StaticTable& static_table;
 
-	std::stack<symbol> parse_stack;
+	const ParsingTable& parsing_table;
 
 	struct SymbolKeyCompare {
 		bool operator()(const std::pair<int, symbol>& a,
@@ -36,8 +33,6 @@ private:
 			return a.second.index < b.second.index;
 		}
 	};
-
-	std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare> parsing_table;
 
 	std::string readable(symbol sym)
 	{
@@ -61,7 +56,10 @@ private:
 	}
 public:
 
-	SyntaxAnalyzer(std::map<std::pair<int, symbol>, std::vector<symbol>> table) : parsing_table(table) {};
+	SyntaxAnalyzer()
+		: parsing_table(PARSING_TABLE), static_table(STATIC_TABLE)
+	{}
+
 
 	void parse(std::string file_name)
 	{
@@ -78,6 +76,8 @@ public:
 			tokens.push({ token_type, token_index });
 		}
 		tokens.push(symbol{ symbol_type::ENDOFFILE, -1 });
+
+		std::stack<symbol> parse_stack{};
 
 		parse_stack.push(symbol{ symbol_type::ENDOFFILE, -1 });
 		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});

@@ -7,7 +7,9 @@
 class GrammarParser
 {
 private:
-	StaticTable static_table;
+	const StaticTable& static_table;
+
+	ParsingTable& parsing_table;
 
 	std::map<int, std::vector<std::vector<symbol>>> grammar;
 
@@ -473,7 +475,7 @@ private:
 	};
 public:
 
-	GrammarParser() : static_table("static_characters.txt")
+	GrammarParser() : static_table(STATIC_TABLE), parsing_table(PARSING_TABLE)
 	{
 		parse("grammar_for_parsing.txt");
 		build_nullable();
@@ -532,10 +534,5 @@ public:
 		}
 		std::cout << "TABLE SIZE: " << parsing_table.size() << '\n';
 		std::cout << '\n';
-	}
-
-	std::map<std::pair<int, symbol>, std::vector<symbol>> get_parsing_table()
-	{
-		return parsing_table;
 	}
 };

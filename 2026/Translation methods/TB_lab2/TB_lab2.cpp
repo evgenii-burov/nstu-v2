@@ -14,7 +14,7 @@ int main()
 	gp.print_follow();
 	gp.print_parsing_table();
 
-	SyntaxAnalyzer s(gp.get_parsing_table());
+	SyntaxAnalyzer s;
 	s.parse("tokens.txt");
 	return 0;
 }
