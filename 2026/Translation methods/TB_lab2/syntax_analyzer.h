@@ -6,13 +6,10 @@
 #include <queue>
 #include <set>
 #include "grammar.h"
-#include "grammar_parser.h"
-
-std::set<int> nonspecific_symbols{ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE};
 
 bool compare_symbols(symbol s1, symbol s2)
 {
-	if (nonspecific_symbols.contains(s1.type) && nonspecific_symbols.contains(s2.type))
+	if (NONSPECIFIC_SYMBOLS.contains(s1.type) && NONSPECIFIC_SYMBOLS.contains(s2.type))
 	{
 		return s1.type == s2.type;
 	}
@@ -22,14 +19,47 @@ bool compare_symbols(symbol s1, symbol s2)
 class SyntaxAnalyzer
 {
 private:
-	StaticTable static_table = StaticTable("static_characters.txt");
+	const StaticTable& static_table;
 
-	std::stack<symbol> parse_stack;
+	const ParsingTable& parsing_table;
 
-	std::map<std::pair<int, symbol>, std::vector<symbol>> parsing_table;
+	struct SymbolKeyCompare {
+		bool operator()(const std::pair<int, symbol>& a,
+			const std::pair<int, symbol>& b) const {
+			if (a.first != b.first) return a.first < b.first;
+			if (a.second.type != b.second.type) return a.second.type < b.second.type;
+			// -1 is wildcard: treat as equal to anything
+			if (a.second.index == -1 || b.second.index == -1) return false;
+			return a.second.index < b.second.index;
+		}
+	};
+
+	std::string readable(symbol sym)
+	{
+		std::string s;
+		int type = sym.type;
+		if (type == symbol_type::ID)
+			s = "id";
+		else if (type == symbol_type::CONST_ID)
+			s = "const_id";
+		else if (type == symbol_type::INT_LITERAL)
+			s = "int_literal";
+		else if (type == symbol_type::EXPR_OPERATOR)
+			s = "operator";
+		else if (type == symbol_type::EPSILON)
+			s = "eps";
+		else if (type == symbol_type::ENDOFFILE)
+			s = "#";
+		else
+			s = static_table.at(sym.index).second;
+		return s;
+	}
 public:
 
-	SyntaxAnalyzer(std::map<std::pair<int, symbol>, std::vector<symbol>> table) : parsing_table(table) {};
+	SyntaxAnalyzer()
+		: parsing_table(PARSING_TABLE), static_table(STATIC_TABLE)
+	{}
+
 
 	void parse(std::string file_name)
 	{
@@ -47,41 +77,51 @@ public:
 		}
 		tokens.push(symbol{ symbol_type::ENDOFFILE, -1 });
 
+		std::stack<symbol> parse_stack{};
+
 		parse_stack.push(symbol{ symbol_type::ENDOFFILE, -1 });
 		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});
 
+		int count = 0;
 		while (!compare_symbols(parse_stack.top(), symbol{ ENDOFFILE, -1 }))
 		{
-			std::cout << parse_stack.top().type << "&" << parse_stack.top().index;
+			count++;
+			std::cout << count << " stack:\t" << readable(parse_stack.top()) << '\t';
 			// terminal symbol
+			std::cout << "token:" << readable(tokens.front()) << '\n';
 			if (parse_stack.top().type != NONTERMINAL)
 			{
 				if (compare_symbols(parse_stack.top(), tokens.front()))
 				{
-					std::cout << "terminal:" << tokens.front().type << '&';
 					parse_stack.pop();
 					tokens.pop();
 				}
 				else
 				{
-					std::cerr << "Expected symbol: " << parse_stack.top().type << '&' << parse_stack.top().index << '\n';
+					std::cerr << "Expected symbol: " << readable(parse_stack.top()) << '\n';
 					exit(0);
 				}
 			}
 			// nonterminal symbol
-			if (!parsing_table.contains({ parse_stack.top().index, tokens.front() }))
-			{
-				std::cerr << "No usable rule\n";
-				exit(0);
-			}
-			symbol stack_top = parse_stack.top();
-			parse_stack.pop();
+			else
+			{ 
+				if (!parsing_table.contains({ parse_stack.top().index, tokens.front() }))
+				{
+					std::cerr << "No usable rule\n";
+					exit(0);
+				}
+				symbol stack_top = parse_stack.top();
+				parse_stack.pop();
 
-			std::vector<symbol> rule = parsing_table[{stack_top.index, tokens.front()}];
+				std::vector<symbol> rule = parsing_table[{stack_top.index, tokens.front()}];
 
-			for (int i = rule.size(); i >= 0; i--)
-			{
-				parse_stack.push(rule[i]);
+				if (compare_symbols(rule[0], symbol{symbol_type::EPSILON, -1}))
+					continue;
+
+				for (int i = rule.size() - 1; i >= 0; i--)
+				{
+					parse_stack.push(rule[i]);
+				}
 			}
 		}
 		if (!compare_symbols(parse_stack.top(), tokens.front()) || !(tokens.front().type == symbol_type::ENDOFFILE))
