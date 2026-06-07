@@ -48,8 +48,6 @@ struct SymbolKeyCompare {
 
 using ParsingTable = std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare>;
 
-std::set<int> NONSPECIFIC_SYMBOLS{ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE };
+std::set<int> NONSPECIFIC_SYMBOLS = std::set<int>({ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE });
 
-StaticTable STATIC_TABLE = StaticTable("static_characters.txt");
-
-ParsingTable PARSING_TABLE{};
+inline ParsingTable PARSING_TABLE{};

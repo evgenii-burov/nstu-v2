@@ -50,3 +50,5 @@ public:
 		return table[index];
 	}
 };
+
+inline StaticTable STATIC_TABLE = StaticTable("static_characters.txt");

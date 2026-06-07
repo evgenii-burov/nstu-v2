@@ -4,7 +4,6 @@
 #include <fstream>
 #include <stack>
 #include <queue>
-#include <set>
 #include "grammar.h"
 
 bool compare_symbols(symbol s1, symbol s2)
@@ -22,17 +21,6 @@ private:
 	const StaticTable& static_table;
 
 	const ParsingTable& parsing_table;
-
-	struct SymbolKeyCompare {
-		bool operator()(const std::pair<int, symbol>& a,
-			const std::pair<int, symbol>& b) const {
-			if (a.first != b.first) return a.first < b.first;
-			if (a.second.type != b.second.type) return a.second.type < b.second.type;
-			// -1 is wildcard: treat as equal to anything
-			if (a.second.index == -1 || b.second.index == -1) return false;
-			return a.second.index < b.second.index;
-		}
-	};
 
 	std::string readable(symbol sym)
 	{
@@ -113,7 +101,7 @@ public:
 				symbol stack_top = parse_stack.top();
 				parse_stack.pop();
 
-				std::vector<symbol> rule = parsing_table[{stack_top.index, tokens.front()}];
+				std::vector<symbol> rule = parsing_table.at({ stack_top.index, tokens.front() });
 
 				if (compare_symbols(rule[0], symbol{symbol_type::EPSILON, -1}))
 					continue;
