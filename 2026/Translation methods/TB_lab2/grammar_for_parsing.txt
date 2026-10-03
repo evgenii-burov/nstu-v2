@@ -1,4 +1,4 @@
-S := 'int' 'main' '(' ')' '{' BLOCK '}' |;
+S := 'int' 'main' '(' ')' '{' BLOCK '}'|;
 
 BLOCK := DECLARATION BLOCK
 	| ASSIGNMENT BLOCK

@@ -1,13 +1,21 @@
-int main(){
-	int a;
-	switch(a){
-	case 1:
-	{
-		const int CONST_NUMBER = 9;
-		int b = (a < 2);
-		break;
-	}
-	default:
-		break;
-	}
+int main()
+{
+int_case = 2;
+int int_case1 = 2;
+switch (int_case)
+{
+    case 1:
+        int_case = int_case + 10;
+        break;
+    case 2:
+        switch (int_case1) {
+            case 1:
+                int_case1 = int_case1 + 10;
+                break;
+            case 2:
+                int_case1 = int_case1 + 20;
+                break;
+        }
+        break;
+}
 }

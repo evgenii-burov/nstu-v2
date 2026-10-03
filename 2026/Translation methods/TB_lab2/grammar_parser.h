@@ -111,13 +111,13 @@ private:
 				}
 				symbol s = {-1, -1};
 				if (int_token == "id")
-					s = { symbol_type::ID, 0 };
+					s = { symbol_type::ID, NONSPECIFIC_INDEX };
 				if (int_token == "const_id")
-					s = { symbol_type::CONST_ID, 0 };
+					s = { symbol_type::CONST_ID, NONSPECIFIC_INDEX };
 				if (int_token == "int_literal")
-					s = { symbol_type::INT_LITERAL, 0 };
+					s = { symbol_type::INT_LITERAL, NONSPECIFIC_INDEX };
 				if (int_token == "operator")
-					s = { symbol_type::EXPR_OPERATOR, 0 };
+					s = { symbol_type::EXPR_OPERATOR, NONSPECIFIC_INDEX };
 				rule.push_back(s);
 				current_state = STATE_S;
 				break;
