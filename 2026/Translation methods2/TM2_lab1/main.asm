@@ -11,11 +11,11 @@ Coef_B EQU 19
 Coef_C EQU -2
 
 .data
-    msgIn    BYTE "Ç¢•§®‚• Á®·´Æ ¢ 16-‡®Á≠Æ© ·®·‚•¨•: "
-    msgOut   BYTE "ó®·´Æ ¢ 10-‡®Á≠Æ© ·®·‚•¨•: "
-    msgPolyO BYTE "á≠†Á•≠®• ¨≠Æ£ÆÁ´•≠† ¢ 8-‡®Á≠Æ© ·®·‚•¨•: "
-    msgPolyD BYTE "á≠†Á•≠®• ¨≠Æ£ÆÁ´•≠† ¢ 10-‡®Á≠Æ© ·®·‚•¨•: "
-    msgErr   BYTE "ç•¢•‡≠Î© ¢¢Æ§. ÑÆØ„·‚®¨Î 16-‡®Á≠Î• Á®·´† Æ‚ -5A84 §Æ 5A80: ", 13, 10
+    msgIn    BYTE "–í–≤–µ–¥–∏—Ç–µ —á–∏—Å–ª–æ –≤ 16-—Ä–∏—á–Ω–æ–π —Å–∏—Å—Ç–µ–º–µ: "
+    msgOut   BYTE "–ß–∏—Å–ª–æ –≤ 10-—Ä–∏—á–Ω–æ–π —Å–∏—Å—Ç–µ–º–µ: "
+    msgPolyO BYTE "–ó–Ω–∞—á–µ–Ω–∏–µ –º–Ω–æ–≥–æ—á–ª–µ–Ω–∞ –≤ 8-—Ä–∏—á–Ω–æ–π —Å–∏—Å—Ç–µ–º–µ: "
+    msgPolyD BYTE "–ó–Ω–∞—á–µ–Ω–∏–µ –º–Ω–æ–≥–æ—á–ª–µ–Ω–∞ –≤ 10-—Ä–∏—á–Ω–æ–π —Å–∏—Å—Ç–µ–º–µ: "
+    msgErr   BYTE "–û—à–∏–±–∫–∞ –≤–≤–æ–¥–∞! –ù—É–∂–Ω–æ 16-—Ä–∏—á–Ω–æ–µ —á–∏—Å–ª–æ –æ—Ç -5A84 –¥–æ 5A80 (–¥–æ–ø—É—Å—Ç–∏–º –∑–Ω–∞–∫ –º–∏–Ω—É—Å).", 13, 10
     crlf     BYTE 13, 10
     inBuf    BYTE 32 DUP(0)
     outBuf   BYTE 16 DUP(0)
@@ -27,7 +27,7 @@ Coef_C EQU -2
     nWritten DWORD ?
 
 .code
-; mult(x, y) -> EAX, „¨≠Æ¶•≠®• ·´Æ¶•≠®•¨
+; mult(x, y) -> EAX, —É–º–Ω–æ–∂–µ–Ω–∏–µ —Å–ª–æ–∂–µ–Ω–∏–µ–º
 mult PROC
     push ebp
     mov  ebp, esp
@@ -36,7 +36,7 @@ mult PROC
 
     mov  eax, [ebp+8]
     mov  ebx, [ebp+12]
-    xor  edi, edi               ; Ø‡®ß≠†™ Æ‚‡®Ê†‚•´Ï≠Æ£Æ ‡•ß„´Ï‚†‚†
+    xor  edi, edi               ; –ø—Ä–∏–∑–Ω–∞–∫ –æ—Ç—Ä–∏—Ü–∞—Ç–µ–ª—å–Ω–æ–≥–æ —Ä–µ–∑—É–ª—å—Ç–∞—Ç–∞
     test eax, eax
     jns  m_x
     neg  eax
@@ -49,10 +49,10 @@ m_x:
 m_y:
     cmp  eax, ebx
     jbe  m_order
-    xchg eax, ebx               ; EAX - ¨•≠ÏË®© ¨Æ§„´Ï, EBX - °Æ´ÏË®©
+    xchg eax, ebx               ; EAX - –º–µ–Ω—å—à–∏–π –º–æ–¥—É–ª—å, EBX - –±–æ–ª—å—à–∏–π
 m_order:
-    mov  ecx, eax               ; ·ÁÒ‚Á®™ Ê®™´†
-    xor  eax, eax               ; ≠†™ÆØ®‚•´Ï
+    mov  ecx, eax               ; —Å—á—ë—Ç—á–∏–∫ —Ü–∏–∫–ª–∞
+    xor  eax, eax               ; –Ω–∞–∫–æ–ø–∏—Ç–µ–ª—å
     test ecx, ecx
     jz   m_sign
 m_add:
@@ -70,7 +70,7 @@ m_end:
     ret  8
 mult ENDP
 
-; PrintNum(Á®·´Æ, Æ·≠Æ¢†≠®•, ß≠†™Æ¢Æ•)
+; PrintNum(—á–∏—Å–ª–æ, –æ—Å–Ω–æ–≤–∞–Ω–∏–µ, –∑–Ω–∞–∫–æ–≤–æ–µ)
 PrintNum PROC
     push ebp
     mov  ebp, esp
@@ -142,12 +142,12 @@ input_again:
     push hIn
     call ReadConsoleA@20
 
-    ; ---------- 16-‡®Á≠†Ô ·‚‡Æ™† (·Æ ß≠†™Æ¨) -> Á®·´Æ (EBX) · Ø‡Æ¢•‡™Æ© ----------
-    ; §ÆØ„·‚®¨Î© §®†Ø†ßÆ≠: -5A84h .. 5A80h (Ø‡® ≠Ò¨ ¨≠Æ£ÆÁ´•≠ ØÆ¨•È†•‚·Ô ¢ int32)
+    ; ---------- 16-—Ä–∏—á–Ω–∞—è —Å—Ç—Ä–æ–∫–∞ (—Å–æ –∑–Ω–∞–∫–æ–º) -> —á–∏—Å–ª–æ (EBX) —Å –ø—Ä–æ–≤–µ—Ä–∫–æ–π ----------
+    ; –¥–æ–ø—É—Å—Ç–∏–º—ã–π –¥–∏–∞–ø–∞–∑–æ–Ω: -5A84h .. 5A80h (–ø—Ä–∏ –Ω—ë–º –º–Ω–æ–≥–æ—á–ª–µ–Ω –ø–æ–º–µ—â–∞–µ—Ç—Å—è –≤ int32)
     mov  esi, OFFSET inBuf
     xor  ebx, ebx
-    xor  edi, edi               ; Ø‡®ß≠†™ ¨®≠„·†
-    xor  ecx, ecx               ; Á®·´Æ ¢¢•§Ò≠≠ÎÂ Ê®‰‡
+    xor  edi, edi               ; –ø—Ä–∏–∑–Ω–∞–∫ –º–∏–Ω—É—Å–∞
+    xor  ecx, ecx               ; —á–∏—Å–ª–æ –≤–≤–µ–¥—ë–Ω–Ω—ã—Ö —Ü–∏—Ñ—Ä
     cmp  BYTE PTR [esi], '-'
     jne  hex_loop
     mov  edi, 1
@@ -171,14 +171,14 @@ hex_add:
     shl  ebx, 4
     or   ebx, eax
     inc  ecx
-    cmp  ebx, 5A84h             ; „¶• ¢ÎË´® ß† ¨†™·®¨„¨ ØÆ ¨Æ§„´Ó -> ÆË®°™†
-    ja   bad_input              ; (ß†Æ§≠Æ ≠•‚ Ø•‡•ØÆ´≠•≠®Ô EBX)
+    cmp  ebx, 5A84h             ; —É–∂–µ –≤—ã—à–ª–∏ –∑–∞ –º–∞–∫—Å–∏–º—É–º –ø–æ –º–æ–¥—É–ª—é -> –æ—à–∏–±–∫–∞
+    ja   bad_input              ; (–∑–∞–æ–¥–Ω–æ –Ω–µ—Ç –ø–µ—Ä–µ–ø–æ–ª–Ω–µ–Ω–∏—è EBX)
     inc  esi
     jmp  hex_loop
 hex_end:
-    test ecx, ecx               ; ≠•‚ ≠® Æ§≠Æ© Ê®‰‡Î
+    test ecx, ecx               ; –Ω–µ—Ç –Ω–∏ –æ–¥–Ω–æ–π —Ü–∏—Ñ—Ä—ã
     jz   bad_input
-    mov  al, [esi]              ; ØÆ·´• Á®·´† §ÆØ„·‚®¨ ‚Æ´Ï™Æ ™Æ≠•Ê ·‚‡Æ™®
+    mov  al, [esi]              ; –ø–æ—Å–ª–µ —á–∏—Å–ª–∞ –¥–æ–ø—É—Å—Ç–∏–º —Ç–æ–ª—å–∫–æ –∫–æ–Ω–µ—Ü —Å—Ç—Ä–æ–∫–∏
     cmp  al, 13
     je   hex_done
     cmp  al, 10
@@ -188,7 +188,7 @@ hex_end:
 hex_done:
     test edi, edi
     jz   check_pos
-    neg  ebx                    ; ¨®≠®¨„¨ -5A84h „¶• Ø‡Æ¢•‡•≠ ¢ Ê®™´•
+    neg  ebx                    ; –º–∏–Ω–∏–º—É–º -5A84h —É–∂–µ –ø—Ä–æ–≤–µ—Ä–µ–Ω –≤ —Ü–∏–∫–ª–µ
     jmp  calc
 check_pos:
     cmp  ebx, 5A80h
@@ -203,7 +203,7 @@ bad_input:
     call WriteConsoleA@20
     jmp  input_again
 
-    ; ---------- ¨≠Æ£ÆÁ´•≠: (Coef_A*x + Coef_B)*x + Coef_C -> ESI ----------
+    ; ---------- –º–Ω–æ–≥–æ—á–ª–µ–Ω: (Coef_A*x + Coef_B)*x + Coef_C -> ESI ----------
 calc:
     push Coef_A
     push ebx
@@ -215,7 +215,7 @@ calc:
     add  eax, Coef_C
     mov  esi, eax
 
-    ; ---------- ¢Î¢Æ§ Á®·´† ----------
+    ; ---------- –≤—ã–≤–æ–¥ —á–∏—Å–ª–∞ ----------
     push 0
     push OFFSET nWritten
     push SIZEOF msgOut
@@ -235,7 +235,7 @@ calc:
     push hOut
     call WriteConsoleA@20
 
-    ; ---------- ¨≠Æ£ÆÁ´•≠ ¢ 8-‡®Á≠Æ© ----------
+    ; ---------- –º–Ω–æ–≥–æ—á–ª–µ–Ω –≤ 8-—Ä–∏—á–Ω–æ–π ----------
     push 0
     push OFFSET nWritten
     push SIZEOF msgPolyO
@@ -255,7 +255,7 @@ calc:
     push hOut
     call WriteConsoleA@20
 
-    ; ---------- ¨≠Æ£ÆÁ´•≠ ¢ 10-‡®Á≠Æ© ----------
+    ; ---------- –º–Ω–æ–≥–æ—á–ª–µ–Ω –≤ 10-—Ä–∏—á–Ω–æ–π ----------
     push 0
     push OFFSET nWritten
     push SIZEOF msgPolyD
