@@ -261,5 +261,7 @@ public:
 			output_stream << token.type << '\t' << token.index << '\n';
 		}
 		output_stream.close();
+
+
 	}
 };

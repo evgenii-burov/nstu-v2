@@ -4,8 +4,8 @@
 
 int main()
 {
-	//LexicalAnalyzer lx;
-	//lx.tokenize("test_program1.txt");
+	LexicalAnalyzer lx;
+	lx.tokenize("test_program1.txt");
 
 	GrammarParser gp;
 

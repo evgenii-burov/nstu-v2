@@ -1,7 +1,7 @@
 NAME	TYPE	TOK_TYPE	VALUE
-a	int	0	
-1	int	2	1
-CONST_NUMBER	int	1	
-9	int	2	9
-b	int	0	
+int_case	int	0	
 2	int	2	2
+int_case1	int	0	
+1	int	2	1
+10	int	2	10
+20	int	2	20

@@ -33,23 +33,29 @@ struct symbol {
 			return type < other.type;
 		return index < other.index;
 	}
-};
 
-struct SymbolKeyCompare {
-	bool operator()(const std::pair<int, symbol>& a,
-		const std::pair<int, symbol>& b) const {
-		if (a.first != b.first) return a.first < b.first;
-		if (a.second.type != b.second.type) return a.second.type < b.second.type;
-		// -1 is wildcard: treat as equal to anything
-		if (a.second.index == -1 || b.second.index == -1) return false;
-		return a.second.index < b.second.index;
+	friend std::ostream& operator<<(std::ostream& os, const symbol& s)
+	{
+		os << s.type << " " << s.index;
+		return os;
 	}
 };
 
-using ParsingTable = std::map<std::pair<int, symbol>, std::vector<symbol>, SymbolKeyCompare>;
+std::set<int> NONSPECIFIC_SYMBOLS = std::set<int>({ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE });
 
-std::set<int> NONSPECIFIC_SYMBOLS{ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE };
+const int NONSPECIFIC_INDEX = -1;
 
-StaticTable STATIC_TABLE = StaticTable("static_characters.txt");
+//struct SymbolKeyCompare {
+//	bool operator()(const std::pair<int, symbol>& a,
+//		const std::pair<int, symbol>& b) const
+//	{
+//		if (a.first != b.first) return a.first < b.first;
+//		if (a.second.index == -1 || b.second.index == -1) return false;
+//		if (a.second.type != b.second.type) return a.second.type < b.second.type;
+//		return a.second.index < b.second.index;
+//	}
+//};
 
-ParsingTable PARSING_TABLE{};
+using ParsingTable = std::map<std::pair<int, symbol>, std::vector<symbol>>;
+
+inline ParsingTable PARSING_TABLE{};

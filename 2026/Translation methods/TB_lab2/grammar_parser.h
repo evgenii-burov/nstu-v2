@@ -111,13 +111,13 @@ private:
 				}
 				symbol s = {-1, -1};
 				if (int_token == "id")
-					s = { symbol_type::ID, 0 };
+					s = { symbol_type::ID, NONSPECIFIC_INDEX };
 				if (int_token == "const_id")
-					s = { symbol_type::CONST_ID, 0 };
+					s = { symbol_type::CONST_ID, NONSPECIFIC_INDEX };
 				if (int_token == "int_literal")
-					s = { symbol_type::INT_LITERAL, 0 };
+					s = { symbol_type::INT_LITERAL, NONSPECIFIC_INDEX };
 				if (int_token == "operator")
-					s = { symbol_type::EXPR_OPERATOR, 0 };
+					s = { symbol_type::EXPR_OPERATOR, NONSPECIFIC_INDEX };
 				rule.push_back(s);
 				current_state = STATE_S;
 				break;
@@ -443,20 +443,29 @@ private:
 	{
 		std::string s;
 		int type = sym.type;
-		if (type == symbol_type::ID)
+		switch (type)
+		{
+		case symbol_type::ID:
 			s = "id";
-		else if (type == symbol_type::CONST_ID)
+			break;
+		case symbol_type::CONST_ID:
 			s = "const_id";
-		else if (type == symbol_type::INT_LITERAL)
+			break;
+		case symbol_type::INT_LITERAL:
 			s = "int_literal";
-		else if (type == symbol_type::EXPR_OPERATOR)
+			break;
+		case symbol_type::EXPR_OPERATOR:
 			s = "operator";
-		else if (type == symbol_type::EPSILON)
+			break;
+		case symbol_type::EPSILON:
 			s = "eps";
-		else if (type == symbol_type::ENDOFFILE)
+			break;
+		case symbol_type::ENDOFFILE:
 			s = "#";
-		else
+			break;
+		default:
 			s = static_table.at(sym.index).second;
+		}
 		return s;
 	}
 
@@ -486,16 +495,18 @@ public:
 
 	void print_nullable()
 	{
+		std::cout << "Nullable:\n";
 		for (const auto& bucket : is_nullable)
 		{
 			std::cout << std::boolalpha;
-			std::cout << bucket.first << "\t" << bucket.second << "\n";
+			std::cout << readable(symbol(bucket.first, 0)) << "\t" << bucket.second << "\n";
 		}
 		std::cout << "\n";
 	}
 
 	void print_first()
 	{
+		std::cout << "First:\n";
 		for (const auto& bucket : first_s)		{
 			std::cout << bucket.first << "|\t";
 			for (const auto& symbol : bucket.second)
@@ -509,6 +520,7 @@ public:
 
 	void print_follow()
 	{
+		std::cout << "Follow:\n";
 		for (const auto& bucket : follow_s)
 		{
 			std::cout << bucket.first << "|\t";
