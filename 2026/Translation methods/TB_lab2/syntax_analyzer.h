@@ -107,10 +107,26 @@ public:
 			else
 			{ 
 				// if the token is nonspecific
-				int index_to_use = -2;
+				int index_to_use;
 				if (NONSPECIFIC_SYMBOLS.count(tokens.front().type) == 1)
 				{
-					index_to_use = NONSPECIFIC_INDEX;
+					bool nonspecific = true;
+					if (parsing_table.contains({ parse_stack.top().index, symbol{ tokens.front().type, NONSPECIFIC_INDEX } }))
+					{
+						index_to_use = NONSPECIFIC_INDEX;
+					}
+					else
+					{
+						if (parsing_table.contains({ parse_stack.top().index, symbol{ tokens.front().type, tokens.front().index }}))
+						{
+							index_to_use = tokens.front().index;
+						}
+						else
+						{
+							std::cerr << "No usable rule\n";
+							exit(0);
+						}
+					}
 				}
 				else
 				{
