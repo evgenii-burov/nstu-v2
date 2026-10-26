@@ -52,6 +52,11 @@ private:
 					current_state = INT;
 					break;
 				}
+				if (input_character == '#')
+				{
+					current_state = ACTION;
+					break;
+				}
 				if (input_character == '|')
 				{
 					current_state = ENDRULE;
@@ -122,6 +127,21 @@ private:
 				current_state = STATE_S;
 				break;
 			}
+			case ACTION:
+			{
+				std::string action = "";
+				while (input_stream.peek() == '_' || std::islower(input_stream.peek()))
+				{
+					input_character = input_stream.get();
+					action += input_character;
+				}
+
+				int terminal_index = ACTIONS.find(action);
+				symbol s = { ACTIONS.at(terminal_index).first, terminal_index };
+				rule.push_back(s);
+				current_state = STATE_S;
+				break;
+			}
 			case ENDRULE:
 				nonterminal_rules.push_back(rule);
 				rule.clear();
@@ -160,7 +180,7 @@ private:
 					bool all_symbols_nullable = true;
 					for (const auto& symbol : rule)
 					{
-						if (symbol.type == symbol_type::EPSILON)
+						if (symbol.type == symbol_type::EPSILON || symbol.type == symbol_type::ACTION)
 							continue;
 						if (symbol.type != symbol_type::NONTERMINAL)
 						{
@@ -232,6 +252,8 @@ private:
 				{
 					for (const auto& symbol : rule)
 					{
+						if (symbol.type == symbol_type::ACTION)
+							continue;
 						// if terminal, add it to the set and move onto the next rule
 						if (symbol.type == symbol_type::EPSILON)
 							break;
@@ -309,29 +331,31 @@ private:
 						bool past_target_nonterminal = false;
 						for (auto it = rule.begin(); it != rule.end(); ++it) {
 							const auto& symbol = *it;
-							auto next_it = std::next(it);
-							bool is_last = (next_it == rule.end());
 
-							if (symbol.index == current_nonterminal)
+							if (symbol.type == symbol_type::ACTION)
+								continue;
+
+							bool is_last = true;
+							for (auto n = std::next(it); n != rule.end(); ++n)
+								if (n->type != symbol_type::ACTION) { is_last = false; break; }
+
+							if (symbol.type == symbol_type::NONTERMINAL &&
+								symbol.index == current_nonterminal)
 							{
 								past_target_nonterminal = true;
 								if (is_last)
 								{
 									if (left_side_nonterminal == current_nonterminal)
 										continue;
-										//break;
-										
+
 									if (!is_decided[left_side_nonterminal])
 									{
 										set_complete = false;
 										break;
 									}
 									for (const auto& s : follow_s[left_side_nonterminal])
-									{
 										follow_s[current_nonterminal].insert(s);
-									}
 								}
-								//?
 								continue;
 							}
 							// go next symbol if we havent got target nonterminal
@@ -410,6 +434,9 @@ private:
 			{
 				for (const auto& symbol : rule)
 				{
+					if (symbol.type == symbol_type::ACTION)
+						continue;
+
 					if (symbol.type != symbol_type::NONTERMINAL && symbol.type != symbol_type::EPSILON)
 					{
 						if (parsing_table.contains({ current_nonterminal, symbol }))
@@ -463,6 +490,9 @@ private:
 		case symbol_type::ENDOFFILE:
 			s = "#";
 			break;
+		case symbol_type::ACTION:
+			s = ACTIONS.at(sym.index).second;
+			break;
 		default:
 			s = static_table.at(sym.index).second;
 		}
@@ -480,13 +510,16 @@ private:
 		// |
 		ENDRULE,
 		// ;
-		ENDSECTION
+		ENDSECTION,
+		// #
+		ACTION
 	};
 public:
 
 	GrammarParser() : static_table(STATIC_TABLE), parsing_table(PARSING_TABLE)
 	{
-		parse("grammar_for_parsing.txt");
+		//parse("grammar_for_parsing.txt");
+		parse("grammar_with_actions.txt");
 		build_nullable();
 		build_first();
 		build_follow();

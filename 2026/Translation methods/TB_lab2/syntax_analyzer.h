@@ -27,17 +27,16 @@ private:
 	{
 		std::string s;
 		int type = sym.type;
-
 		switch (type)
 		{
 		case symbol_type::ID:
 			s = "id";
 			break;
-		case symbol_type::INT_LITERAL:
-			s = "int_literal";
-			break;
 		case symbol_type::CONST_ID:
 			s = "const_id";
+			break;
+		case symbol_type::INT_LITERAL:
+			s = "int_literal";
 			break;
 		case symbol_type::EXPR_OPERATOR:
 			s = "operator";
@@ -46,11 +45,13 @@ private:
 			s = "eps";
 			break;
 		case symbol_type::ENDOFFILE:
-			s = "eof";
+			s = "#";
+			break;
+		case symbol_type::ACTION:
+			s = ACTIONS.at(sym.index).second;
 			break;
 		default:
 			s = static_table.at(sym.index).second;
-			break;
 		}
 		return s;
 	}
@@ -88,6 +89,12 @@ public:
 			count++;
 			std::cout << count << " stack:\t" << readable(parse_stack.top()) << '\t';
 			std::cout << "token:" << readable(tokens.front()) << '\n';
+			// action
+			if (parse_stack.top().type == ACTION)
+			{
+				parse_stack.pop();
+				continue;
+			}
 			// terminal symbol
 			if (parse_stack.top().type != NONTERMINAL)
 			{
@@ -95,7 +102,6 @@ public:
 				{
 					parse_stack.pop();
 					tokens.pop();
-					std::cout << "pop\n";
 				}
 				else
 				{

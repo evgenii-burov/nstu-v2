@@ -32,6 +32,8 @@ public:
 				table.push_back({ symbol_type::EPSILON, word });
 			if (type == "NONTERMINAL")
 				table.push_back({ symbol_type::NONTERMINAL, word });
+			if (type == "ACTION")
+				table.push_back({ symbol_type::ACTION, word });
 		}
 		input_stream.close();
 	}
@@ -53,3 +55,4 @@ public:
 
 inline StaticTable STATIC_TABLE = StaticTable("static_characters.txt");
 inline StaticTable OPERATOR_CHARACTERS = StaticTable("operator_characters.txt");
+inline StaticTable ACTIONS = StaticTable("actions.txt");

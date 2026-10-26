@@ -14,7 +14,15 @@ enum symbol_type {
 	KEYWORD,
 	EPSILON,
 	NONTERMINAL,
-	ENDOFFILE
+	ENDOFFILE,
+	ACTION
+};
+
+enum action_id {
+	A_DECLARE, A_INIT_ADDR, A_PUSH_ADDR, A_PUSH_VAR, A_PUSH_CONST,
+	A_EXPR_OPEN, A_OP, A_NEG, A_EXPR_CLOSE, A_ASSIGN,
+	A_CONST_BEGIN, A_CONST_END, A_DECL_CONST, A_SET_CONST,
+	A_SW_BEGIN, A_CASE_TEST, A_DEFAULT, A_BRK, A_SW_END
 };
 
 // specifies any grammar symbol,
@@ -42,6 +50,7 @@ struct symbol {
 };
 
 std::set<int> NONSPECIFIC_SYMBOLS = std::set<int>({ ID, CONST_ID, INT_LITERAL, EXPR_OPERATOR, EPSILON, ENDOFFILE });
+
 
 const int NONSPECIFIC_INDEX = -1;
 
