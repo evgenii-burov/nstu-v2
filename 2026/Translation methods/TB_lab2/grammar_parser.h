@@ -518,8 +518,8 @@ public:
 
 	GrammarParser() : static_table(STATIC_TABLE), parsing_table(PARSING_TABLE)
 	{
-		//parse("grammar_for_parsing.txt");
-		parse("grammar_with_actions.txt");
+		parse("grammar_for_parsing.txt");
+		//parse("grammar_with_actions.txt");
 		build_nullable();
 		build_first();
 		build_follow();
