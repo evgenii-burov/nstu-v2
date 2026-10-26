@@ -14,7 +14,11 @@ int main()
 	gp.print_follow();
 	gp.print_parsing_table();
 
-	SyntaxAnalyzer s;
-	s.parse("tokens.txt");
+	DynamicTable dt;
+	dt.read_from_file("dynamic_table.txt");
+	dt.output_table(std::cout);
+
+	//SyntaxAnalyzer s;
+	//s.parse("tokens.txt");
 	return 0;
 }

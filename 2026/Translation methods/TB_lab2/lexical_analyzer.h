@@ -139,7 +139,7 @@ public:
 				//process identifier
 				int identifier_index = static_table.find(identifier);
 				if (identifier_index == -1) {
-					identifier_index = dynamic_table.insert(identifier, "int", symbol_type::ID, "");
+					identifier_index = dynamic_table.insert(identifier, "int", symbol_type::ID, "-");
 					tokens.push_back(symbol{ symbol_type::ID, identifier_index });
 				}
 				else {
@@ -205,7 +205,7 @@ public:
 				}
 
 				//process const
-				int const_index = dynamic_table.insert(const_str, "int", symbol_type::CONST_ID, "");
+				int const_index = dynamic_table.insert(const_str, "inta", symbol_type::CONST_ID, "-");
 				tokens.push_back(symbol{ symbol_type::CONST_ID, const_index });
 
 				current_state = S;
@@ -252,7 +252,7 @@ public:
 		}
 		input_stream.close(); //finished tokenizing
 
-		std::ofstream output_stream("identifier_table.txt");
+		std::ofstream output_stream("dynamic_table.txt");
 		dynamic_table.output_table(output_stream);
 		output_stream.close();
 

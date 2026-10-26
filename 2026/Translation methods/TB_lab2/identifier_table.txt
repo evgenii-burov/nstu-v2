@@ -1,5 +1,0 @@
-NAME	TYPE	TOK_TYPE	VALUE
-x	int	0	
-a	int	0	
-b	int	0	
-2	int	2	2
