@@ -84,6 +84,14 @@ public:
 		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});
 
 		int count = 0;
+
+		std::vector<poliz_item> poliz;
+		std::vector<int> opst;
+
+		int prio(int op) { /* '*' -> 3, '+','-' -> 2, '<','==','!=' -> 1 */ }
+
+		symbol last_token = symbol{ ENDOFFILE, NONSPECIFIC_INDEX };
+
 		while (!compare_symbols(parse_stack.top(), symbol{ ENDOFFILE, -1 }))
 		{
 			count++;
@@ -96,10 +104,11 @@ public:
 				continue;
 			}
 			// terminal symbol
-			if (parse_stack.top().type != NONTERMINAL)
+			if (parse_stack.top().type != NONTERMINAL && parse_stack.top().type != ACTION)
 			{
 				if (compare_symbols(parse_stack.top(), tokens.front()))
 				{
+					last_token = tokens.front();
 					parse_stack.pop();
 					tokens.pop();
 				}
