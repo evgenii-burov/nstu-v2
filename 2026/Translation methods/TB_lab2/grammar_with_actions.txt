@@ -1,0 +1,34 @@
+S := 'int' 'main' '(' ')' '{' BLOCK '}'|;
+
+BLOCK := DECLARATION BLOCK
+	| ASSIGNMENT BLOCK
+	| CONST_ASSIGNMENT BLOCK
+	| SWITCH BLOCK
+	| 'eps' |;
+LOOP_BLOCK := DECLARATION LOOP_BLOCK
+	| ASSIGNMENT LOOP_BLOCK
+	| CONST_ASSIGNMENT LOOP_BLOCK
+	| SWITCH LOOP_BLOCK
+	| 'break' #brk ';' LOOP_BLOCK
+	| 'eps'|;
+
+DECLARATION := 'int' id #declare OPTIONAL_INIT ';'|;
+OPTIONAL_INIT := '=' #init_addr EXPRESSION #assign | 'eps'|;
+ASSIGNMENT := id #push_addr '=' EXPRESSION #assign ';'|;
+CONST_ASSIGNMENT := 'const' 'int' const_id #decl_const '=' #const_begin CONST_EXPRESSION #const_end #set_const ';'|;
+
+EXPRESSION := #expr_open TERM EXPRESSION_TAIL #expr_close|;
+EXPRESSION_TAIL := operator #op TERM EXPRESSION_TAIL | 'eps'|;
+TERM := '(' EXPRESSION ')' | '-' TERM #neg | OPERAND|;
+OPERAND := id #push_var | CONST_OPERAND|;
+
+CONST_EXPRESSION := #expr_open CONST_TERM CONST_EXPRESSION_TAIL #expr_close|;
+CONST_EXPRESSION_TAIL := operator #op CONST_TERM CONST_EXPRESSION_TAIL | 'eps'|;
+CONST_TERM := '(' CONST_EXPRESSION ')' | '-' CONST_TERM #neg | CONST_OPERAND|;
+CONST_OPERAND := int_literal #push_const | const_id #push_const|;
+
+SWITCH := 'switch' '(' EXPRESSION ')' #sw_begin '{' SWITCH_BODY '}' #sw_end|;
+SWITCH_BODY := CASES DEFAULT|;
+CASES := CASE CASES | 'eps'|;
+CASE := 'case' #const_begin CONST_EXPRESSION #const_end #case_test ':' LOOP_BLOCK|;
+DEFAULT := 'default' #default ':' LOOP_BLOCK | 'eps'|;

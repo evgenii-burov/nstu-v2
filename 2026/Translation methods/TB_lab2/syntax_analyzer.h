@@ -27,17 +27,16 @@ private:
 	{
 		std::string s;
 		int type = sym.type;
-
 		switch (type)
 		{
 		case symbol_type::ID:
 			s = "id";
 			break;
-		case symbol_type::INT_LITERAL:
-			s = "int_literal";
-			break;
 		case symbol_type::CONST_ID:
 			s = "const_id";
+			break;
+		case symbol_type::INT_LITERAL:
+			s = "int_literal";
 			break;
 		case symbol_type::EXPR_OPERATOR:
 			s = "operator";
@@ -46,11 +45,13 @@ private:
 			s = "eps";
 			break;
 		case symbol_type::ENDOFFILE:
-			s = "eof";
+			s = "#";
+			break;
+		case symbol_type::ACTION:
+			s = ACTIONS.at(sym.index).second;
 			break;
 		default:
 			s = static_table.at(sym.index).second;
-			break;
 		}
 		return s;
 	}
@@ -83,19 +84,33 @@ public:
 		parse_stack.push(symbol{ symbol_type::NONTERMINAL, static_table.find("S")});
 
 		int count = 0;
+
+		std::vector<poliz_item> poliz;
+		std::vector<int> opst;
+
+		int prio(int op) { /* '*' -> 3, '+','-' -> 2, '<','==','!=' -> 1 */ }
+
+		symbol last_token = symbol{ ENDOFFILE, NONSPECIFIC_INDEX };
+
 		while (!compare_symbols(parse_stack.top(), symbol{ ENDOFFILE, -1 }))
 		{
 			count++;
 			std::cout << count << " stack:\t" << readable(parse_stack.top()) << '\t';
 			std::cout << "token:" << readable(tokens.front()) << '\n';
+			// action
+			if (parse_stack.top().type == ACTION)
+			{
+				parse_stack.pop();
+				continue;
+			}
 			// terminal symbol
-			if (parse_stack.top().type != NONTERMINAL)
+			if (parse_stack.top().type != NONTERMINAL && parse_stack.top().type != ACTION)
 			{
 				if (compare_symbols(parse_stack.top(), tokens.front()))
 				{
+					last_token = tokens.front();
 					parse_stack.pop();
 					tokens.pop();
-					std::cout << "pop\n";
 				}
 				else
 				{
