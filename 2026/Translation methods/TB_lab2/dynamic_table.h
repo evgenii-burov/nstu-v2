@@ -19,6 +19,17 @@ private:
 	std::vector<lexeme> table;
 
 public:
+	DynamicTable() : table({}) {}
+
+	DynamicTable(std::string file_name)
+	{
+		std::ifstream input_stream(file_name);
+		std::string name, var_type, symbol_type, value;
+		while (input_stream >> name >> var_type >> symbol_type >> value)
+			insert(name, var_type, std::stoi(symbol_type), value);
+		input_stream.close();
+	}
+
 	lexeme at(int index) const
 	{
 		return table[index];
@@ -70,10 +81,5 @@ public:
 		while (input_stream >> name >> var_type >> symbol_type >> value)
 			insert(name, var_type, std::stoi(symbol_type), value);
 		input_stream.close();
-	}
-
-	lexeme at(int index)
-	{
-		return table[index];
 	}
 };

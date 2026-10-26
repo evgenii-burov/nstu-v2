@@ -61,6 +61,7 @@ private:
 public:
 	LexicalAnalyzer()
 		: static_table("static_characters.txt"),
+		dynamic_table(),
 		tokens({})
 	{};
 

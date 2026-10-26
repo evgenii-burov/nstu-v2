@@ -292,7 +292,7 @@ private:
 public:
 
 	SyntaxAnalyzer()
-		: parsing_table(PARSING_TABLE), static_table(STATIC_TABLE)
+		: parsing_table(PARSING_TABLE), static_table(STATIC_TABLE), dynamic_table(DynamicTable("dynamic_table.txt"))
 	{}
 
 	void parse(std::string file_name)
