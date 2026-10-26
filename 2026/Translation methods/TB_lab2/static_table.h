@@ -52,3 +52,4 @@ public:
 };
 
 inline StaticTable STATIC_TABLE = StaticTable("static_characters.txt");
+inline StaticTable OPERATOR_CHARACTERS = StaticTable("operator_characters.txt");
