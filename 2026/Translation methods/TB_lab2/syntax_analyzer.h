@@ -6,8 +6,8 @@
 #include <queue>
 #include <memory>
 #include <string>
-#include <functional>
 #include "grammar.h"
+#include "dynamic_table.h"
 
 bool compare_symbols(symbol s1, symbol s2)
 {
@@ -31,6 +31,7 @@ class SyntaxAnalyzer
 private:
 	const StaticTable& static_table;
 	const ParsingTable& parsing_table;
+	const DynamicTable& dynamic_table;
 
 	std::vector<std::unique_ptr<Node>> pool;   // владеет всеми узлами
 	Node* root = nullptr;
@@ -82,18 +83,18 @@ private:
 	}
 
 	// ---------- текст токена ----------
-	// ADAPT: подставьте ваши таблицы идентификаторов и литералов
 	std::string text_of(const symbol& t)
 	{
 		switch (t.type)
 		{
 		case symbol_type::ID:
+			return dynamic_table.at(t.index).name;
 		case symbol_type::CONST_ID:
-			return "id" + std::to_string(t.index);      // ADAPT: имя из таблицы идентификаторов
+			return dynamic_table.at(t.index).name;
 		case symbol_type::INT_LITERAL:
-			return std::to_string(t.index);             // ADAPT: значение из таблицы литералов
+			return dynamic_table.at(t.index).name;
 		default:
-			return static_table.at(t.index).second;     // операции, разделители, ключевые слова
+			return static_table.at(t.index).second;
 		}
 	}
 
