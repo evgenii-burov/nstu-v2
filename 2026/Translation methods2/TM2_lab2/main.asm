@@ -164,11 +164,11 @@ upper:
     cmp  al, 0A0h
     jb   store
     cmp  al, 0AFh
-    jbe  shift20                ; русские а..п (A0h..AFh)
+    jbe  shift20                ; кириллица а..п (A0h..AFh)
     cmp  al, 0E0h
     jb   store
     cmp  al, 0EFh
-    jbe  shift50                ; русские р..я (E0h..EFh)
+    jbe  shift50                ; кириллица р..я (E0h..EFh)
     cmp  al, 0F1h
     jne  store
     dec  al                     ; ё (F1h) -> Ё (F0h)
