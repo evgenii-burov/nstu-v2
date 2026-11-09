@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="kg_lab1.vcxproj" Id="654b8422-26ef-4ce4-8af8-5facf378a2a0" />
+</Solution>

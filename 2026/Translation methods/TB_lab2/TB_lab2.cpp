@@ -18,7 +18,7 @@ int main()
 	dt.read_from_file("dynamic_table.txt");
 	dt.output_table(std::cout);
 
-	//SyntaxAnalyzer s;
-	//s.parse("tokens.txt");
+	SyntaxAnalyzer s;
+	s.parse("tokens.txt");
 	return 0;
 }
