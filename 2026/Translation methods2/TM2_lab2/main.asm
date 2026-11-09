@@ -19,9 +19,6 @@ EXTERN CharToOemA@8: PROC
     buffer    BYTE 256 dup(0)         ; буфер для вводимой строки
     bufSize   = 256
 
-    msgOut    BYTE "Вы ввели: ", 0
-    msgOutLen = $ - msgOut - 1
-
     msgPos    BYTE "Введите номер позиции: ", 0
     msgPosLen = $ - msgPos - 1
 
@@ -36,7 +33,7 @@ EXTERN CharToOemA@8: PROC
 
     strLen    DWORD ?                 ; длина введённой строки без CR LF
 
-    msgRes    BYTE "Подстрока: ", 0
+    msgRes    BYTE "Подстрока, приведённая к верхнему регистру:", 13, 10, 0
     msgResLen = $ - msgRes - 1
 
     msgErr    BYTE "Ошибка: подстрока выходит за границы строки", 13, 10, 0
@@ -78,27 +75,6 @@ main PROC
     mov  eax, nRead
     sub  eax, 2                 ; отбрасываем 0Dh 0Ah
     mov  strLen, eax
-
-    ; --- перекодировка сообщения "Вы ввели: " в OEM ---
-    push offset msgOut          ; pDst
-    push offset msgOut          ; pSrc
-    call CharToOemA@8
-
-    ; --- вывод сообщения ---
-    push 0
-    push offset nWritten
-    push msgOutLen
-    push offset msgOut
-    push dOut
-    call WriteConsoleA@20
-
-    ; --- вывод введённой строки ---
-    push 0
-    push offset nWritten
-    push nRead                  ; выводим ровно столько символов, сколько прочитали
-    push offset buffer
-    push dOut
-    call WriteConsoleA@20
 
     ; --- перекодировка обоих сообщений в OEM ---
     push offset msgPos
