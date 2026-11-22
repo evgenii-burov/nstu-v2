@@ -3,94 +3,79 @@
 
 .code
 
-; int Substr(const char* src, char* dst, int start, int len)
-; [ebp+8]  - src    (исходная строка, оканчивается нулём)
-; [ebp+12] - dst    (буфер под результат)
-; [ebp+16] - start  (позиция, считая с 1)
-; [ebp+20] - len    (длина подстроки)
-; Возврат в EAX: 0 - успех, 1 - ошибка границ
-SubstrUpper PROC
+CalcFunc PROC
     push ebp
     mov  ebp, esp
-    push esi                    ; cdecl: ESI, EDI, EBX нужно сохранять
-    push edi
     push ebx
 
-    ; --- длина исходной строки (repne scasb) ---
-    cld
-    mov  edi, [ebp+8]
-    xor  al, al                 ; ищем нулевой байт
-    mov  ecx, 0FFFFFFFFh        ; максимальный счётчик
-    repne scasb                 ; сканируем, пока [EDI] <> AL
-    not  ecx
-    dec  ecx                    ; ECX = длина строки без нуля
-    mov  ebx, ecx               ; EBX = strLen
+    mov  ebx, [ebp+16]          ; EBX = ok
 
-    ; --- проверка границ ---
-    mov  eax, [ebp+16]          ; start
-    cmp  eax, 1
-    jl   bad                    ; start < 1
-    mov  ecx, [ebp+20]          ; len
-    cmp  ecx, 1
-    jl   bad                    ; len < 1
-    cmp  eax, ebx
-    jg   bad                    ; start > strLen
-    mov  edx, ebx
-    sub  edx, eax
-    inc  edx                    ; EDX = сколько символов осталось с позиции start
-    cmp  ecx, edx
-    jg   bad                    ; len больше остатка строки
+    ; --- проверка области определения: x != 1 ---
+    ; Стек FPU: пуст
+    fld  qword ptr [ebp+8]      ; ST(0) = x
+    fld1                        ; ST(0) = 1.0, ST(1) = x
+    fucompp                     ; pop обоих
+                                ; Стек FPU: пуст
+    fnstsw ax
+    test ah, 40h                ; x == 1.0 ?
+    jnz  undefined
 
-    ; --- вырезание подстроки (rep movsb) ---
-    mov  esi, [ebp+8]
-    add  esi, [ebp+16]
-    dec  esi                    ; позиции с 1, смещения с 0
-    mov  edi, [ebp+12]
-    mov  ecx, [ebp+20]
-    rep  movsb
-    mov  byte ptr [edi], 0      ; завершающий ноль для вывода через cout
+    ; --- числитель: x + 2*x^2 ---
+    ; Стек FPU: пуст
+    fld  qword ptr [ebp+8]      ; ST(0) = x
+    fld  st(0)                  ; ST(0) = x, ST(1) = x
+    fmul st(0), st(0)           ; ST(0) = x^2, ST(1) = x
+    fadd st(0), st(0)           ; ST(0) = 2*x^2, ST(1) = x
+    fadd st(0), st(1)           ; ST(0) = x + 2*x^2, ST(1) = x
+                                ; Стек FPU: ST(0)=числитель, ST(1)=x
 
-    ; --- приведение к верхнему регистру (lodsb / stosb), кодировка cp866 ---
-    mov  esi, [ebp+12]
-    mov  edi, esi
-    mov  ecx, [ebp+20]
-upLoop:
-    lodsb
-    cmp  al, 'a'
-    jb   upStore
-    cmp  al, 'z'
-    jbe  shift20                ; латиница a..z
-    cmp  al, 0A0h
-    jb   upStore
-    cmp  al, 0AFh
-    jbe  shift20                ; кириллица а..п
-    cmp  al, 0E0h
-    jb   upStore
-    cmp  al, 0EFh
-    jbe  shift50                ; кириллица р..я
-    cmp  al, 0F1h
-    jne  upStore
-    dec  al                     ; ё -> Ё
-    jmp  upStore
-shift20:
-    sub  al, 20h
-    jmp  upStore
-shift50:
-    sub  al, 50h
-upStore:
-    stosb
-    loop upLoop
+    ; --- знаменатель: x - 1 ---
+    fld1                        ; ST(0)=1, ST(1)=числитель, ST(2)=x
+    fsubr st(0), st(2)          ; ST(0)=x-1, ST(1)=числитель, ST(2)=x
+                                ; Стек FPU: ST(0)=x-1, ST(1)=числитель, ST(2)=x
 
-    xor  eax, eax               ; успех
+    ; --- деление ---
+    fdivp st(1), st(0)          ; ST(0)=числитель/(x-1), ST(1)=x
+                                ; Стек FPU: ST(0)=результат, ST(1)=x
+
+    fstp st(1)                  ; ST(0)=результат
+                                ; Стек FPU: ST(0)=результат
+
+    ; --- нормализация -0.0 -> +0.0 ---
+    ; Стек FPU: ST(0)=результат
+    sub  esp, 8
+    fst  qword ptr [esp]        ; сохранили, ST(0) на месте
+                                ; Стек FPU: ST(0)=результат
+    fldz                        ; ST(0)=0.0, ST(1)=результат
+    fucompp                     ; pop обоих
+                                ; Стек FPU: пуст
+    fnstsw ax
+    test ah, 40h
+    jz   restore_res
+    fldz                        ; ST(0)=+0.0
+                                ; Стек FPU: ST(0)=+0.0
+    add  esp, 8
+    jmp  set_ok
+
+restore_res:
+    fld  qword ptr [esp]        ; ST(0)=результат
+                                ; Стек FPU: ST(0)=результат
+    add  esp, 8
+
+set_ok:
+    mov  dword ptr [ebx], 1
     jmp  quit
-bad:
-    mov  eax, 1                 ; ошибка
+
+undefined:
+    ; Стек FPU: пуст
+    fldz                        ; ST(0)=+0.0
+                                ; Стек FPU: ST(0)=+0.0
+    mov  dword ptr [ebx], 0
+
 quit:
     pop  ebx
-    pop  edi
-    pop  esi
     pop  ebp
-    ret                         ; cdecl: стек очищает вызывающий (C++)
-SubstrUpper ENDP
+    ret
+CalcFunc ENDP
 
 END
