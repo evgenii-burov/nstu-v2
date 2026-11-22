@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="TM2_RGZ.vcxproj" />
+  <Project Path="TM2_RGZ.vcxproj" Id="321e95d8-0af4-442b-b93c-5b329bff137a" />
 </Solution>
